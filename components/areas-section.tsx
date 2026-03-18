@@ -2,7 +2,8 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Building, Home, TrendingUp } from "lucide-react"
+import { ArrowRight, Building, Home, TrendingUp, MapPin } from "lucide-react"
+import { useRef, useState, useEffect } from "react"
 
 const areas = [
   {
@@ -32,7 +33,7 @@ const areas = [
     properties: 156,
     avgPrice: "4,500,000 AED",
     growth: "+15%",
-    image: "/images/dubai-skyline.jpg",
+    image: "/images/dubai-hero.jpg",
     highlights: ["Private Beaches", "5-Star Hotels", "Luxury Villas"],
   },
   {
@@ -48,101 +49,174 @@ const areas = [
 ]
 
 export function AreasSection() {
+  const [isVisible, setIsVisible] = useState(false)
+  const [hoveredArea, setHoveredArea] = useState<number | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section id="areas" className="py-20 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section ref={sectionRef} id="areas" className="py-24 bg-muted/30 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-secondary font-medium mb-2 tracking-wider uppercase">
+        <div 
+          className={`text-center mb-14 transition-all duration-1000 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
+            <MapPin className="w-4 h-4" />
             Prime Locations
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Explore Dubai Areas
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
             Discover Dubai's most prestigious neighborhoods and find the perfect 
-            location that matches your lifestyle and investment goals.
+            location that matches your lifestyle.
           </p>
         </div>
 
-        {/* Areas Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Areas Grid - Bento Style */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {areas.map((area, index) => (
             <div
               key={area.id}
-              className={`group relative overflow-hidden rounded-2xl bg-card shadow-lg hover:shadow-2xl transition-all duration-500 ${
-                index === 0 ? "md:col-span-2 md:row-span-1" : ""
-              }`}
+              className={`group transition-all duration-700 ${
+                index === 0 ? "lg:col-span-2 lg:row-span-2" : ""
+              } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              style={{ transitionDelay: `${index * 100}ms` }}
+              onMouseEnter={() => setHoveredArea(area.id)}
+              onMouseLeave={() => setHoveredArea(null)}
             >
-              <div className={`flex flex-col ${index === 0 ? "md:flex-row" : ""}`}>
+              <div className={`relative overflow-hidden rounded-3xl bg-card border border-border/50 hover:border-secondary/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-secondary/10 ${
+                index === 0 ? "h-full min-h-[500px]" : "h-[280px]"
+              }`}>
                 {/* Image */}
-                <div className={`relative ${index === 0 ? "md:w-1/2 h-64 md:h-auto" : "h-56"} overflow-hidden`}>
-                  <Image
-                    src={area.image}
-                    alt={area.name}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent" />
-                  
-                  {/* Growth Badge */}
-                  <div className="absolute top-4 right-4 bg-green-600/90 text-white px-3 py-1 rounded-full flex items-center gap-1">
-                    <TrendingUp className="h-4 w-4" />
-                    <span className="text-sm font-medium">{area.growth} YoY</span>
+                <Image
+                  src={area.image}
+                  alt={area.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                
+                {/* Overlay */}
+                <div className={`absolute inset-0 transition-all duration-500 ${
+                  hoveredArea === area.id 
+                    ? "bg-gradient-to-t from-black/90 via-black/50 to-black/20" 
+                    : "bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+                }`} />
+                
+                {/* Growth Badge */}
+                <div className="absolute top-4 right-4 z-10">
+                  <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm border border-green-500/30">
+                    <TrendingUp className="h-4 w-4 text-green-400" />
+                    <span className="text-green-400 text-sm font-bold">{area.growth} YoY</span>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className={`p-6 ${index === 0 ? "md:w-1/2 md:p-8" : ""}`}>
-                  <h3 className="text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {area.name}
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    {area.description}
-                  </p>
+                <div className="absolute inset-0 p-6 flex flex-col justify-end z-10">
+                  {/* Name & Description */}
+                  <div className={`transition-all duration-500 ${
+                    hoveredArea === area.id ? "translate-y-0" : "translate-y-4"
+                  }`}>
+                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 group-hover:text-secondary transition-colors">
+                      {area.name}
+                    </h3>
+                    <p className={`text-white/80 mb-4 transition-all duration-500 ${
+                      index === 0 ? "text-base max-w-md" : "text-sm line-clamp-2"
+                    }`}>
+                      {area.description}
+                    </p>
 
-                  {/* Highlights */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {area.highlights.map((highlight) => (
-                      <span
-                        key={highlight}
-                        className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-sm"
-                      >
-                        {highlight}
-                      </span>
-                    ))}
-                  </div>
+                    {/* Highlights */}
+                    <div className={`flex flex-wrap gap-2 mb-4 transition-all duration-500 ${
+                      hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                    }`}>
+                      {area.highlights.map((highlight) => (
+                        <span
+                          key={highlight}
+                          className="px-3 py-1 bg-white/10 backdrop-blur-sm text-white/90 rounded-full text-xs font-medium border border-white/20"
+                        >
+                          {highlight}
+                        </span>
+                      ))}
+                    </div>
 
-                  {/* Stats */}
-                  <div className="flex gap-6 mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        <Home className="h-5 w-5 text-primary" />
+                    {/* Stats */}
+                    <div className="flex items-center gap-6 mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                          <Home className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-white/60">Properties</p>
+                          <p className="font-bold text-white">{area.properties}+</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Properties</p>
-                        <p className="font-semibold text-foreground">{area.properties}+</p>
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                          <Building className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-white/60">Avg. Price</p>
+                          <p className="font-bold text-white">{area.avgPrice}</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-secondary/10 rounded-lg">
-                        <Building className="h-5 w-5 text-secondary" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Avg. Price</p>
-                        <p className="font-semibold text-foreground">{area.avgPrice}</p>
-                      </div>
-                    </div>
-                  </div>
 
-                  <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground group/btn">
-                    Explore Area
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
+                    {/* CTA */}
+                    <Button 
+                      className={`bg-white/10 backdrop-blur-sm hover:bg-secondary text-white border border-white/20 hover:border-secondary rounded-xl transition-all duration-500 ${
+                        hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                      }`}
+                    >
+                      Explore Area
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        {/* View All Button */}
+        <div 
+          className={`text-center mt-14 transition-all duration-1000 delay-500 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <Button 
+            size="lg" 
+            variant="outline"
+            className="h-14 px-10 border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground rounded-2xl font-semibold text-base transition-all duration-300 hover:scale-105"
+          >
+            View All Areas
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
         </div>
       </div>
     </section>

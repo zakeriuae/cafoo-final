@@ -2,10 +2,9 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Calendar, CreditCard, Building2, ArrowRight, MessageCircle } from "lucide-react"
-import { useState } from "react"
+import { MapPin, Calendar, Building2, ArrowRight, MessageCircle, Sparkles, TrendingUp } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
 
 const projects = [
   {
@@ -20,6 +19,7 @@ const projects = [
     status: "Off-Plan",
     image: "/images/downtown-dubai.jpg",
     featured: true,
+    roi: "8.5%",
   },
   {
     id: 2,
@@ -33,6 +33,7 @@ const projects = [
     status: "Off-Plan",
     image: "/images/dubai-marina.jpg",
     featured: true,
+    roi: "7.2%",
   },
   {
     id: 3,
@@ -46,19 +47,21 @@ const projects = [
     status: "Off-Plan",
     image: "/images/luxury-apartment.jpg",
     featured: true,
+    roi: "6.8%",
   },
   {
     id: 4,
     name: "The Address Sky View",
     developer: "EMAAR PROPERTIES",
     location: "Dubai Downtown",
-    launchPrice: "Starting from 2,500,000 AED",
+    launchPrice: "2,500,000 AED",
     paymentPlan: "0/100",
     deliveryTime: "Ready",
     type: "Hotel Apartment",
     status: "Ready",
     image: "/images/downtown-dubai.jpg",
     featured: false,
+    roi: "5.5%",
   },
   {
     id: 5,
@@ -72,19 +75,21 @@ const projects = [
     status: "Ready",
     image: "/images/dubai-marina.jpg",
     featured: false,
+    roi: "6.0%",
   },
   {
     id: 6,
     name: "THE OPUS",
     developer: "OMNIYAT",
     location: "Dubai Business Bay",
-    launchPrice: "Starting from 3,000,000 AED",
+    launchPrice: "3,000,000 AED",
     paymentPlan: "100/0",
     deliveryTime: "2025",
     type: "Apartment",
     status: "Ready",
     image: "/images/luxury-apartment.jpg",
     featured: false,
+    roi: "5.8%",
   },
 ]
 
@@ -92,37 +97,71 @@ const filters = ["All", "Off-Plan", "Ready", "Apartment", "Villa", "Penthouse"]
 
 export function ProjectsSection() {
   const [activeFilter, setActiveFilter] = useState("All")
+  const [isVisible, setIsVisible] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
 
   const filteredProjects = activeFilter === "All" 
     ? projects 
     : projects.filter(p => p.status === activeFilter || p.type === activeFilter)
 
   return (
-    <section id="projects" className="py-20 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section ref={sectionRef} id="projects" className="py-24 bg-background relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-secondary font-medium mb-2 tracking-wider uppercase">
+        <div 
+          className={`text-center mb-14 transition-all duration-1000 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            <Sparkles className="w-4 h-4" />
             Exclusive Developments
-          </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Featured Projects
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
             Discover the most prestigious real estate projects in Dubai from 
-            world-renowned developers. From off-plan investments to ready-to-move residences.
+            world-renowned developers.
           </p>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+        <div 
+          className={`flex flex-wrap justify-center gap-3 mb-12 transition-all duration-1000 delay-200 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
           {filters.map((filter) => (
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-5 py-2 rounded-full font-medium transition-all ${
+              className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${
                 activeFilter === filter
-                  ? "bg-primary text-primary-foreground shadow-lg"
+                  ? "bg-primary text-white shadow-lg shadow-primary/30"
                   : "bg-card text-foreground hover:bg-muted border border-border"
               }`}
             >
@@ -133,83 +172,121 @@ export function ProjectsSection() {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project) => (
-            <Card key={project.id} className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 bg-card">
-              {/* Image */}
-              <div className="relative h-56 overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={project.name}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                
-                {/* Badges */}
-                <div className="absolute top-4 left-4 flex gap-2">
-                  <Badge className={`${project.status === "Off-Plan" ? "bg-secondary" : "bg-green-600"} text-white`}>
-                    {project.status}
-                  </Badge>
-                  {project.featured && (
-                    <Badge className="bg-amber-500 text-white">Featured</Badge>
+          {filteredProjects.map((project, index) => (
+            <div 
+              key={project.id} 
+              className={`group transition-all duration-700 ${
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+              }`}
+              style={{ transitionDelay: `${index * 100}ms` }}
+            >
+              <div className="relative bg-card rounded-3xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/5">
+                {/* Image */}
+                <div className="relative h-60 overflow-hidden">
+                  <Image
+                    src={project.image}
+                    alt={project.name}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  
+                  {/* Badges */}
+                  <div className="absolute top-4 left-4 flex gap-2">
+                    <Badge className={`${project.status === "Off-Plan" ? "bg-secondary/90" : "bg-green-500/90"} backdrop-blur-sm text-white border-0 px-3 py-1`}>
+                      {project.status}
+                    </Badge>
+                    {project.featured && (
+                      <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 px-3 py-1">
+                        Featured
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* ROI Badge */}
+                  {project.roi && (
+                    <div className="absolute top-4 right-4 flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm">
+                      <TrendingUp className="w-4 h-4 text-green-400" />
+                      <span className="text-green-400 text-sm font-semibold">{project.roi}</span>
+                    </div>
                   )}
+
+                  {/* Developer & Name */}
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white/80 text-sm font-medium mb-1">{project.developer}</p>
+                    <h3 className="text-white text-xl font-bold">{project.name}</h3>
+                  </div>
                 </div>
 
-                {/* Developer */}
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-white/80 text-sm">{project.developer}</p>
-                  <h3 className="text-white text-xl font-bold">{project.name}</h3>
+                {/* Content */}
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {/* Location & Type */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 rounded-lg bg-secondary/10">
+                          <MapPin className="h-4 w-4 text-secondary" />
+                        </div>
+                        <span className="text-sm text-muted-foreground">{project.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 rounded-lg bg-primary/10">
+                          <Building2 className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-sm text-muted-foreground">{project.type}</span>
+                      </div>
+                    </div>
+
+                    {/* Price & Payment */}
+                    <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-border/50">
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Starting Price</p>
+                        <p className="font-bold text-primary">{project.launchPrice}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Payment Plan</p>
+                        <p className="font-bold text-foreground">{project.paymentPlan}</p>
+                      </div>
+                    </div>
+
+                    {/* Delivery */}
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 rounded-lg bg-muted">
+                        <Calendar className="h-4 w-4 text-foreground" />
+                      </div>
+                      <span className="text-sm text-foreground font-medium">Delivery: {project.deliveryTime}</span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-3 mt-6">
+                    <Button className="flex-1 bg-primary hover:bg-primary/90 text-white h-12 rounded-xl font-semibold group/btn">
+                      View Details
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="h-12 w-12 rounded-xl border-green-500 text-green-500 hover:bg-green-500 hover:text-white p-0"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
-
-              {/* Content */}
-              <CardContent className="p-5">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <MapPin className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">{project.location}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Building2 className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">{project.type}</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-border">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Starting Price</p>
-                      <p className="font-semibold text-primary">{project.launchPrice}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Payment Plan</p>
-                      <p className="font-semibold text-foreground">{project.paymentPlan}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Calendar className="h-4 w-4 text-secondary" />
-                    <span className="text-sm">Delivery: {project.deliveryTime}</span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-3 mt-5">
-                  <Button variant="outline" className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                    Details
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button className="bg-green-600 hover:bg-green-700 text-white">
-                    <MessageCircle className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            </div>
           ))}
         </div>
 
         {/* View All Button */}
-        <div className="text-center mt-12">
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+        <div 
+          className={`text-center mt-14 transition-all duration-1000 delay-500 ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
+          <Button 
+            size="lg" 
+            className="h-14 px-10 bg-primary hover:bg-primary/90 text-white rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 hover:scale-105"
+          >
             View All Projects
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>

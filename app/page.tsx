@@ -4,8 +4,8 @@ import { ProjectsSection } from "@/components/projects-section"
 import { PropertiesSection } from "@/components/properties-section"
 import { AreasSection } from "@/components/areas-section"
 import { DevelopersSection } from "@/components/developers-section"
+import { AgentsSection } from "@/components/agents-section"
 import { AboutSection } from "@/components/about-section"
-import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
 
 export default function HomePage() {
@@ -17,8 +17,8 @@ export default function HomePage() {
       <PropertiesSection />
       <AreasSection />
       <DevelopersSection />
+      <AgentsSection />
       <AboutSection />
-      <ContactSection />
       <Footer />
     </main>
   )
