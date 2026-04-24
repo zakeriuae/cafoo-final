@@ -100,7 +100,7 @@ export function DevelopersSection() {
   const duplicatedDevelopers = [...developers, ...developers, ...developers]
 
   return (
-    <section ref={sectionRef} id="developers" className="py-16 bg-muted/30 relative overflow-hidden">
+    <section ref={sectionRef} id="developers" className="py-20 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div 
@@ -129,8 +129,8 @@ export function DevelopersSection() {
           )}
         >
           {/* Gradient Masks */}
-          <div className="absolute inset-y-0 left-0 w-24 md:w-40 bg-gradient-to-r from-muted/80 via-muted/50 to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-24 md:w-40 bg-gradient-to-l from-muted/80 via-muted/50 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 left-0 w-24 md:w-40 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
+          <div className="absolute inset-y-0 right-0 w-24 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
 
           {/* Scrolling Container */}
           <div className="overflow-hidden">
@@ -141,14 +141,14 @@ export function DevelopersSection() {
               {duplicatedDevelopers.map((developer, index) => (
                 <div
                   key={`${developer.name}-${index}`}
-                  className="flex-shrink-0 mx-4 md:mx-6 group"
+                  className="flex-shrink-0 mx-8 md:mx-12 group cursor-pointer"
                 >
-                  <div className="relative w-28 h-16 md:w-36 md:h-20 bg-white rounded-xl flex items-center justify-center p-3 md:p-4 border border-border/30 transition-all duration-300 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 hover:scale-110 cursor-pointer">
+                  <div className="relative w-36 h-20 md:w-48 md:h-28 flex items-center justify-center transition-all duration-300 hover:scale-110">
                     <Image
                       src={developer.logo}
                       alt={developer.name}
                       fill
-                      className="object-contain p-2 md:p-3 grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                      className="object-contain grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
                       unoptimized
                     />
                   </div>
