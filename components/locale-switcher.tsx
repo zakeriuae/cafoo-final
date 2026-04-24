@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +17,20 @@ export function LocaleSwitcher() {
   const pathname = usePathname();
   const router = useRouter();
   const { locale: currentLocale } = useI18n();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Render a placeholder on server to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="sm" className="gap-2 text-foreground/80" disabled>
+        <Globe className="h-4 w-4" />
+      </Button>
+    );
+  }
 
   const switchLocale = (newLocale: Locale) => {
     // Remove current locale from pathname and add new one

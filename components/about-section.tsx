@@ -79,7 +79,7 @@ export function AboutSection() {
             </span>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
               {content.about.title}{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
                 {content.about.titleHighlight}
               </span>
             </h2>
@@ -99,7 +99,7 @@ export function AboutSection() {
                   )}
                   style={{ transitionDelay: `${index * 100 + 300}ms` }}
                 >
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
                     <CheckCircle2 className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-foreground/80 text-sm">{feature}</span>
@@ -110,7 +110,7 @@ export function AboutSection() {
             <Button
               size="lg"
               className={cn(
-                "bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl group",
+                "btn-primary px-8 py-6 text-lg rounded-xl group",
                 isRtl && "flex-row-reverse"
               )}
             >
@@ -133,14 +133,15 @@ export function AboutSection() {
             {/* Main Image */}
             <div className="relative">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl" />
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10">
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
                 <Image
                   src="/images/dubai-marina.jpg"
                   alt="Dubai Marina Skyline"
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-700 hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+                {/* Reduced gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
               </div>
 
               {/* Floating Stats Card */}
@@ -149,7 +150,7 @@ export function AboutSection() {
                 isRtl ? "-right-8" : "-left-8"
               )}>
                 <div className={cn("flex items-center gap-4", isRtl && "flex-row-reverse")}>
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
                     <Award className="w-7 h-7 text-white" />
                   </div>
                   <div className={cn(isRtl && "text-right")}>
@@ -163,7 +164,7 @@ export function AboutSection() {
 
               {/* Floating Badge */}
               <div className={cn(
-                "absolute -top-4 bg-gradient-to-r from-primary to-accent text-white px-6 py-3 rounded-full shadow-lg",
+                "absolute -top-4 bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full shadow-lg",
                 isRtl ? "-left-4" : "-right-4"
               )}>
                 <span className="text-sm font-semibold">2000+ {content.hero.stats.clients}</span>

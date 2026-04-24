@@ -18,25 +18,25 @@ export function HeroSection() {
   }, [])
 
   return (
-    <section className="relative h-[80vh] flex items-center overflow-hidden bg-black">
+    <section className="relative h-[80vh] flex items-center overflow-hidden bg-black pt-20">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/hero/hero-bg.png"
-          alt="Dubai Skyline Luxury"
+          alt="Dubai Marina Luxury Skyline"
           fill
-          className="object-cover opacity-80"
+          className="object-cover"
           priority
           quality={100}
         />
-        {/* Subtle Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+        {/* Gradient Overlay - stronger for daylight photo */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl">
+      <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
+        <div className="max-w-4xl flex flex-col items-center text-center">
           {/* Badge */}
           <div 
             className={cn(
@@ -51,30 +51,27 @@ export function HeroSection() {
           {/* Main Heading */}
           <h1 
             className={cn(
-              "text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-8 leading-[1.1] tracking-tight transition-all duration-1000 delay-200",
+              "text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-[1.1] tracking-tight transition-all duration-1000 delay-200 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.4)]",
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
           >
-            {content.hero.title}
-            <br />
-            <span className="text-secondary drop-shadow-2xl">
-              {content.hero.titleHighlight}
-            </span>
+            Luxury Living <br />
+            <span className="text-secondary drop-shadow-[1px_1px_0px_rgba(0,0,0,0.2)]">Redefined</span>
           </h1>
 
           <p 
             className={cn(
-              "text-lg md:text-xl text-white/70 mb-12 max-w-xl leading-relaxed transition-all duration-1000 delay-300",
+              "text-lg md:text-xl lg:text-2xl text-white/90 mb-12 max-w-2xl transition-all duration-1000 delay-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,0.4)] font-light tracking-wide mx-auto",
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
           >
-            {content.hero.description}
+            Exclusive Real Estate in Dubai
           </p>
 
           {/* Minimal Glass Search Box */}
           <div 
             className={cn(
-              "transition-all duration-1000 delay-500 max-w-3xl",
+              "flex flex-col sm:flex-row gap-6 transition-all duration-1000 delay-500",
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
           >
@@ -144,7 +141,7 @@ export function HeroSection() {
           {/* Minimal Stats */}
           <div 
             className={cn(
-              "flex items-center gap-10 mt-16 transition-all duration-1000 delay-700",
+              "flex items-center justify-center gap-10 mt-16 transition-all duration-1000 delay-700",
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
           >

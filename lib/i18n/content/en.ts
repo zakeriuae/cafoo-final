@@ -26,17 +26,16 @@ export const en: LocaleContent = {
 
   // Hero Section
   hero: {
-    badge: 'Dubai Premier Real Estate',
-    title: 'Find Your Perfect',
-    titleHighlight: 'Dubai Home',
-    subtitle: 'Smart Choice, Pleasant Purchase',
-    description: 'Discover exclusive luxury properties in Dubai with Cafoo Real Estate. From stunning apartments to magnificent villas, we help you find your dream home.',
+    badge: 'Dubai Premier Investment',
+    title: 'Secure Your Wealth',
+    titleHighlight: 'High-Yield Real Estate',
+    subtitle: 'Maximize your ROI with Dubai\'s most profitable off-plan and ready properties. Professional guidance for global investors.',
     searchPlaceholder: 'Search by location, tower, district, or developer...',
     propertyType: 'Property Type',
     location: 'Location',
     priceRange: 'Price Range',
     bedrooms: 'Bedrooms',
-    search: 'Search Properties',
+    search: 'Find Investment',
     stats: {
       properties: 'Premium Properties',
       clients: 'Happy Clients',

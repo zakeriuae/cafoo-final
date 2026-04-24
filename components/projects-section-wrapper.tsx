@@ -4,7 +4,7 @@ import ProjectsSectionClient from "./projects-section-client"
 export async function ProjectsSection() {
   const supabase = await createClient()
 
-  const { data: towers } = await supabase
+  const { data: towers, error } = await supabase
     .from("towers")
     .select(`
       id, 
@@ -12,34 +12,41 @@ export async function ProjectsSection() {
       name_fa, 
       slug, 
       starting_price, 
-      handover_date, 
+      delivery_date, 
       is_off_plan, 
       featured,
+      cover_image_url,
+      payment_plan,
       area:areas(name, name_fa, slug),
       developer:developers(name, name_fa, slug)
     `)
-    .eq("status", "published")
     .limit(6)
+
+  if (error) console.error('Towers fetch error:', error.message)
 
   // Map database towers to the format expected by the client component
   const formattedProjects = towers?.map(t => ({
     id: t.id,
     name: t.name,
-    developer: t.developer?.name || "",
-    location: {
-      en: t.area?.name || "Dubai",
-      fa: t.area?.name_fa || t.area?.name || "دبی"
+    developer: t.developer?.name || "Developer",
+    location: { 
+      en: t.area?.name || "Dubai", 
+      fa: t.area?.name_fa || t.area?.name || "دبی" 
     },
     launchPrice: t.starting_price?.toLocaleString() || "0",
-    paymentPlan: "70/30", // This could be added to DB
-    deliveryTime: t.handover_date || "2027",
-    type: { en: "Apartment", fa: "آپارتمان" }, // Default for now
+    paymentPlan: t.payment_plan || "70/30",
+    deliveryTime: t.delivery_date || "2027",
+    type: { en: "Apartment", fa: "آپارتمان" },
     status: t.is_off_plan ? "Off-Plan" : "Ready",
-    image: "/images/downtown-dubai.jpg", // Placeholder or from DB if added
+    image: t.cover_image_url || "/images/hero/hero-bg.png",
     featured: t.featured,
     roi: "8.0%",
     slug: t.slug
   })) || []
+
+  if (formattedProjects.length === 0) {
+    console.log("No towers found in database, check status or table content");
+  }
 
   return <ProjectsSectionClient projects={formattedProjects} />
 }

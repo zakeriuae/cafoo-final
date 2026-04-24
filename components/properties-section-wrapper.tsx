@@ -4,7 +4,7 @@ import PropertiesSectionClient from "./properties-section-client"
 export async function PropertiesSection() {
   const supabase = await createClient()
   
-  const { data: properties } = await supabase
+  const { data: properties, error } = await supabase
     .from("properties")
     .select(`
       id, 
@@ -19,11 +19,13 @@ export async function PropertiesSection() {
       listing_type, 
       property_type, 
       featured,
+      roi_percent,
       area:areas(name, name_fa, slug),
       tower:towers(name, name_fa)
     `)
-    .eq("content_status", "published")
     .limit(6)
+
+  if (error) console.error('Properties fetch error:', error.message)
 
   // Map database properties to the format expected by the client component
   const formattedProperties = properties?.map(p => ({
@@ -43,7 +45,7 @@ export async function PropertiesSection() {
     type: p.listing_type,
     image: p.cover_image_url || "/images/placeholder.jpg",
     featured: p.featured,
-    roi: "7.0%", // Hardcoded for now or can be added to DB
+    roi: p.roi_percent ? `${p.roi_percent}%` : "7.0%",
     slug: p.slug
   })) || []
 

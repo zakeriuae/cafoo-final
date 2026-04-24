@@ -51,15 +51,14 @@ export function Navigation() {
 
       {/* Main Navigation */}
       <header className={cn(
-        "sticky top-0 z-50",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled 
-          ? "bg-card/98 backdrop-blur-xl shadow-lg shadow-black/5 border-b border-border/50" 
-          : "bg-card/95 backdrop-blur-md border-b border-border"
+          ? "bg-black/40 backdrop-blur-xl border-b border-white/10 py-1" 
+          : "bg-transparent py-4"
       )}>
         <div className="container mx-auto px-4">
           <nav className={cn(
-            "flex items-center justify-between",
-            isScrolled ? "h-16" : "h-20"
+            "flex items-center justify-between h-20"
           )}>
             {/* Logo */}
             <Link href={`/${locale}`} className="flex items-center group">
@@ -69,10 +68,7 @@ export function Navigation() {
                   alt="Cafoo Real Estate"
                   width={140}
                   height={50}
-                  className={cn(
-                    "w-auto",
-                    isScrolled ? "h-10" : "h-12"
-                  )}
+                  className="h-12 w-auto"
                   priority
                 />
               </div>
@@ -87,8 +83,8 @@ export function Navigation() {
                   className={cn(
                     "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg",
                     activeSection === link.href.substring(1)
-                      ? "text-primary"
-                      : "text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                      ? "text-secondary"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   )}
                 >
                   {link.label}
@@ -102,15 +98,15 @@ export function Navigation() {
             {/* CTA Buttons */}
             <div className={cn("hidden lg:flex items-center gap-3", isRtl && "flex-row-reverse")}>
               <LocaleSwitcher />
-              <div className="w-px h-6 bg-border mx-2" />
+              <div className="w-px h-6 bg-white/20 mx-2" />
               <Button 
                 variant="ghost" 
-                className="text-foreground/70 hover:text-foreground hover:bg-muted/50"
+                className="text-white/80 hover:text-white hover:bg-white/10"
               >
                 <Phone className={cn("w-4 h-4", isRtl ? "ml-2" : "mr-2")} />
                 {content.nav.callUs}
               </Button>
-              <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-lg shadow-primary/25 px-6">
+              <Button className="bg-gradient-to-r from-primary to-secondary hover:brightness-110 text-white shadow-xl shadow-primary/20 border-0 px-8 rounded-full font-bold">
                 {content.nav.contact}
               </Button>
             </div>
