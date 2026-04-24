@@ -3,6 +3,8 @@
 import Image from "next/image"
 import { Award } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
+import { useI18n, useContent } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
 const developers = [
   {
@@ -42,6 +44,8 @@ const developers = [
 export function DevelopersSection() {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const { isRtl } = useI18n()
+  const content = useContent()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -68,35 +72,46 @@ export function DevelopersSection() {
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div 
-          className={`text-center mb-12 transition-all duration-1000 ${
+          className={cn(
+            "text-center mb-12 transition-all duration-1000",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          )}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+          <div className={cn(
+            "inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4",
+            isRtl && "flex-row-reverse"
+          )}>
             <Award className="w-4 h-4" />
-            Trusted Partners
+            {content.developers.subtitle}
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-            Premier Developers
+            {content.developers.title}
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            We partner with the UAE&apos;s most reputable developers
-          </p>
         </div>
 
         {/* Auto-scrolling Logos */}
         <div 
-          className={`relative transition-all duration-1000 delay-300 ${
+          className={cn(
+            "relative transition-all duration-1000 delay-300",
             isVisible ? "opacity-100" : "opacity-0"
-          }`}
+          )}
         >
           {/* Gradient Masks */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-muted/30 to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-muted/30 to-transparent z-10 pointer-events-none" />
+          <div className={cn(
+            "absolute top-0 bottom-0 w-32 bg-gradient-to-r from-muted/30 to-transparent z-10 pointer-events-none",
+            isRtl ? "right-0 bg-gradient-to-l" : "left-0"
+          )} />
+          <div className={cn(
+            "absolute top-0 bottom-0 w-32 bg-gradient-to-l from-muted/30 to-transparent z-10 pointer-events-none",
+            isRtl ? "left-0 bg-gradient-to-r" : "right-0"
+          )} />
 
           {/* Scrolling Container */}
           <div className="overflow-hidden">
-            <div className="flex animate-marquee hover:[animation-play-state:paused]">
+            <div className={cn(
+              "flex animate-marquee hover:[animation-play-state:paused]",
+              isRtl && "flex-row-reverse [animation-direction:reverse]"
+            )}>
               {duplicatedDevelopers.map((developer, index) => (
                 <div
                   key={`${developer.name}-${index}`}

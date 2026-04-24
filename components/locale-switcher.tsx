@@ -1,0 +1,59 @@
+'use client';
+
+import { usePathname, useRouter } from 'next/navigation';
+import { Globe } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { locales, localeNames, type Locale } from '@/lib/i18n';
+import { useI18n } from '@/lib/i18n';
+
+export function LocaleSwitcher() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { locale: currentLocale } = useI18n();
+
+  const switchLocale = (newLocale: Locale) => {
+    // Remove current locale from pathname and add new one
+    const segments = pathname.split('/');
+    segments[1] = newLocale;
+    const newPath = segments.join('/');
+    
+    // Set cookie for locale preference
+    document.cookie = `NEXT_LOCALE=${newLocale};path=/;max-age=31536000`;
+    
+    router.push(newPath);
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="gap-2 text-foreground/80 hover:text-foreground hover:bg-primary/10"
+        >
+          <Globe className="h-4 w-4" />
+          <span className="hidden sm:inline">{localeNames[currentLocale]}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[120px]">
+        {locales.map((locale) => (
+          <DropdownMenuItem
+            key={locale}
+            onClick={() => switchLocale(locale)}
+            className={`cursor-pointer ${
+              locale === currentLocale ? 'bg-primary/10 text-primary font-medium' : ''
+            }`}
+          >
+            {localeNames[locale]}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

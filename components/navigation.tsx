@@ -3,29 +3,32 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Menu, X, Phone, Mail, Globe, MessageCircle } from "lucide-react"
+import { Menu, X, Phone, Mail, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-
-const navLinks = [
-  { href: "#projects", label: "Projects" },
-  { href: "#properties", label: "Properties" },
-  { href: "#areas", label: "Areas" },
-  { href: "#developers", label: "Developers" },
-  { href: "#agents", label: "Our Team" },
-  { href: "#about", label: "About" },
-]
+import { useI18n, useContent } from "@/lib/i18n"
+import { LocaleSwitcher } from "@/components/locale-switcher"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("")
+  const { locale, isRtl } = useI18n()
+  const content = useContent()
+
+  const navLinks = [
+    { href: "#projects", label: content.nav.projects },
+    { href: "#properties", label: content.nav.properties },
+    { href: "#areas", label: content.nav.areas },
+    { href: "#developers", label: content.nav.developers },
+    { href: "#agents", label: content.nav.agents },
+    { href: "#about", label: content.nav.about },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
       
-      // Detect active section
       const sections = navLinks.map(link => link.href.substring(1))
       for (const section of sections.reverse()) {
         const element = document.getElementById(section)
@@ -41,7 +44,7 @@ export function Navigation() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [navLinks])
 
   return (
     <>
@@ -51,7 +54,7 @@ export function Navigation() {
         isScrolled && "py-1.5"
       )}>
         <div className="container mx-auto px-4 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-6">
+          <div className={cn("flex items-center gap-6", isRtl && "flex-row-reverse")}>
             <a 
               href="tel:+971525041810" 
               className="flex items-center gap-2 hover:text-white/80 transition-colors group"
@@ -59,7 +62,7 @@ export function Navigation() {
               <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
                 <Phone className="h-3.5 w-3.5" />
               </div>
-              <span className="hidden sm:inline font-medium">+971 52 504 1810</span>
+              <span className="hidden sm:inline font-medium" dir="ltr">+971 52 504 1810</span>
             </a>
             <a 
               href="mailto:info@cafoo.ae" 
@@ -71,7 +74,7 @@ export function Navigation() {
               <span className="hidden sm:inline font-medium">info@cafoo.ae</span>
             </a>
           </div>
-          <div className="flex items-center gap-4">
+          <div className={cn("flex items-center gap-4", isRtl && "flex-row-reverse")}>
             <a 
               href="https://wa.me/971525041810" 
               target="_blank" 
@@ -79,13 +82,10 @@ export function Navigation() {
               className="flex items-center gap-2 hover:text-white/80 transition-colors"
             >
               <MessageCircle className="h-4 w-4" />
-              <span className="hidden md:inline">WhatsApp</span>
+              <span className="hidden md:inline">{content.nav.whatsapp}</span>
             </a>
             <div className="h-4 w-px bg-white/30" />
-            <button className="flex items-center gap-2 hover:text-white/80 transition-colors">
-              <Globe className="h-4 w-4" />
-              <span>EN</span>
-            </button>
+            <LocaleSwitcher />
           </div>
         </div>
       </div>
@@ -103,7 +103,7 @@ export function Navigation() {
             isScrolled ? "h-16" : "h-20"
           )}>
             {/* Logo */}
-            <Link href="/" className="flex items-center group">
+            <Link href={`/${locale}`} className="flex items-center group">
               <div className="relative overflow-hidden">
                 <Image
                   src="/logo.jpg"
@@ -120,7 +120,7 @@ export function Navigation() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className={cn("hidden lg:flex items-center gap-1", isRtl && "flex-row-reverse")}>
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -141,16 +141,16 @@ export function Navigation() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className={cn("hidden lg:flex items-center gap-3", isRtl && "flex-row-reverse")}>
               <Button 
                 variant="ghost" 
                 className="text-foreground/70 hover:text-foreground hover:bg-muted/50"
               >
-                <Phone className="w-4 h-4 mr-2" />
-                Call Us
+                <Phone className={cn("w-4 h-4", isRtl ? "ml-2" : "mr-2")} />
+                {content.nav.callUs}
               </Button>
               <Button className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-lg shadow-primary/25 px-6">
-                Book Consultation
+                {content.nav.contact}
               </Button>
             </div>
 
@@ -162,15 +162,18 @@ export function Navigation() {
             >
               <div className="relative w-6 h-6">
                 <span className={cn(
-                  "absolute left-0 block w-6 h-0.5 bg-current transition-all duration-300",
+                  "absolute block w-6 h-0.5 bg-current transition-all duration-300",
+                  isRtl ? "right-0" : "left-0",
                   isOpen ? "top-3 rotate-45" : "top-1"
                 )} />
                 <span className={cn(
-                  "absolute left-0 top-3 block w-6 h-0.5 bg-current transition-all duration-300",
+                  "absolute top-3 block w-6 h-0.5 bg-current transition-all duration-300",
+                  isRtl ? "right-0" : "left-0",
                   isOpen ? "opacity-0" : "opacity-100"
                 )} />
                 <span className={cn(
-                  "absolute left-0 block w-6 h-0.5 bg-current transition-all duration-300",
+                  "absolute block w-6 h-0.5 bg-current transition-all duration-300",
+                  isRtl ? "right-0" : "left-0",
                   isOpen ? "top-3 -rotate-45" : "top-5"
                 )} />
               </div>
@@ -194,7 +197,8 @@ export function Navigation() {
                   "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300",
                   activeSection === link.href.substring(1)
                     ? "bg-primary/10 text-primary"
-                    : "text-foreground/70 hover:bg-muted/50 hover:text-foreground"
+                    : "text-foreground/70 hover:bg-muted/50 hover:text-foreground",
+                  isRtl && "flex-row-reverse"
                 )}
                 onClick={() => setIsOpen(false)}
                 style={{ animationDelay: `${index * 50}ms` }}
@@ -209,14 +213,14 @@ export function Navigation() {
                 className="w-full justify-center"
                 onClick={() => setIsOpen(false)}
               >
-                <Phone className="w-4 h-4 mr-2" />
-                Call Us
+                <Phone className={cn("w-4 h-4", isRtl ? "ml-2" : "mr-2")} />
+                {content.nav.callUs}
               </Button>
               <Button 
                 className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white"
                 onClick={() => setIsOpen(false)}
               >
-                Book Consultation
+                {content.nav.contact}
               </Button>
             </div>
           </div>

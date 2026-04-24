@@ -15,12 +15,14 @@ import {
   TrendingUp
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
+import { useI18n, useContent } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
 const properties = [
   {
     id: 1,
-    title: "Luxurious 3BR Apartment in Downtown",
-    location: "Downtown Dubai",
+    title: { en: "Luxurious 3BR Apartment in Downtown", fa: "آپارتمان لوکس ۳ خوابه در داون‌تاون" },
+    location: { en: "Downtown Dubai", fa: "داون‌تاون دبی" },
     project: "Boulevard Crescent",
     price: "2,850,000",
     rentPrice: "180,000",
@@ -35,8 +37,8 @@ const properties = [
   },
   {
     id: 2,
-    title: "Stunning 2BR with Marina View",
-    location: "Dubai Marina",
+    title: { en: "Stunning 2BR with Marina View", fa: "آپارتمان ۲ خوابه با چشم‌انداز مارینا" },
+    location: { en: "Dubai Marina", fa: "دبی مارینا" },
     project: "Marina Promenade",
     price: "1,950,000",
     rentPrice: "120,000",
@@ -51,8 +53,8 @@ const properties = [
   },
   {
     id: 3,
-    title: "Premium 1BR in Business Bay",
-    location: "Business Bay",
+    title: { en: "Premium 1BR in Business Bay", fa: "آپارتمان ممتاز ۱ خوابه در بیزینس بی" },
+    location: { en: "Business Bay", fa: "بیزینس بی" },
     project: "The Opus",
     price: "1,100,000",
     rentPrice: "95,000",
@@ -67,8 +69,8 @@ const properties = [
   },
   {
     id: 4,
-    title: "Elegant 4BR Penthouse",
-    location: "Palm Jumeirah",
+    title: { en: "Elegant 4BR Penthouse", fa: "پنت‌هاوس مجلل ۴ خوابه" },
+    location: { en: "Palm Jumeirah", fa: "پالم جمیرا" },
     project: "Atlantis The Royal",
     price: "15,500,000",
     rentPrice: "850,000",
@@ -83,8 +85,8 @@ const properties = [
   },
   {
     id: 5,
-    title: "Modern 2BR with Burj View",
-    location: "Downtown Dubai",
+    title: { en: "Modern 2BR with Burj View", fa: "آپارتمان مدرن ۲ خوابه با نمای برج خلیفه" },
+    location: { en: "Downtown Dubai", fa: "داون‌تاون دبی" },
     project: "Address Sky View",
     price: "2,400,000",
     rentPrice: "145,000",
@@ -99,8 +101,8 @@ const properties = [
   },
   {
     id: 6,
-    title: "Spacious 3BR Villa",
-    location: "Emirates Hills",
+    title: { en: "Spacious 3BR Villa", fa: "ویلای وسیع ۳ خوابه" },
+    location: { en: "Emirates Hills", fa: "امارات هیلز" },
     project: "Emirates Hills Villas",
     price: "8,200,000",
     rentPrice: "450,000",
@@ -120,6 +122,8 @@ export function PropertiesSection() {
   const [favorites, setFavorites] = useState<number[]>([])
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const { isRtl, locale } = useI18n()
+  const content = useContent()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -150,44 +154,55 @@ export function PropertiesSection() {
     )
   }
 
+  const tabs = [
+    { key: "all" as const, label: content.projects.filters.all },
+    { key: "sale" as const, label: content.properties.tabs.sale },
+    { key: "rent" as const, label: content.properties.tabs.rent },
+  ]
+
   return (
     <section ref={sectionRef} id="properties" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div 
-          className={`flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 transition-all duration-1000 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          className={cn(
+            "flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 transition-all duration-1000",
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
+            isRtl && "md:flex-row-reverse"
+          )}
         >
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
+          <div className={cn(isRtl && "text-right")}>
+            <div className={cn(
+              "inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4",
+              isRtl && "flex-row-reverse"
+            )}>
               <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-              Premium Listings
+              {content.properties.badge}
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-balance">
-              Properties for Sale & Rent
+              {content.properties.title}{" "}
+              <span className="text-secondary">{content.properties.titleHighlight}</span>
             </h2>
             <p className="text-muted-foreground max-w-xl text-lg">
-              Browse our curated collection of exclusive properties in Dubai's most 
-              sought-after locations.
+              {content.properties.subtitle}
             </p>
           </div>
 
           {/* Tabs */}
-          <div className="flex p-1.5 bg-card rounded-2xl border border-border shadow-sm">
-            {[
-              { key: "all", label: "All" },
-              { key: "sale", label: "For Sale" },
-              { key: "rent", label: "For Rent" },
-            ].map((tab) => (
+          <div className={cn(
+            "flex p-1.5 bg-card rounded-2xl border border-border shadow-sm",
+            isRtl && "flex-row-reverse"
+          )}>
+            {tabs.map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as "all" | "sale" | "rent")}
-                className={`px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                onClick={() => setActiveTab(tab.key)}
+                className={cn(
+                  "px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300",
                   activeTab === tab.key
                     ? "bg-primary text-white shadow-lg"
                     : "text-muted-foreground hover:text-foreground"
-                }`}
+                )}
               >
                 {tab.label}
               </button>
@@ -200,9 +215,10 @@ export function PropertiesSection() {
           {filteredProperties.map((property, index) => (
             <div 
               key={property.id} 
-              className={`group transition-all duration-700 ${
+              className={cn(
+                "group transition-all duration-700",
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-              }`}
+              )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
               <div className="relative bg-card rounded-3xl overflow-hidden border border-border/50 hover:border-secondary/30 transition-all duration-500 hover:-translate-y-2">
@@ -210,25 +226,27 @@ export function PropertiesSection() {
                 <div className="relative h-64 overflow-hidden">
                   <Image
                     src={property.image}
-                    alt={property.title}
+                    alt={property.title[locale as 'en' | 'fa']}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                   
-                  {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   
                   {/* Top Actions */}
-                  <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
-                    <div className="flex gap-2">
+                  <div className={cn(
+                    "absolute top-4 left-4 right-4 flex justify-between items-start z-10",
+                    isRtl && "flex-row-reverse"
+                  )}>
+                    <div className={cn("flex gap-2", isRtl && "flex-row-reverse")}>
                       <Badge className="bg-primary/90 backdrop-blur-sm text-white border-0 px-3 py-1">
                         {activeTab === "rent" || (activeTab === "all" && property.type === "both") 
-                          ? "For Rent" 
-                          : "For Sale"}
+                          ? content.properties.tabs.rent 
+                          : content.properties.tabs.sale}
                       </Badge>
                       {property.featured && (
                         <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 px-3 py-1">
-                          Featured
+                          {content.properties.featured}
                         </Badge>
                       )}
                     </div>
@@ -237,31 +255,41 @@ export function PropertiesSection() {
                       className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:scale-110"
                     >
                       <Heart 
-                        className={`h-5 w-5 transition-colors ${
+                        className={cn(
+                          "h-5 w-5 transition-colors",
                           favorites.includes(property.id) 
                             ? "fill-red-500 text-red-500" 
                             : "text-foreground"
-                        }`} 
+                        )} 
                       />
                     </button>
                   </div>
 
                   {/* Bottom Price Tag */}
-                  <div className="absolute bottom-4 left-4 right-4 z-10">
-                    <div className="flex items-end justify-between">
+                  <div className={cn(
+                    "absolute bottom-4 left-4 right-4 z-10",
+                    isRtl && "text-right"
+                  )}>
+                    <div className={cn(
+                      "flex items-end justify-between",
+                      isRtl && "flex-row-reverse"
+                    )}>
                       <div>
-                        <p className="text-2xl font-bold text-white">
+                        <p className="text-2xl font-bold text-white" dir="ltr">
                           {activeTab === "rent" || (activeTab === "all" && property.type === "both")
-                            ? `${property.rentPrice} AED`
-                            : `${property.price} AED`
+                            ? `${property.rentPrice} ${content.common.aed}`
+                            : `${property.price} ${content.common.aed}`
                           }
                         </p>
                         <p className="text-white/70 text-sm">
-                          {activeTab === "rent" ? "/year" : `${property.pricePerSqft} AED/sqft`}
+                          {activeTab === "rent" ? content.properties.perYear : `${property.pricePerSqft} ${content.common.aed}/${content.properties.sqft}`}
                         </p>
                       </div>
                       {property.roi && activeTab !== "rent" && (
-                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm">
+                        <div className={cn(
+                          "flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm",
+                          isRtl && "flex-row-reverse"
+                        )}>
                           <TrendingUp className="w-4 h-4 text-green-400" />
                           <span className="text-green-400 text-sm font-semibold">{property.roi} ROI</span>
                         </div>
@@ -273,45 +301,68 @@ export function PropertiesSection() {
                 {/* Content */}
                 <div className="p-6">
                   {/* Title */}
-                  <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors mb-3 line-clamp-1">
-                    {property.title}
+                  <h3 className={cn(
+                    "font-bold text-lg text-foreground group-hover:text-primary transition-colors mb-3 line-clamp-1",
+                    isRtl && "text-right"
+                  )}>
+                    {property.title[locale as 'en' | 'fa']}
                   </h3>
 
                   {/* Location */}
-                  <div className="flex items-center gap-2 text-muted-foreground mb-4">
+                  <div className={cn(
+                    "flex items-center gap-2 text-muted-foreground mb-4",
+                    isRtl && "flex-row-reverse"
+                  )}>
                     <div className="p-1.5 rounded-lg bg-secondary/10">
                       <MapPin className="h-4 w-4 text-secondary" />
                     </div>
-                    <span className="text-sm truncate">{property.location} - {property.project}</span>
+                    <span className="text-sm truncate">
+                      {property.location[locale as 'en' | 'fa']} - {property.project}
+                    </span>
                   </div>
 
                   {/* Features */}
-                  <div className="flex items-center gap-6 py-4 border-t border-border/50">
-                    <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "flex items-center gap-6 py-4 border-t border-border/50",
+                    isRtl && "flex-row-reverse"
+                  )}>
+                    <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
                       <div className="p-1.5 rounded-lg bg-muted">
                         <Bed className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-sm font-medium text-foreground">{property.bedrooms} Beds</span>
+                      <span className="text-sm font-medium text-foreground">
+                        {property.bedrooms} {content.properties.beds}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
                       <div className="p-1.5 rounded-lg bg-muted">
                         <Bath className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-sm font-medium text-foreground">{property.bathrooms} Baths</span>
+                      <span className="text-sm font-medium text-foreground">
+                        {property.bathrooms} {content.properties.baths}
+                      </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
                       <div className="p-1.5 rounded-lg bg-muted">
                         <Maximize className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-sm font-medium text-foreground">{property.size} sqft</span>
+                      <span className="text-sm font-medium text-foreground" dir="ltr">
+                        {property.size} {content.properties.sqft}
+                      </span>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3 mt-4">
-                    <Button className="flex-1 bg-primary hover:bg-primary/90 text-white h-12 rounded-xl font-semibold group/btn">
-                      <Eye className="mr-2 h-4 w-4 group-hover/btn:scale-110 transition-transform" />
-                      View Details
+                  <div className={cn("flex gap-3 mt-4", isRtl && "flex-row-reverse")}>
+                    <Button className={cn(
+                      "flex-1 bg-primary hover:bg-primary/90 text-white h-12 rounded-xl font-semibold group/btn",
+                      isRtl && "flex-row-reverse"
+                    )}>
+                      <Eye className={cn(
+                        "h-4 w-4 group-hover/btn:scale-110 transition-transform",
+                        isRtl ? "ml-2" : "mr-2"
+                      )} />
+                      {content.properties.viewDetails}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -328,16 +379,23 @@ export function PropertiesSection() {
 
         {/* View All Button */}
         <div 
-          className={`text-center mt-14 transition-all duration-1000 delay-500 ${
+          className={cn(
+            "text-center mt-14 transition-all duration-1000 delay-500",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          )}
         >
           <Button 
             size="lg" 
-            className="h-14 px-10 bg-primary hover:bg-primary/90 text-white rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 hover:scale-105"
+            className={cn(
+              "h-14 px-10 bg-primary hover:bg-primary/90 text-white rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 hover:scale-105",
+              isRtl && "flex-row-reverse"
+            )}
           >
-            Browse All Properties
-            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            {content.properties.viewAll}
+            <ArrowRight className={cn(
+              "h-5 w-5 group-hover:translate-x-1 transition-transform",
+              isRtl ? "mr-2 rotate-180" : "ml-2"
+            )} />
           </Button>
         </div>
       </div>

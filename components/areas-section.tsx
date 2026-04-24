@@ -4,47 +4,73 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Building, Home, TrendingUp, MapPin } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
+import { useI18n, useContent } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
 const areas = [
   {
     id: 1,
-    name: "Downtown Dubai",
-    description: "Home to Burj Khalifa and Dubai Mall, the heart of modern Dubai living",
+    name: { en: "Downtown Dubai", fa: "داون‌تاون دبی" },
+    description: { 
+      en: "Home to Burj Khalifa and Dubai Mall, the heart of modern Dubai living",
+      fa: "خانه برج خلیفه و دبی مال، قلب زندگی مدرن دبی"
+    },
     properties: 245,
-    avgPrice: "2,500,000 AED",
+    avgPrice: "2,500,000",
     growth: "+12%",
     image: "/images/downtown-dubai.jpg",
-    highlights: ["Burj Khalifa Views", "Dubai Mall Access", "Metro Connected"],
+    highlights: { 
+      en: ["Burj Khalifa Views", "Dubai Mall Access", "Metro Connected"],
+      fa: ["نمای برج خلیفه", "دسترسی دبی مال", "متصل به مترو"]
+    },
   },
   {
     id: 2,
-    name: "Dubai Marina",
-    description: "Waterfront living with stunning marina views and vibrant lifestyle",
+    name: { en: "Dubai Marina", fa: "دبی مارینا" },
+    description: { 
+      en: "Waterfront living with stunning marina views and vibrant lifestyle",
+      fa: "زندگی ساحلی با چشم‌انداز خیره‌کننده مارینا و سبک زندگی پویا"
+    },
     properties: 189,
-    avgPrice: "1,800,000 AED",
+    avgPrice: "1,800,000",
     growth: "+8%",
     image: "/images/dubai-marina.jpg",
-    highlights: ["Marina Walk", "Beach Access", "JBR Proximity"],
+    highlights: { 
+      en: ["Marina Walk", "Beach Access", "JBR Proximity"],
+      fa: ["پیاده‌روی مارینا", "دسترسی ساحل", "نزدیکی JBR"]
+    },
   },
   {
     id: 3,
-    name: "Palm Jumeirah",
-    description: "Iconic man-made island offering exclusive beachfront properties",
+    name: { en: "Palm Jumeirah", fa: "پالم جمیرا" },
+    description: { 
+      en: "Iconic man-made island offering exclusive beachfront properties",
+      fa: "جزیره نمادین مصنوعی با املاک ساحلی اختصاصی"
+    },
     properties: 156,
-    avgPrice: "4,500,000 AED",
+    avgPrice: "4,500,000",
     growth: "+15%",
     image: "/images/dubai-hero.jpg",
-    highlights: ["Private Beaches", "5-Star Hotels", "Luxury Villas"],
+    highlights: { 
+      en: ["Private Beaches", "5-Star Hotels", "Luxury Villas"],
+      fa: ["ساحل خصوصی", "هتل‌های ۵ ستاره", "ویلاهای لوکس"]
+    },
   },
   {
     id: 4,
-    name: "Business Bay",
-    description: "Dubai's thriving business district with modern residential towers",
+    name: { en: "Business Bay", fa: "بیزینس بی" },
+    description: { 
+      en: "Dubai's thriving business district with modern residential towers",
+      fa: "منطقه تجاری پویا دبی با برج‌های مسکونی مدرن"
+    },
     properties: 178,
-    avgPrice: "1,500,000 AED",
+    avgPrice: "1,500,000",
     growth: "+10%",
     image: "/images/luxury-apartment.jpg",
-    highlights: ["Canal Views", "Business Hub", "Modern Living"],
+    highlights: { 
+      en: ["Canal Views", "Business Hub", "Modern Living"],
+      fa: ["نمای کانال", "مرکز تجاری", "زندگی مدرن"]
+    },
   },
 ]
 
@@ -52,6 +78,8 @@ export function AreasSection() {
   const [isVisible, setIsVisible] = useState(false)
   const [hoveredArea, setHoveredArea] = useState<number | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
+  const { isRtl, locale } = useI18n()
+  const content = useContent()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -74,27 +102,37 @@ export function AreasSection() {
     <section ref={sectionRef} id="areas" className="py-24 bg-muted/30 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className={cn(
+          "absolute bottom-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl",
+          isRtl ? "left-0" : "right-0"
+        )} />
+        <div className={cn(
+          "absolute top-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl",
+          isRtl ? "right-0" : "left-0"
+        )} />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div 
-          className={`text-center mb-14 transition-all duration-1000 ${
+          className={cn(
+            "text-center mb-14 transition-all duration-1000",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          )}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
+          <div className={cn(
+            "inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4",
+            isRtl && "flex-row-reverse"
+          )}>
             <MapPin className="w-4 h-4" />
-            Prime Locations
+            {content.areas.badge}
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Explore Dubai Areas
+            {content.areas.title}{" "}
+            <span className="text-secondary">{content.areas.titleHighlight}</span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            Discover Dubai's most prestigious neighborhoods and find the perfect 
-            location that matches your lifestyle.
+            {content.areas.subtitle}
           </p>
         </div>
 
@@ -103,59 +141,75 @@ export function AreasSection() {
           {areas.map((area, index) => (
             <div
               key={area.id}
-              className={`group transition-all duration-700 ${
-                index === 0 ? "lg:col-span-2 lg:row-span-2" : ""
-              } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
+              className={cn(
+                "group transition-all duration-700",
+                index === 0 ? "lg:col-span-2 lg:row-span-2" : "",
+                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+              )}
               style={{ transitionDelay: `${index * 100}ms` }}
               onMouseEnter={() => setHoveredArea(area.id)}
               onMouseLeave={() => setHoveredArea(null)}
             >
-              <div className={`relative overflow-hidden rounded-3xl bg-card border border-border/50 hover:border-secondary/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-secondary/10 ${
+              <div className={cn(
+                "relative overflow-hidden rounded-3xl bg-card border border-border/50 hover:border-secondary/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-secondary/10",
                 index === 0 ? "h-full min-h-[500px]" : "h-[280px]"
-              }`}>
+              )}>
                 {/* Image */}
                 <Image
                   src={area.image}
-                  alt={area.name}
+                  alt={area.name[locale as 'en' | 'fa']}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 
                 {/* Overlay */}
-                <div className={`absolute inset-0 transition-all duration-500 ${
+                <div className={cn(
+                  "absolute inset-0 transition-all duration-500",
                   hoveredArea === area.id 
                     ? "bg-gradient-to-t from-black/90 via-black/50 to-black/20" 
                     : "bg-gradient-to-t from-black/80 via-black/30 to-transparent"
-                }`} />
+                )} />
                 
                 {/* Growth Badge */}
-                <div className="absolute top-4 right-4 z-10">
-                  <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm border border-green-500/30">
+                <div className={cn(
+                  "absolute top-4 z-10",
+                  isRtl ? "left-4" : "right-4"
+                )}>
+                  <div className={cn(
+                    "flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm border border-green-500/30",
+                    isRtl && "flex-row-reverse"
+                  )}>
                     <TrendingUp className="h-4 w-4 text-green-400" />
-                    <span className="text-green-400 text-sm font-bold">{area.growth} YoY</span>
+                    <span className="text-green-400 text-sm font-bold">{area.growth} {content.areas.growth}</span>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="absolute inset-0 p-6 flex flex-col justify-end z-10">
-                  {/* Name & Description */}
-                  <div className={`transition-all duration-500 ${
+                <div className={cn(
+                  "absolute inset-0 p-6 flex flex-col justify-end z-10",
+                  isRtl && "text-right"
+                )}>
+                  <div className={cn(
+                    "transition-all duration-500",
                     hoveredArea === area.id ? "translate-y-0" : "translate-y-4"
-                  }`}>
+                  )}>
                     <h3 className="text-2xl md:text-3xl font-bold text-white mb-2 group-hover:text-secondary transition-colors">
-                      {area.name}
+                      {area.name[locale as 'en' | 'fa']}
                     </h3>
-                    <p className={`text-white/80 mb-4 transition-all duration-500 ${
+                    <p className={cn(
+                      "text-white/80 mb-4 transition-all duration-500",
                       index === 0 ? "text-base max-w-md" : "text-sm line-clamp-2"
-                    }`}>
-                      {area.description}
+                    )}>
+                      {area.description[locale as 'en' | 'fa']}
                     </p>
 
                     {/* Highlights */}
-                    <div className={`flex flex-wrap gap-2 mb-4 transition-all duration-500 ${
-                      hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                    }`}>
-                      {area.highlights.map((highlight) => (
+                    <div className={cn(
+                      "flex flex-wrap gap-2 mb-4 transition-all duration-500",
+                      hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+                      isRtl && "flex-row-reverse"
+                    )}>
+                      {area.highlights[locale as 'en' | 'fa'].map((highlight) => (
                         <span
                           key={highlight}
                           className="px-3 py-1 bg-white/10 backdrop-blur-sm text-white/90 rounded-full text-xs font-medium border border-white/20"
@@ -166,35 +220,43 @@ export function AreasSection() {
                     </div>
 
                     {/* Stats */}
-                    <div className="flex items-center gap-6 mb-4">
-                      <div className="flex items-center gap-2">
+                    <div className={cn(
+                      "flex items-center gap-6 mb-4",
+                      isRtl && "flex-row-reverse"
+                    )}>
+                      <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
                         <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
                           <Home className="h-4 w-4 text-white" />
                         </div>
-                        <div>
-                          <p className="text-xs text-white/60">Properties</p>
+                        <div className={cn(isRtl && "text-right")}>
+                          <p className="text-xs text-white/60">{content.areas.properties}</p>
                           <p className="font-bold text-white">{area.properties}+</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
                         <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
                           <Building className="h-4 w-4 text-white" />
                         </div>
-                        <div>
-                          <p className="text-xs text-white/60">Avg. Price</p>
-                          <p className="font-bold text-white">{area.avgPrice}</p>
+                        <div className={cn(isRtl && "text-right")}>
+                          <p className="text-xs text-white/60">{content.areas.avgPrice}</p>
+                          <p className="font-bold text-white" dir="ltr">{area.avgPrice} {content.common.aed}</p>
                         </div>
                       </div>
                     </div>
 
                     {/* CTA */}
                     <Button 
-                      className={`bg-white/10 backdrop-blur-sm hover:bg-secondary text-white border border-white/20 hover:border-secondary rounded-xl transition-all duration-500 ${
-                        hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                      }`}
+                      className={cn(
+                        "bg-white/10 backdrop-blur-sm hover:bg-secondary text-white border border-white/20 hover:border-secondary rounded-xl transition-all duration-500",
+                        hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+                        isRtl && "flex-row-reverse"
+                      )}
                     >
-                      Explore Area
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      {content.areas.explore}
+                      <ArrowRight className={cn(
+                        "h-4 w-4 group-hover:translate-x-1 transition-transform",
+                        isRtl ? "mr-2 rotate-180 group-hover:-translate-x-1" : "ml-2"
+                      )} />
                     </Button>
                   </div>
                 </div>
@@ -205,17 +267,21 @@ export function AreasSection() {
 
         {/* View All Button */}
         <div 
-          className={`text-center mt-14 transition-all duration-1000 delay-500 ${
+          className={cn(
+            "text-center mt-14 transition-all duration-1000 delay-500",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          )}
         >
           <Button 
             size="lg" 
             variant="outline"
-            className="h-14 px-10 border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground rounded-2xl font-semibold text-base transition-all duration-300 hover:scale-105"
+            className={cn(
+              "h-14 px-10 border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground rounded-2xl font-semibold text-base transition-all duration-300 hover:scale-105",
+              isRtl && "flex-row-reverse"
+            )}
           >
-            View All Areas
-            <ArrowRight className="ml-2 h-5 w-5" />
+            {content.common.viewAll}
+            <ArrowRight className={cn("h-5 w-5", isRtl ? "mr-2 rotate-180" : "ml-2")} />
           </Button>
         </div>
       </div>

@@ -4,27 +4,29 @@ import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { Shield, Award, Users, TrendingUp, CheckCircle2, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-const stats = [
-  { icon: Shield, value: "10+", label: "Years Experience", delay: 0 },
-  { icon: Award, value: "500+", label: "Projects Delivered", delay: 100 },
-  { icon: Users, value: "2000+", label: "Happy Clients", delay: 200 },
-  { icon: TrendingUp, value: "5", label: "Billion AED Value", suffix: "B+", delay: 300 },
-]
-
-const features = [
-  "Expert knowledge of Dubai real estate market",
-  "Exclusive access to off-plan projects",
-  "Personalized property matching service",
-  "Complete support from search to handover",
-  "Transparent pricing with no hidden fees",
-  "Multilingual team (English, Arabic, Persian)",
-]
+import { useI18n, useContent } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
 export function AboutSection() {
   const [isVisible, setIsVisible] = useState(false)
   const [counters, setCounters] = useState<{ [key: string]: number }>({})
   const sectionRef = useRef<HTMLElement>(null)
+  const { isRtl, locale } = useI18n()
+  const content = useContent()
+
+  const stats = [
+    { icon: Shield, value: "10", label: content.agents.experience, suffix: "+", delay: 0 },
+    { icon: Award, value: "500", label: content.about.stats.transactions, suffix: "+", delay: 100 },
+    { icon: Users, value: "2000", label: content.hero.stats.clients, suffix: "+", delay: 200 },
+    { icon: TrendingUp, value: "5", label: content.about.stats.volume, suffix: "B+", delay: 300 },
+  ]
+
+  const features = [
+    content.about.features.expertise.description,
+    content.about.features.trust.description,
+    content.about.features.service.description,
+    content.about.features.global.description,
+  ]
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,7 +34,7 @@ export function AboutSection() {
         if (entry.isIntersecting) {
           setIsVisible(true)
           stats.forEach((stat) => {
-            const numericValue = parseInt(stat.value.replace(/[^0-9]/g, ""))
+            const numericValue = parseInt(stat.value)
             let current = 0
             const increment = numericValue / 50
             const timer = setInterval(() => {
@@ -55,39 +57,34 @@ export function AboutSection() {
     }
 
     return () => observer.disconnect()
-  }, [])
-
-  const formatValue = (label: string, originalValue: string, suffix?: string) => {
-    const numericValue = counters[label] || 0
-    if (suffix) {
-      return `${numericValue}${suffix}`
-    }
-    return `${numericValue}${originalValue.includes("+") ? "+" : ""}`
-  }
+  }, [stats])
 
   return (
     <section id="about" ref={sectionRef} className="py-24 bg-gradient-to-b from-background to-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className={cn(
+          "grid lg:grid-cols-2 gap-16 items-center",
+          isRtl && "lg:grid-flow-dense"
+        )}>
           {/* Left Content */}
           <div
-            className={`transition-all duration-1000 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
-            }`}
+            className={cn(
+              "transition-all duration-1000",
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12",
+              isRtl && "text-right lg:col-start-2"
+            )}
           >
             <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
-              About Cafoo
+              {content.about.badge}
             </span>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
-              Your Trusted Partner in{" "}
+              {content.about.title}{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-                Dubai Real Estate
+                {content.about.titleHighlight}
               </span>
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Cafoo is a premier real estate consultancy based in Dubai, UAE. We specialize in connecting discerning
-              buyers and investors with exceptional properties across Dubai&apos;s most prestigious locations. Our team
-              of expert consultants brings unparalleled market knowledge and personalized service to every client.
+              {content.about.description}
             </p>
 
             {/* Features List */}
@@ -95,9 +92,11 @@ export function AboutSection() {
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className={`flex items-center gap-3 transition-all duration-500 ${
-                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                  }`}
+                  className={cn(
+                    "flex items-center gap-3 transition-all duration-500",
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+                    isRtl && "flex-row-reverse"
+                  )}
                   style={{ transitionDelay: `${index * 100 + 300}ms` }}
                 >
                   <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
@@ -110,18 +109,26 @@ export function AboutSection() {
 
             <Button
               size="lg"
-              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl group"
+              className={cn(
+                "bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl group",
+                isRtl && "flex-row-reverse"
+              )}
             >
-              Learn More About Us
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {content.common.learnMore}
+              <ArrowRight className={cn(
+                "w-5 h-5 group-hover:translate-x-1 transition-transform",
+                isRtl ? "mr-2 rotate-180 group-hover:-translate-x-1" : "ml-2"
+              )} />
             </Button>
           </div>
 
           {/* Right Content - Image & Stats */}
           <div
-            className={`relative transition-all duration-1000 delay-300 ${
-              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
-            }`}
+            className={cn(
+              "relative transition-all duration-1000 delay-300",
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12",
+              isRtl && "lg:col-start-1 lg:row-start-1"
+            )}
           >
             {/* Main Image */}
             <div className="relative">
@@ -137,23 +144,29 @@ export function AboutSection() {
               </div>
 
               {/* Floating Stats Card */}
-              <div className="absolute -bottom-8 -left-8 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-2xl">
-                <div className="flex items-center gap-4">
+              <div className={cn(
+                "absolute -bottom-8 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-2xl",
+                isRtl ? "-right-8" : "-left-8"
+              )}>
+                <div className={cn("flex items-center gap-4", isRtl && "flex-row-reverse")}>
                   <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-primary to-accent flex items-center justify-center">
                     <Award className="w-7 h-7 text-white" />
                   </div>
-                  <div>
-                    <div className="text-3xl font-bold text-foreground">
-                      {counters["Years Experience"] || 0}+
+                  <div className={cn(isRtl && "text-right")}>
+                    <div className="text-3xl font-bold text-foreground" dir="ltr">
+                      {counters[content.agents.experience] || 0}+
                     </div>
-                    <div className="text-muted-foreground text-sm">Years of Excellence</div>
+                    <div className="text-muted-foreground text-sm">{content.agents.experience}</div>
                   </div>
                 </div>
               </div>
 
               {/* Floating Badge */}
-              <div className="absolute -top-4 -right-4 bg-gradient-to-r from-primary to-accent text-white px-6 py-3 rounded-full shadow-lg">
-                <span className="text-sm font-semibold">Trusted by 2000+ Clients</span>
+              <div className={cn(
+                "absolute -top-4 bg-gradient-to-r from-primary to-accent text-white px-6 py-3 rounded-full shadow-lg",
+                isRtl ? "-left-4" : "-right-4"
+              )}>
+                <span className="text-sm font-semibold">2000+ {content.hero.stats.clients}</span>
               </div>
             </div>
 
@@ -162,20 +175,24 @@ export function AboutSection() {
               {stats.map((stat, index) => (
                 <div
                   key={index}
-                  className={`group bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-5 hover:bg-card hover:border-primary/30 transition-all duration-500 ${
+                  className={cn(
+                    "group bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-5 hover:bg-card hover:border-primary/30 transition-all duration-500",
                     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
+                  )}
                   style={{ transitionDelay: `${stat.delay + 500}ms` }}
                 >
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className={cn(
+                    "flex items-center gap-3 mb-2",
+                    isRtl && "flex-row-reverse"
+                  )}>
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                       <stat.icon className="w-5 h-5 text-primary" />
                     </div>
-                    <div className="text-2xl font-bold text-foreground">
-                      {formatValue(stat.label, stat.value, stat.suffix)}
+                    <div className="text-2xl font-bold text-foreground" dir="ltr">
+                      {counters[stat.label] || 0}{stat.suffix}
                     </div>
                   </div>
-                  <div className="text-muted-foreground text-sm">{stat.label}</div>
+                  <div className={cn("text-muted-foreground text-sm", isRtl && "text-right")}>{stat.label}</div>
                 </div>
               ))}
             </div>
