@@ -192,10 +192,10 @@ export function AboutSection() {
                     />
                   ))}
                 </div>
-                {/* Brand Gradient Overlay - More Visible */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-secondary/30 z-10" />
-                {/* Dark gradient for text contrast at the bottom */}
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
+                {/* Brand Gradient Overlay - Bottom half only for a cleaner look */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-primary/30 via-secondary/10 to-transparent z-10" />
+                {/* Dark gradient for text contrast at the very bottom */}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent z-10" />
               </div>
 
               {/* Floating Stats Card */}
