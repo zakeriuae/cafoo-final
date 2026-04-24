@@ -22,7 +22,7 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/dubai-hero.jpg"
+          src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1920&q=90"
           alt="Dubai Skyline"
           fill
           className="object-cover scale-105"
