@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
-import { AreasSectionClient } from "./areas-section-client"
+import { AreasSectionClientNew } from "./areas-section-client"
 
 export async function AreasSection() {
   const supabase = await createClient()
@@ -10,7 +10,7 @@ export async function AreasSection() {
     .eq("status", "published")
     .eq("featured", true)
     .order("sort_order", { ascending: true })
-    .limit(4)
+    .limit(3)
 
-  return <AreasSectionClient areas={areas || []} />
+  return <AreasSectionClientNew areas={areas || []} />
 }

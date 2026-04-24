@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+// Force rebuild for minimal design update - v2
 import { Navigation } from "@/components/navigation"
 import { HeroSection } from "@/components/hero-section"
 import { ProjectsSection } from "@/components/projects-section"

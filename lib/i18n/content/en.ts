@@ -13,7 +13,7 @@ export const en: LocaleContent = {
   // Navigation
   nav: {
     home: 'Home',
-    projects: 'Projects',
+    projects: 'Towers & Districts',
     properties: 'Properties',
     areas: 'Areas',
     developers: 'Developers',
@@ -31,7 +31,7 @@ export const en: LocaleContent = {
     titleHighlight: 'Dubai Home',
     subtitle: 'Smart Choice, Pleasant Purchase',
     description: 'Discover exclusive luxury properties in Dubai with Cafoo Real Estate. From stunning apartments to magnificent villas, we help you find your dream home.',
-    searchPlaceholder: 'Search by location, project, or developer...',
+    searchPlaceholder: 'Search by location, tower, district, or developer...',
     propertyType: 'Property Type',
     location: 'Location',
     priceRange: 'Price Range',
@@ -78,9 +78,9 @@ export const en: LocaleContent = {
 
   // Projects Section
   projects: {
-    badge: 'Featured Projects',
-    title: 'Exclusive Off-Plan',
-    titleHighlight: 'Developments',
+    badge: 'Towers & Districts',
+    title: 'Exclusive',
+    titleHighlight: 'Towers & Districts',
     subtitle: 'Invest in Dubai\'s most prestigious upcoming projects from world-renowned developers',
     viewDetails: 'View Details',
     startingFrom: 'Starting From',
@@ -88,12 +88,12 @@ export const en: LocaleContent = {
     handover: 'Handover',
     developer: 'Developer',
     filters: {
-      all: 'All Projects',
+      all: 'All',
       offPlan: 'Off-Plan',
       readyToMove: 'Ready to Move',
       underConstruction: 'Under Construction',
     },
-    viewAll: 'View All Projects',
+    viewAll: 'View All Towers & Districts',
   },
 
   // Properties Section  
@@ -146,6 +146,7 @@ export const en: LocaleContent = {
     deals: 'Deals Closed',
     experience: 'Years Exp.',
     contact: 'Contact',
+    allTeam: 'All Team',
     languages: 'Languages',
     specializations: 'Specializations',
   },

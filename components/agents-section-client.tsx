@@ -1,17 +1,16 @@
 "use client"
 
 import Image from "next/image"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { 
   Phone, 
   MessageCircle, 
-  Star,
   Award,
   MapPin,
   ArrowRight
 } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
+import Link from "next/link"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
@@ -20,24 +19,21 @@ interface Agent {
   name: string
   name_fa: string | null
   slug: string
-  title: string | null
+  title: string
   title_fa: string | null
   avatar_url: string | null
   phone: string | null
   whatsapp: string | null
-  bio: string | null
-  bio_fa: string | null
-  specializations: string[] | null
-  languages: string[] | null
   experience_years: number
   total_listings: number
+  rating?: number
 }
 
 interface AgentsSectionClientProps {
   agents: Agent[]
 }
 
-export function AgentsSectionClient({ agents }: AgentsSectionClientProps) {
+export default function AgentsSectionClient({ agents }: AgentsSectionClientProps) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const { isRtl, locale } = useI18n()
@@ -60,46 +56,32 @@ export function AgentsSectionClient({ agents }: AgentsSectionClientProps) {
     return () => observer.disconnect()
   }, [])
 
-  if (agents.length === 0) {
-    return null
-  }
-
   return (
-    <section ref={sectionRef} id="agents" className="py-24 bg-muted/30 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className={cn(
-          "absolute top-1/2 w-72 h-72 bg-secondary/5 rounded-full blur-3xl -translate-y-1/2",
-          isRtl ? "right-0" : "left-0"
-        )} />
-        <div className={cn(
-          "absolute top-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl",
-          isRtl ? "left-0" : "right-0"
-        )} />
-      </div>
-
+    <section ref={sectionRef} id="agents" className="py-24 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div 
           className={cn(
-            "text-center mb-16 transition-all duration-1000",
+            "flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16 transition-all duration-1000",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          <div className={cn(
-            "inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4",
-            isRtl && "flex-row-reverse"
-          )}>
-            <Star className="w-4 h-4 fill-current" />
-            {content.agents.badge}
+          <div className="max-w-2xl">
+            <p className="text-secondary font-medium mb-3 text-sm tracking-wide">
+              {content.agents.badge}
+            </p>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
+              {content.agents.title} {content.agents.titleHighlight}
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              {content.agents.subtitle}
+            </p>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {content.agents.title}{" "}
-            <span className="text-secondary">{content.agents.titleHighlight}</span>
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            {content.agents.subtitle}
-          </p>
+          
+          <Button variant="outline" className="rounded-full px-8 h-12 border-border/60 hover:bg-muted/50 transition-all gap-2 group">
+            {content.agents.allTeam}
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </Button>
         </div>
 
         {/* Agents Grid */}
@@ -107,7 +89,7 @@ export function AgentsSectionClient({ agents }: AgentsSectionClientProps) {
           {agents.map((agent, index) => {
             const agentName = locale === 'fa' && agent.name_fa ? agent.name_fa : agent.name
             const agentTitle = locale === 'fa' && agent.title_fa ? agent.title_fa : agent.title
-            
+
             return (
               <div 
                 key={agent.id} 
@@ -117,152 +99,72 @@ export function AgentsSectionClient({ agents }: AgentsSectionClientProps) {
                 )}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="relative bg-card rounded-3xl overflow-hidden border border-border/50 hover:border-secondary/30 transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl hover:shadow-secondary/10">
+                <div className="relative bg-white rounded-[2.5rem] overflow-hidden border border-border/40 hover:border-secondary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-black/5 h-[500px]">
                   {/* Image */}
-                  <Link href={`/${locale}/agents/${agent.slug}`}>
-                    <div className="relative h-72 overflow-hidden">
-                      <Image
-                        src={agent.avatar_url || "/images/placeholder-agent.jpg"}
-                        alt={agentName}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                      
-                      {/* Rating Badge */}
-                      <div className={cn(
-                        "absolute top-4 flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm",
-                        isRtl ? "left-4 flex-row-reverse" : "right-4"
-                      )}>
-                        <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                        <span className="text-sm font-bold text-foreground">5.0</span>
-                      </div>
+                  <Image
+                    src={agent.avatar_url || "/images/agents/placeholder.jpg"}
+                    alt={agentName}
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                  />
+                  
+                  {/* Overlay - Stronger at bottom for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90" />
+                  
+                  {/* Top Badge - Rating */}
+                  <div className={cn(
+                    "absolute top-6 flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary/10 backdrop-blur-md border border-secondary/20 z-20",
+                    isRtl ? "left-6" : "right-6"
+                  )}>
+                    <Award className="w-3.5 h-3.5 text-secondary" />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">Top Agent</span>
+                  </div>
 
-                      {/* Name & Title Overlay */}
-                      <div className={cn(
-                        "absolute bottom-4 left-4 right-4",
-                        isRtl && "text-right"
-                      )}>
-                        <h3 className="text-xl font-bold text-white mb-1">
-                          {agentName}
-                        </h3>
-                        <p className="text-white/80 text-sm">{agentTitle}</p>
+                  {/* Content Overlay */}
+                  <div className="absolute inset-0 p-8 flex flex-col justify-end z-10">
+                    <p className="text-secondary font-bold text-[10px] uppercase tracking-[0.2em] mb-2">
+                      {agentTitle}
+                    </p>
+                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-secondary transition-colors">
+                      {agentName}
+                    </h3>
+                    
+                    {/* Stats Row */}
+                    <div className="flex items-center gap-8 pb-4 border-b border-white/10 mb-4">
+                      <div>
+                        <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-1">{content.agents.experience}</p>
+                        <p className="text-xl font-bold text-white leading-none">{agent.experience_years}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-1">{content.agents.deals}</p>
+                        <p className="text-xl font-bold text-white leading-none">{agent.total_listings}</p>
                       </div>
                     </div>
-                  </Link>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    {/* Stats */}
-                    <div className={cn(
-                      "flex items-center justify-between mb-5 pb-5 border-b border-border/50",
-                      isRtl && "flex-row-reverse"
-                    )}>
-                      <div className="text-center">
-                        <p className="text-lg font-bold text-foreground">{agent.experience_years}</p>
-                        <p className="text-xs text-muted-foreground">{content.agents.experience}</p>
-                      </div>
-                      <div className="w-px h-10 bg-border" />
-                      <div className="text-center">
-                        <p className="text-lg font-bold text-foreground">{agent.total_listings}+</p>
-                        <p className="text-xs text-muted-foreground">{content.agents.deals}</p>
-                      </div>
-                    </div>
-
-                    {/* Specialization */}
-                    <div className="space-y-3 mb-5">
-                      {agent.specializations && agent.specializations.length > 0 && (
-                        <div className={cn(
-                          "flex items-center gap-2",
-                          isRtl && "flex-row-reverse"
-                        )}>
-                          <div className="p-1.5 rounded-lg bg-primary/10">
-                            <Award className="h-4 w-4 text-primary" />
-                          </div>
-                          <span className="text-sm text-foreground line-clamp-1">
-                            {agent.specializations[0]}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Languages */}
-                    {agent.languages && agent.languages.length > 0 && (
-                      <div className={cn(
-                        "flex flex-wrap gap-1.5 mb-5",
-                        isRtl && "flex-row-reverse"
-                      )}>
-                        {agent.languages.map((lang) => (
-                          <span
-                            key={lang}
-                            className="px-2 py-1 bg-muted rounded-md text-xs font-medium text-muted-foreground"
-                          >
-                            {lang}
-                          </span>
-                        ))}
-                      </div>
-                    )}
 
                     {/* Actions */}
-                    <div className={cn("flex gap-2", isRtl && "flex-row-reverse")}>
-                      {agent.phone && (
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className={cn(
-                            "flex-1 h-10 rounded-xl border-border hover:bg-primary hover:text-white hover:border-primary transition-all",
-                            isRtl && "flex-row-reverse"
-                          )}
-                          asChild
-                        >
-                          <a href={`tel:${agent.phone}`}>
-                            <Phone className={cn("h-4 w-4", isRtl ? "ml-1" : "mr-1")} />
-                            {content.agents.contact}
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-4">
+                        {agent.phone && (
+                          <a href={`tel:${agent.phone}`} className="w-11 h-11 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10">
+                            <Phone className="h-4.5 w-4.5" />
                           </a>
-                        </Button>
-                      )}
-                      {agent.whatsapp && (
-                        <Button 
-                          size="sm"
-                          className={cn(
-                            "flex-1 h-10 rounded-xl bg-green-500 hover:bg-green-600 text-white",
-                            isRtl && "flex-row-reverse"
-                          )}
-                          asChild
-                        >
-                          <a href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                            <MessageCircle className={cn("h-4 w-4", isRtl ? "ml-1" : "mr-1")} />
-                            {content.nav.whatsapp}
+                        )}
+                        {agent.whatsapp && (
+                          <a href={`https://wa.me/${agent.whatsapp.replace(/\+/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-11 h-11 flex items-center justify-center rounded-full bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-all border border-green-500/20">
+                            <MessageCircle className="h-4.5 w-4.5" />
                           </a>
-                        </Button>
-                      )}
+                        )}
+                      </div>
+                      <Link href={`/${locale}/agents/${agent.slug}`} className="flex items-center gap-2 text-white font-bold text-sm group-hover:gap-3 transition-all cursor-pointer">
+                        {content.agents.contact}
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
                     </div>
                   </div>
                 </div>
               </div>
             )
           })}
-        </div>
-
-        {/* CTA */}
-        <div 
-          className={cn(
-            "text-center mt-14 transition-all duration-1000 delay-500",
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          )}
-        >
-          <Link href={`/${locale}/agents`}>
-            <Button 
-              size="lg" 
-              className={cn(
-                "h-14 px-10 bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-2xl font-semibold text-base shadow-lg shadow-secondary/20 transition-all duration-300 hover:scale-105",
-                isRtl && "flex-row-reverse"
-              )}
-            >
-              {content.nav.contact}
-              <ArrowRight className={cn("h-5 w-5", isRtl ? "mr-2 rotate-180" : "ml-2")} />
-            </Button>
-          </Link>
         </div>
       </div>
     </section>

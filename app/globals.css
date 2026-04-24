@@ -4,44 +4,31 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Luxury Dubai Real Estate - Blue & Turquoise Theme */
-  --background: oklch(0.99 0.005 220);
-  --foreground: oklch(0.15 0.02 240);
+  /* Luxury Dubai Real Estate - Gold & Light Theme */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.12 0.02 220);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 240);
+  --card-foreground: oklch(0.12 0.02 220);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 240);
-  --primary: oklch(0.45 0.15 220);
-  --primary-foreground: oklch(0.99 0.005 220);
-  --secondary: oklch(0.55 0.12 190);
-  --secondary-foreground: oklch(0.99 0.005 220);
-  --muted: oklch(0.95 0.01 220);
+  --popover-foreground: oklch(0.12 0.02 220);
+  --primary: oklch(0.75 0.15 85); /* Gold */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.7 0.12 85);
+  --secondary-foreground: oklch(1 0 0);
+  --muted: oklch(0.97 0.01 220);
   --muted-foreground: oklch(0.45 0.03 220);
-  --accent: oklch(0.65 0.15 190);
-  --accent-foreground: oklch(0.15 0.02 240);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.02 220);
+  --accent: oklch(0.97 0.01 220);
+  --accent-foreground: oklch(0.12 0.02 220);
+  --destructive: oklch(0.6 0.18 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.92 0.01 220);
   --input: oklch(0.92 0.01 220);
-  --ring: oklch(0.55 0.12 190);
-  --chart-1: oklch(0.45 0.15 220);
-  --chart-2: oklch(0.55 0.12 190);
-  --chart-3: oklch(0.65 0.15 190);
-  --chart-4: oklch(0.75 0.1 190);
-  --chart-5: oklch(0.35 0.1 220);
+  --ring: oklch(0.75 0.15 85);
   --radius: 0.75rem;
-  --sidebar: oklch(0.98 0.005 220);
-  --sidebar-foreground: oklch(0.15 0.02 240);
-  --sidebar-primary: oklch(0.45 0.15 220);
-  --sidebar-primary-foreground: oklch(0.99 0.005 220);
-  --sidebar-accent: oklch(0.95 0.01 220);
-  --sidebar-accent-foreground: oklch(0.15 0.02 240);
-  --sidebar-border: oklch(0.88 0.02 220);
-  --sidebar-ring: oklch(0.55 0.12 190);
   
   /* Custom tokens for real estate */
   --gold: oklch(0.75 0.15 85);
-  --gold-foreground: oklch(0.15 0.02 240);
+  --gold-foreground: oklch(0.12 0.02 220);
 }
 
 .dark {
@@ -140,8 +127,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
   }
   
   /* RTL Support */

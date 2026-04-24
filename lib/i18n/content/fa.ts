@@ -13,7 +13,7 @@ export const fa: LocaleContent = {
   // منوی ناوبری
   nav: {
     home: 'خانه',
-    projects: 'پروژه‌ها',
+    projects: 'برج‌ها و محله‌ها',
     properties: 'املاک',
     areas: 'مناطق',
     developers: 'سازندگان',
@@ -31,7 +31,7 @@ export const fa: LocaleContent = {
     titleHighlight: 'دبی',
     subtitle: 'انتخاب هوشمندانه، خرید دلپذیر',
     description: 'با کافو، املاک لوکس دبی را کشف کنید. از آپارتمان‌های خیره‌کننده تا ویلاهای باشکوه، ما در یافتن خانه رویایی‌تان همراه شما هستیم.',
-    searchPlaceholder: 'جستجو بر اساس منطقه، پروژه یا سازنده...',
+    searchPlaceholder: 'جستجو بر اساس منطقه، برج، محله یا سازنده...',
     propertyType: 'نوع ملک',
     location: 'موقعیت',
     priceRange: 'محدوده قیمت',
@@ -78,9 +78,9 @@ export const fa: LocaleContent = {
 
   // بخش پروژه‌ها
   projects: {
-    badge: 'پروژه‌های ویژه',
-    title: 'پروژه‌های پیش‌فروش',
-    titleHighlight: 'اختصاصی',
+    badge: 'برج‌ها و محله‌ها',
+    title: 'مجموعه اختصاصی',
+    titleHighlight: 'برج‌ها و محله‌ها',
     subtitle: 'سرمایه‌گذاری در معتبرترین پروژه‌های آینده دبی از سازندگان برتر جهان',
     viewDetails: 'مشاهده جزئیات',
     startingFrom: 'شروع از',
@@ -88,12 +88,12 @@ export const fa: LocaleContent = {
     handover: 'تحویل',
     developer: 'سازنده',
     filters: {
-      all: 'همه پروژه‌ها',
+      all: 'همه',
       offPlan: 'پیش‌فروش',
       readyToMove: 'آماده تحویل',
       underConstruction: 'در حال ساخت',
     },
-    viewAll: 'مشاهده همه پروژه‌ها',
+    viewAll: 'مشاهده همه برج‌ها و محله‌ها',
   },
 
   // بخش املاک
@@ -146,6 +146,7 @@ export const fa: LocaleContent = {
     deals: 'معامله موفق',
     experience: 'سال تجربه',
     contact: 'تماس',
+    allTeam: 'کل تیم',
     languages: 'زبان‌ها',
     specializations: 'تخصص‌ها',
   },

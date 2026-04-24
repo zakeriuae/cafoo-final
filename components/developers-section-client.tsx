@@ -18,7 +18,7 @@ interface DevelopersSectionClientProps {
   developers: Developer[]
 }
 
-export function DevelopersSectionClient({ developers }: DevelopersSectionClientProps) {
+export default function DevelopersSectionClient({ developers }: DevelopersSectionClientProps) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const { isRtl, locale } = useI18n()
