@@ -101,6 +101,8 @@ export function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const { isRtl, locale } = useI18n()
   const content = useContent()
+  
+  console.log("[v0] ProjectsSection rendering, content:", content?.projects ? "exists" : "missing")
 
   const filters = [
     { key: "all", label: content.projects.filters.all },
