@@ -97,7 +97,7 @@ export function AgentsSection() {
   }, [])
 
   return (
-    <section ref={sectionRef} id="agents" className="py-24 bg-white relative overflow-hidden">
+    <section ref={sectionRef} id="agents" className="py-24 bg-muted/30 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className={cn(
