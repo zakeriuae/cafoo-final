@@ -1,115 +1,184 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
+import { Shield, Award, Users, TrendingUp, CheckCircle2, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Users, Award, Shield, ArrowRight } from "lucide-react"
 
-const features = [
-  {
-    icon: Users,
-    title: "Expert Team",
-    description: "Experienced consultants well-versed in the UAE real estate market",
-  },
-  {
-    icon: Award,
-    title: "Premium Service",
-    description: "Professional solutions to help you protect and grow your investments",
-  },
-  {
-    icon: Shield,
-    title: "Trusted Partner",
-    description: "Your trusted companion and consultant on your investment journey",
-  },
+const stats = [
+  { icon: Shield, value: "10+", label: "Years Experience", delay: 0 },
+  { icon: Award, value: "500+", label: "Projects Delivered", delay: 100 },
+  { icon: Users, value: "2000+", label: "Happy Clients", delay: 200 },
+  { icon: TrendingUp, value: "5", label: "Billion AED Value", suffix: "B+", delay: 300 },
 ]
 
-const achievements = [
-  "500+ Happy Clients",
-  "10+ Years Experience",
-  "AED 2B+ in Transactions",
-  "Top Rated on Google",
+const features = [
+  "Expert knowledge of Dubai real estate market",
+  "Exclusive access to off-plan projects",
+  "Personalized property matching service",
+  "Complete support from search to handover",
+  "Transparent pricing with no hidden fees",
+  "Multilingual team (English, Arabic, Persian)",
 ]
 
 export function AboutSection() {
+  const [isVisible, setIsVisible] = useState(false)
+  const [counters, setCounters] = useState<{ [key: string]: number }>({})
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          stats.forEach((stat) => {
+            const numericValue = parseInt(stat.value.replace(/[^0-9]/g, ""))
+            let current = 0
+            const increment = numericValue / 50
+            const timer = setInterval(() => {
+              current += increment
+              if (current >= numericValue) {
+                setCounters((prev) => ({ ...prev, [stat.label]: numericValue }))
+                clearInterval(timer)
+              } else {
+                setCounters((prev) => ({ ...prev, [stat.label]: Math.floor(current) }))
+              }
+            }, 30)
+          })
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  const formatValue = (label: string, originalValue: string, suffix?: string) => {
+    const numericValue = counters[label] || 0
+    if (suffix) {
+      return `${numericValue}${suffix}`
+    }
+    return `${numericValue}${originalValue.includes("+") ? "+" : ""}`
+  }
+
   return (
-    <section id="about" className="py-20 bg-muted/30">
+    <section id="about" ref={sectionRef} className="py-24 bg-gradient-to-b from-background to-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Image Side */}
-          <div className="relative">
-            <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src="/images/luxury-apartment.jpg"
-                alt="Cafoo Real Estate Office"
-                fill
-                className="object-cover"
-              />
-            </div>
-            
-            {/* Floating Card */}
-            <div className="absolute -bottom-6 -right-6 bg-card p-6 rounded-xl shadow-xl border border-border max-w-xs">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center">
-                  <Award className="h-6 w-6 text-secondary" />
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left Content */}
+          <div
+            className={`transition-all duration-1000 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            }`}
+          >
+            <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium mb-6">
+              About Cafoo
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+              Your Trusted Partner in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
+                Dubai Real Estate
+              </span>
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              Cafoo is a premier real estate consultancy based in Dubai, UAE. We specialize in connecting discerning
+              buyers and investors with exceptional properties across Dubai&apos;s most prestigious locations. Our team
+              of expert consultants brings unparalleled market knowledge and personalized service to every client.
+            </p>
+
+            {/* Features List */}
+            <div className="grid sm:grid-cols-2 gap-4 mb-10">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center gap-3 transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                  }`}
+                  style={{ transitionDelay: `${index * 100 + 300}ms` }}
+                >
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-foreground/80 text-sm">{feature}</span>
                 </div>
-                <div>
-                  <p className="font-bold text-foreground text-2xl">10+</p>
-                  <p className="text-sm text-muted-foreground">Years of Excellence</p>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Trusted by hundreds of clients across the UAE
-              </p>
+              ))}
             </div>
+
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white px-8 py-6 text-lg rounded-xl group"
+            >
+              Learn More About Us
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
 
-          {/* Content Side */}
-          <div>
-            <p className="text-secondary font-medium mb-2 tracking-wider uppercase">
-              About Cafoo
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-              Your Trusted Real Estate Partner in Dubai
-            </h2>
-            <p className="text-muted-foreground mb-6 leading-relaxed">
-              Cafoo Real Estate Advisors Group, with years of valuable experience in 
-              buying, selling, and real estate investment in Dubai, is proud to be 
-              your trusted companion and consultant on this journey.
-            </p>
-            <p className="text-muted-foreground mb-8 leading-relaxed">
-              Our team of experienced experts, well-versed in the UAE real estate 
-              market, are ready to provide professional solutions to help you protect 
-              and grow your investments.
-            </p>
+          {/* Right Content - Image & Stats */}
+          <div
+            className={`relative transition-all duration-1000 delay-300 ${
+              isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+            }`}
+          >
+            {/* Main Image */}
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl" />
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10">
+                <Image
+                  src="/images/dubai-marina.jpg"
+                  alt="Dubai Marina Skyline"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+              </div>
 
-            {/* Features */}
-            <div className="space-y-4 mb-8">
-              {features.map((feature) => (
-                <div key={feature.title} className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <feature.icon className="h-5 w-5 text-primary" />
+              {/* Floating Stats Card */}
+              <div className="absolute -bottom-8 -left-8 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-2xl">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                    <Award className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">{feature.title}</h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                    <div className="text-3xl font-bold text-foreground">
+                      {counters["Years Experience"] || 0}+
+                    </div>
+                    <div className="text-muted-foreground text-sm">Years of Excellence</div>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Floating Badge */}
+              <div className="absolute -top-4 -right-4 bg-gradient-to-r from-primary to-accent text-white px-6 py-3 rounded-full shadow-lg">
+                <span className="text-sm font-semibold">Trusted by 2000+ Clients</span>
+              </div>
             </div>
 
-            {/* Achievements */}
-            <div className="grid grid-cols-2 gap-3 mb-8">
-              {achievements.map((achievement) => (
-                <div key={achievement} className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-secondary flex-shrink-0" />
-                  <span className="text-sm text-foreground">{achievement}</span>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 gap-4 mt-16">
+              {stats.map((stat, index) => (
+                <div
+                  key={index}
+                  className={`group bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-5 hover:bg-card hover:border-primary/30 transition-all duration-500 ${
+                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                  }`}
+                  style={{ transitionDelay: `${stat.delay + 500}ms` }}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <stat.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {formatValue(stat.label, stat.value, stat.suffix)}
+                    </div>
+                  </div>
+                  <div className="text-muted-foreground text-sm">{stat.label}</div>
                 </div>
               ))}
             </div>
-
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Learn More About Us
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
           </div>
         </div>
       </div>
