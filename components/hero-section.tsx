@@ -51,13 +51,12 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10 pt-24">
-        <div className={cn("max-w-4xl", isRtl && "mr-auto ml-0")}>
+        <div className="max-w-4xl mx-auto lg:mx-0">
           {/* Badge */}
           <div 
             className={cn(
               "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6 transition-all duration-1000",
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
-              isRtl && "flex-row-reverse"
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
             <Sparkles className="w-4 h-4 text-secondary" />
@@ -68,8 +67,7 @@ export function HeroSection() {
           <h1 
             className={cn(
               "text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1000 delay-200",
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
-              isRtl && "font-vazirmatn"
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
           >
             <span className="text-balance">{content.hero.title}</span>
@@ -100,15 +98,14 @@ export function HeroSection() {
               
               <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl p-2 md:p-3">
                 {/* Search Type Toggle */}
-                <div className={cn("flex items-center gap-1 mb-3 px-2", isRtl && "flex-row-reverse")}>
+                <div className="flex items-center gap-1 mb-3 px-2">
                   <button
                     onClick={() => setSearchType("buy")}
                     className={cn(
                       "flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300",
                       searchType === "buy"
                         ? "bg-primary text-white shadow-lg shadow-primary/30"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                      isRtl && "flex-row-reverse"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     )}
                   >
                     <Home className="w-4 h-4" />
@@ -120,8 +117,7 @@ export function HeroSection() {
                       "flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300",
                       searchType === "rent"
                         ? "bg-primary text-white shadow-lg shadow-primary/30"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                      isRtl && "flex-row-reverse"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     )}
                   >
                     <Key className="w-4 h-4" />
@@ -130,20 +126,14 @@ export function HeroSection() {
                 </div>
 
                 {/* Search Fields */}
-                <div className={cn("flex flex-col md:flex-row gap-2 md:gap-0", isRtl && "md:flex-row-reverse")}>
+                <div className="flex flex-col md:flex-row gap-2 md:gap-0">
                   {/* Location */}
                   <div className="flex-1 relative group">
-                    <div className={cn(
-                      "absolute top-1/2 -translate-y-1/2 p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors",
-                      isRtl ? "right-4" : "left-4"
-                    )}>
+                    <div className="absolute top-1/2 -translate-y-1/2 start-4 p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                       <MapPin className="h-5 w-5 text-primary" />
                     </div>
                     <select 
-                      className={cn(
-                        "w-full h-14 rounded-xl border-0 bg-muted/30 text-foreground focus:ring-2 focus:ring-secondary appearance-none cursor-pointer font-medium hover:bg-muted/50 transition-colors",
-                        isRtl ? "pr-16 pl-10" : "pl-16 pr-10"
-                      )}
+                      className="w-full h-14 rounded-xl border-0 bg-muted/30 text-foreground focus:ring-2 focus:ring-secondary appearance-none cursor-pointer font-medium hover:bg-muted/50 transition-colors ps-16 pe-10"
                     >
                       <option value="">{content.hero.locations.all}</option>
                       <option value="downtown">{content.hero.locations.downtown}</option>
@@ -152,10 +142,7 @@ export function HeroSection() {
                       <option value="creek">{content.hero.locations.creek}</option>
                       <option value="hills">{content.hero.locations.hills}</option>
                     </select>
-                    <ChevronDown className={cn(
-                      "absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none",
-                      isRtl ? "left-4" : "right-4"
-                    )} />
+                    <ChevronDown className="absolute top-1/2 -translate-y-1/2 end-4 h-5 w-5 text-muted-foreground pointer-events-none" />
                   </div>
 
                   {/* Divider */}
@@ -163,17 +150,11 @@ export function HeroSection() {
 
                   {/* Property Type */}
                   <div className="flex-1 relative group">
-                    <div className={cn(
-                      "absolute top-1/2 -translate-y-1/2 p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors",
-                      isRtl ? "right-4" : "left-4"
-                    )}>
+                    <div className="absolute top-1/2 -translate-y-1/2 start-4 p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                       <Building2 className="h-5 w-5 text-primary" />
                     </div>
                     <select 
-                      className={cn(
-                        "w-full h-14 rounded-xl border-0 bg-muted/30 text-foreground focus:ring-2 focus:ring-secondary appearance-none cursor-pointer font-medium hover:bg-muted/50 transition-colors",
-                        isRtl ? "pr-16 pl-10" : "pl-16 pr-10"
-                      )}
+                      className="w-full h-14 rounded-xl border-0 bg-muted/30 text-foreground focus:ring-2 focus:ring-secondary appearance-none cursor-pointer font-medium hover:bg-muted/50 transition-colors ps-16 pe-10"
                     >
                       <option value="">{content.hero.propertyTypes.all}</option>
                       <option value="apartment">{content.hero.propertyTypes.apartment}</option>
@@ -181,19 +162,13 @@ export function HeroSection() {
                       <option value="townhouse">{content.hero.propertyTypes.townhouse}</option>
                       <option value="penthouse">{content.hero.propertyTypes.penthouse}</option>
                     </select>
-                    <ChevronDown className={cn(
-                      "absolute top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none",
-                      isRtl ? "left-4" : "right-4"
-                    )} />
+                    <ChevronDown className="absolute top-1/2 -translate-y-1/2 end-4 h-5 w-5 text-muted-foreground pointer-events-none" />
                   </div>
 
                   {/* Search Button */}
-                  <div className={cn(isRtl ? "md:pr-2" : "md:pl-2")}>
-                    <Button className={cn(
-                      "w-full md:w-auto h-14 px-8 bg-secondary hover:bg-secondary/90 text-secondary-foreground text-base font-bold rounded-xl shadow-lg shadow-secondary/30 hover:shadow-secondary/50 transition-all duration-300 hover:scale-105",
-                      isRtl && "flex-row-reverse"
-                    )}>
-                      <Search className={cn("h-5 w-5", isRtl ? "ml-2" : "mr-2")} />
+                  <div className="md:ps-2">
+                    <Button className="w-full md:w-auto h-14 px-8 bg-secondary hover:bg-secondary/90 text-secondary-foreground text-base font-bold rounded-xl shadow-lg shadow-secondary/30 hover:shadow-secondary/50 transition-all duration-300 hover:scale-105">
+                      <Search className="h-5 w-5 me-2" />
                       {content.hero.search}
                     </Button>
                   </div>
@@ -206,8 +181,7 @@ export function HeroSection() {
           <div 
             className={cn(
               "flex flex-wrap gap-8 md:gap-12 mt-12 transition-all duration-1000 delay-700",
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
-              isRtl && "flex-row-reverse"
+              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             )}
           >
             {[
@@ -222,7 +196,7 @@ export function HeroSection() {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="absolute -inset-2 bg-white/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity blur" />
-                <div className={cn("relative", isRtl && "text-right")}>
+                <div className="relative">
                   <p className="text-4xl md:text-5xl font-bold text-white mb-1" dir="ltr">
                     {stat.value}
                   </p>

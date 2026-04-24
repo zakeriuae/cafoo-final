@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Building, Home, TrendingUp, MapPin } from "lucide-react"
+import { ArrowRight, ArrowLeft, Building, Home, TrendingUp, MapPin } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
@@ -102,14 +102,8 @@ export function AreasSection() {
     <section ref={sectionRef} id="areas" className="py-24 bg-muted/30 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
-        <div className={cn(
-          "absolute bottom-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl",
-          isRtl ? "left-0" : "right-0"
-        )} />
-        <div className={cn(
-          "absolute top-1/3 w-72 h-72 bg-primary/5 rounded-full blur-3xl",
-          isRtl ? "right-0" : "left-0"
-        )} />
+        <div className="absolute bottom-0 end-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 start-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -120,10 +114,7 @@ export function AreasSection() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          <div className={cn(
-            "inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4",
-            isRtl && "flex-row-reverse"
-          )}>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
             <MapPin className="w-4 h-4" />
             {content.areas.badge}
           </div>
@@ -170,25 +161,16 @@ export function AreasSection() {
                     : "bg-gradient-to-t from-black/80 via-black/30 to-transparent"
                 )} />
                 
-                {/* Growth Badge */}
-                <div className={cn(
-                  "absolute top-4 z-10",
-                  isRtl ? "left-4" : "right-4"
-                )}>
-                  <div className={cn(
-                    "flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm border border-green-500/30",
-                    isRtl && "flex-row-reverse"
-                  )}>
+                {/* Growth Badge - End side */}
+                <div className="absolute top-4 end-4 z-10">
+                  <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm border border-green-500/30">
                     <TrendingUp className="h-4 w-4 text-green-400" />
                     <span className="text-green-400 text-sm font-bold">{area.growth} {content.areas.growth}</span>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className={cn(
-                  "absolute inset-0 p-6 flex flex-col justify-end z-10",
-                  isRtl && "text-right"
-                )}>
+                <div className="absolute inset-0 p-6 flex flex-col justify-end z-10">
                   <div className={cn(
                     "transition-all duration-500",
                     hoveredArea === area.id ? "translate-y-0" : "translate-y-4"
@@ -206,8 +188,7 @@ export function AreasSection() {
                     {/* Highlights */}
                     <div className={cn(
                       "flex flex-wrap gap-2 mb-4 transition-all duration-500",
-                      hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
-                      isRtl && "flex-row-reverse"
+                      hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                     )}>
                       {area.highlights[locale as 'en' | 'fa'].map((highlight) => (
                         <span
@@ -220,24 +201,21 @@ export function AreasSection() {
                     </div>
 
                     {/* Stats */}
-                    <div className={cn(
-                      "flex items-center gap-6 mb-4",
-                      isRtl && "flex-row-reverse"
-                    )}>
-                      <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+                    <div className="flex items-center gap-6 mb-4">
+                      <div className="flex items-center gap-2">
                         <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
                           <Home className="h-4 w-4 text-white" />
                         </div>
-                        <div className={cn(isRtl && "text-right")}>
+                        <div>
                           <p className="text-xs text-white/60">{content.areas.properties}</p>
                           <p className="font-bold text-white">{area.properties}+</p>
                         </div>
                       </div>
-                      <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+                      <div className="flex items-center gap-2">
                         <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
                           <Building className="h-4 w-4 text-white" />
                         </div>
-                        <div className={cn(isRtl && "text-right")}>
+                        <div>
                           <p className="text-xs text-white/60">{content.areas.avgPrice}</p>
                           <p className="font-bold text-white" dir="ltr">{area.avgPrice} {content.common.aed}</p>
                         </div>
@@ -248,15 +226,15 @@ export function AreasSection() {
                     <Button 
                       className={cn(
                         "bg-white/10 backdrop-blur-sm hover:bg-secondary text-white border border-white/20 hover:border-secondary rounded-xl transition-all duration-500",
-                        hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
-                        isRtl && "flex-row-reverse"
+                        hoveredArea === area.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                       )}
                     >
                       {content.areas.explore}
-                      <ArrowRight className={cn(
-                        "h-4 w-4 group-hover:translate-x-1 transition-transform",
-                        isRtl ? "mr-2 rotate-180 group-hover:-translate-x-1" : "ml-2"
-                      )} />
+                      {isRtl ? (
+                        <ArrowLeft className="h-4 w-4 ms-2 group-hover:-translate-x-1 transition-transform" />
+                      ) : (
+                        <ArrowRight className="h-4 w-4 ms-2 group-hover:translate-x-1 transition-transform" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -275,13 +253,14 @@ export function AreasSection() {
           <Button 
             size="lg" 
             variant="outline"
-            className={cn(
-              "h-14 px-10 border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground rounded-2xl font-semibold text-base transition-all duration-300 hover:scale-105",
-              isRtl && "flex-row-reverse"
-            )}
+            className="h-14 px-10 border-2 border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground rounded-2xl font-semibold text-base transition-all duration-300 hover:scale-105"
           >
             {content.common.viewAll}
-            <ArrowRight className={cn("h-5 w-5", isRtl ? "mr-2 rotate-180" : "ml-2")} />
+            {isRtl ? (
+              <ArrowLeft className="h-5 w-5 ms-2" />
+            ) : (
+              <ArrowRight className="h-5 w-5 ms-2" />
+            )}
           </Button>
         </div>
       </div>

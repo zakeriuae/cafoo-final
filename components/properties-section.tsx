@@ -9,6 +9,7 @@ import {
   Bath, 
   Maximize, 
   Heart, 
+  ArrowLeft,
   ArrowRight,
   MessageCircle,
   Eye,
@@ -62,7 +63,7 @@ const properties = [
     bedrooms: 1,
     bathrooms: 2,
     size: "850",
-    type: "both",
+    type: "rent",
     image: "/images/downtown-dubai.jpg",
     featured: false,
     roi: "8.6%",
@@ -110,7 +111,7 @@ const properties = [
     bedrooms: 3,
     bathrooms: 4,
     size: "4,205",
-    type: "sale",
+    type: "rent",
     image: "/images/dubai-marina.jpg",
     featured: false,
     roi: "5.4%",
@@ -160,6 +161,14 @@ export function PropertiesSection() {
     { key: "rent" as const, label: content.properties.tabs.rent },
   ]
 
+  const getPropertyType = (property: typeof properties[0]) => {
+    if (activeTab === "rent") return content.properties.tabs.rent
+    if (activeTab === "sale") return content.properties.tabs.sale
+    if (property.type === "rent") return content.properties.tabs.rent
+    if (property.type === "sale") return content.properties.tabs.sale
+    return content.properties.tabs.sale
+  }
+
   return (
     <section ref={sectionRef} id="properties" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -167,15 +176,11 @@ export function PropertiesSection() {
         <div 
           className={cn(
             "flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 transition-all duration-1000",
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
-            isRtl && "md:flex-row-reverse"
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          <div className={cn(isRtl && "text-right")}>
-            <div className={cn(
-              "inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4",
-              isRtl && "flex-row-reverse"
-            )}>
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
               <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
               {content.properties.badge}
             </div>
@@ -189,10 +194,7 @@ export function PropertiesSection() {
           </div>
 
           {/* Tabs */}
-          <div className={cn(
-            "flex p-1.5 bg-card rounded-2xl border border-border shadow-sm",
-            isRtl && "flex-row-reverse"
-          )}>
+          <div className="flex p-1.5 bg-card rounded-2xl border border-border shadow-sm">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
@@ -233,16 +235,12 @@ export function PropertiesSection() {
                   
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   
-                  {/* Top Actions */}
-                  <div className={cn(
-                    "absolute top-4 left-4 right-4 flex justify-between items-start z-10",
-                    isRtl && "flex-row-reverse"
-                  )}>
-                    <div className={cn("flex gap-2", isRtl && "flex-row-reverse")}>
+                  {/* Top Actions - Use start/end for RTL */}
+                  <div className="absolute top-4 inset-x-4 flex items-start justify-between z-10">
+                    {/* Badges on start side */}
+                    <div className="flex gap-2">
                       <Badge className="bg-primary/90 backdrop-blur-sm text-white border-0 px-3 py-1">
-                        {activeTab === "rent" || (activeTab === "all" && property.type === "both") 
-                          ? content.properties.tabs.rent 
-                          : content.properties.tabs.sale}
+                        {getPropertyType(property)}
                       </Badge>
                       {property.featured && (
                         <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 px-3 py-1">
@@ -250,6 +248,7 @@ export function PropertiesSection() {
                         </Badge>
                       )}
                     </div>
+                    {/* Favorite on end side */}
                     <button
                       onClick={() => toggleFavorite(property.id)}
                       className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:scale-110"
@@ -266,32 +265,25 @@ export function PropertiesSection() {
                   </div>
 
                   {/* Bottom Price Tag */}
-                  <div className={cn(
-                    "absolute bottom-4 left-4 right-4 z-10",
-                    isRtl && "text-right"
-                  )}>
-                    <div className={cn(
-                      "flex items-end justify-between",
-                      isRtl && "flex-row-reverse"
-                    )}>
+                  <div className="absolute bottom-4 inset-x-4 z-10">
+                    <div className="flex items-end justify-between">
                       <div>
                         <p className="text-2xl font-bold text-white" dir="ltr">
-                          {activeTab === "rent" || (activeTab === "all" && property.type === "both")
+                          {activeTab === "rent" || property.type === "rent"
                             ? `${property.rentPrice} ${content.common.aed}`
                             : `${property.price} ${content.common.aed}`
                           }
                         </p>
                         <p className="text-white/70 text-sm">
-                          {activeTab === "rent" ? content.properties.perYear : `${property.pricePerSqft} ${content.common.aed}/${content.properties.sqft}`}
+                          {activeTab === "rent" || property.type === "rent" 
+                            ? content.properties.perYear 
+                            : `${property.pricePerSqft} ${content.common.aed}/${content.properties.sqft}`}
                         </p>
                       </div>
-                      {property.roi && activeTab !== "rent" && (
-                        <div className={cn(
-                          "flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm",
-                          isRtl && "flex-row-reverse"
-                        )}>
+                      {property.roi && activeTab !== "rent" && property.type !== "rent" && (
+                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-green-500/20 backdrop-blur-sm">
                           <TrendingUp className="w-4 h-4 text-green-400" />
-                          <span className="text-green-400 text-sm font-semibold">{property.roi} ROI</span>
+                          <span className="text-green-400 text-sm font-semibold" dir="ltr">{property.roi} ROI</span>
                         </div>
                       )}
                     </div>
@@ -301,18 +293,12 @@ export function PropertiesSection() {
                 {/* Content */}
                 <div className="p-6">
                   {/* Title */}
-                  <h3 className={cn(
-                    "font-bold text-lg text-foreground group-hover:text-primary transition-colors mb-3 line-clamp-1",
-                    isRtl && "text-right"
-                  )}>
+                  <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors mb-3 line-clamp-1">
                     {property.title[locale as 'en' | 'fa']}
                   </h3>
 
                   {/* Location */}
-                  <div className={cn(
-                    "flex items-center gap-2 text-muted-foreground mb-4",
-                    isRtl && "flex-row-reverse"
-                  )}>
+                  <div className="flex items-center gap-2 text-muted-foreground mb-4">
                     <div className="p-1.5 rounded-lg bg-secondary/10">
                       <MapPin className="h-4 w-4 text-secondary" />
                     </div>
@@ -322,11 +308,8 @@ export function PropertiesSection() {
                   </div>
 
                   {/* Features */}
-                  <div className={cn(
-                    "flex items-center gap-6 py-4 border-t border-border/50",
-                    isRtl && "flex-row-reverse"
-                  )}>
-                    <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+                  <div className="flex items-center gap-6 py-4 border-t border-border/50">
+                    <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-muted">
                         <Bed className="h-4 w-4 text-primary" />
                       </div>
@@ -334,7 +317,7 @@ export function PropertiesSection() {
                         {property.bedrooms} {content.properties.beds}
                       </span>
                     </div>
-                    <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+                    <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-muted">
                         <Bath className="h-4 w-4 text-primary" />
                       </div>
@@ -342,7 +325,7 @@ export function PropertiesSection() {
                         {property.bathrooms} {content.properties.baths}
                       </span>
                     </div>
-                    <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+                    <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-muted">
                         <Maximize className="h-4 w-4 text-primary" />
                       </div>
@@ -353,15 +336,9 @@ export function PropertiesSection() {
                   </div>
 
                   {/* Actions */}
-                  <div className={cn("flex gap-3 mt-4", isRtl && "flex-row-reverse")}>
-                    <Button className={cn(
-                      "flex-1 bg-primary hover:bg-primary/90 text-white h-12 rounded-xl font-semibold group/btn",
-                      isRtl && "flex-row-reverse"
-                    )}>
-                      <Eye className={cn(
-                        "h-4 w-4 group-hover/btn:scale-110 transition-transform",
-                        isRtl ? "ml-2" : "mr-2"
-                      )} />
+                  <div className="flex gap-3 mt-4">
+                    <Button className="flex-1 bg-primary hover:bg-primary/90 text-white h-12 rounded-xl font-semibold group/btn">
+                      <Eye className="h-4 w-4 me-2 group-hover/btn:scale-110 transition-transform" />
                       {content.properties.viewDetails}
                     </Button>
                     <Button 
@@ -386,16 +363,14 @@ export function PropertiesSection() {
         >
           <Button 
             size="lg" 
-            className={cn(
-              "h-14 px-10 bg-primary hover:bg-primary/90 text-white rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 hover:scale-105",
-              isRtl && "flex-row-reverse"
-            )}
+            className="h-14 px-10 bg-primary hover:bg-primary/90 text-white rounded-2xl font-semibold text-base shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300 hover:scale-105"
           >
             {content.properties.viewAll}
-            <ArrowRight className={cn(
-              "h-5 w-5 group-hover:translate-x-1 transition-transform",
-              isRtl ? "mr-2 rotate-180" : "ml-2"
-            )} />
+            {isRtl ? (
+              <ArrowLeft className="h-5 w-5 ms-2" />
+            ) : (
+              <ArrowRight className="h-5 w-5 ms-2" />
+            )}
           </Button>
         </div>
       </div>
