@@ -9,16 +9,17 @@ import { cn } from "@/lib/utils"
 
 export function AboutSection() {
   const [isVisible, setIsVisible] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
   const [counters, setCounters] = useState<{ [key: string]: number }>({})
   const sectionRef = useRef<HTMLElement>(null)
   const { isRtl, locale } = useI18n()
   const content = useContent()
 
   const stats = [
-    { icon: Shield, value: "10", label: content.agents.experience, suffix: "+", delay: 0 },
-    { icon: Award, value: "500", label: content.about.stats.transactions, suffix: "+", delay: 100 },
-    { icon: Users, value: "2000", label: content.hero.stats.clients, suffix: "+", delay: 200 },
-    { icon: TrendingUp, value: "5", label: content.about.stats.volume, suffix: "B+", delay: 300 },
+    { icon: Shield, value: "12", label: content.agents.experience, suffix: "+", delay: 0 },
+    { icon: Award, value: "560", label: content.about.stats.transactions, suffix: "+", delay: 100 },
+    { icon: Users, value: "1280", label: content.hero.stats.clients, suffix: "+", delay: 200 },
+    { icon: TrendingUp, value: "5", label: content.about.stats.volume, suffix: ".4B+", delay: 300 },
   ]
 
   const features = [
@@ -28,25 +29,24 @@ export function AboutSection() {
     content.about.features.global.description,
   ]
 
+  const aboutImages = [
+    "/images/about/011.jpg",
+    "/images/about/033.jpg",
+    "/images/about/044.jpg"
+  ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % aboutImages.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [])
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true)
-          stats.forEach((stat) => {
-            const numericValue = parseInt(stat.value)
-            let current = 0
-            const increment = numericValue / 50
-            const timer = setInterval(() => {
-              current += increment
-              if (current >= numericValue) {
-                setCounters((prev) => ({ ...prev, [stat.label]: numericValue }))
-                clearInterval(timer)
-              } else {
-                setCounters((prev) => ({ ...prev, [stat.label]: Math.floor(current) }))
-              }
-            }, 30)
-          })
         }
       },
       { threshold: 0.2 }
@@ -57,7 +57,38 @@ export function AboutSection() {
     }
 
     return () => observer.disconnect()
-  }, [stats])
+  }, [])
+
+  useEffect(() => {
+    if (!isVisible) return
+
+    const timers: NodeJS.Timeout[] = []
+    
+    stats.forEach((stat) => {
+      const numericValue = parseInt(stat.value)
+      if (isNaN(numericValue)) return
+
+      let current = 0
+      const duration = 2000 
+      const steps = 60
+      const increment = numericValue / steps
+      const stepTime = duration / steps
+
+      const timer = setInterval(() => {
+        current += increment
+        if (current >= numericValue) {
+          setCounters((prev) => ({ ...prev, [stat.label]: numericValue }))
+          clearInterval(timer)
+        } else {
+          setCounters((prev) => ({ ...prev, [stat.label]: Math.floor(current) }))
+        }
+      }, stepTime)
+      
+      timers.push(timer)
+    })
+
+    return () => timers.forEach(clearInterval)
+  }, [isVisible])
 
   return (
     <section id="about" ref={sectionRef} className="py-24 bg-gradient-to-b from-background to-muted/30 overflow-hidden">
@@ -130,44 +161,65 @@ export function AboutSection() {
               isRtl && "lg:col-start-1 lg:row-start-1"
             )}
           >
-            {/* Main Image */}
+            {/* Main Image Slideshow */}
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl" />
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                <Image
-                  src="/images/dubai-marina.jpg"
-                  alt="Dubai Marina Skyline"
-                  fill
-                  className="object-cover transition-transform duration-700 hover:scale-105"
-                />
-                {/* Reduced gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                {aboutImages.map((img, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "absolute inset-0 transition-opacity duration-1000",
+                      currentSlide === index ? "opacity-100" : "opacity-0"
+                    )}
+                  >
+                    <img
+                      src={img}
+                      alt={`Dubai Real Estate View ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
+                  </div>
+                ))}
+                {/* Progress Indicators */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                  {aboutImages.map((_, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "h-1 rounded-full transition-all duration-500",
+                        currentSlide === index ? "w-8 bg-secondary" : "w-2 bg-white/30"
+                      )}
+                    />
+                  ))}
+                </div>
+                {/* Minimal gradient for text contrast */}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent z-10" />
               </div>
 
               {/* Floating Stats Card */}
               <div className={cn(
-                "absolute -bottom-8 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl p-6 shadow-2xl",
+                "absolute -bottom-8 bg-white border border-primary/10 rounded-2xl p-6 shadow-2xl z-30",
                 isRtl ? "-right-8" : "-left-8"
               )}>
                 <div className={cn("flex items-center gap-4", isRtl && "flex-row-reverse")}>
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20">
                     <Award className="w-7 h-7 text-white" />
                   </div>
                   <div className={cn(isRtl && "text-right")}>
                     <div className="text-3xl font-bold text-foreground" dir="ltr">
                       {counters[content.agents.experience] || 0}+
                     </div>
-                    <div className="text-muted-foreground text-sm">{content.agents.experience}</div>
+                    <div className="text-muted-foreground text-sm font-medium">{content.agents.experience}</div>
                   </div>
                 </div>
               </div>
 
               {/* Floating Badge */}
               <div className={cn(
-                "absolute -top-4 bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full shadow-lg",
+                "absolute -top-4 bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-full shadow-xl z-30",
                 isRtl ? "-left-4" : "-right-4"
               )}>
-                <span className="text-sm font-semibold">2000+ {content.hero.stats.clients}</span>
+                <span className="text-sm font-bold">1280+ {content.hero.stats.clients}</span>
               </div>
             </div>
 

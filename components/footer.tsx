@@ -131,13 +131,13 @@ export function Footer() {
             {/* Company Info */}
             <div className={cn("lg:col-span-1", isRtl && "text-right lg:col-start-4")}>
               <Link href={`/${locale}`} className="inline-block mb-6">
-                <div className="bg-white p-3 rounded-xl inline-block">
+                <div className="inline-block">
                   <Image
-                    src="/logo.jpg"
+                    src="/Logo.svg"
                     alt="Cafoo Real Estate"
                     width={140}
                     height={50}
-                    className="h-10 w-auto"
+                    className="h-10 w-auto invert brightness-0"
                   />
                 </div>
               </Link>

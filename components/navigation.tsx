@@ -64,11 +64,11 @@ export function Navigation() {
             <Link href={`/${locale}`} className="flex items-center group">
               <div className="relative overflow-hidden">
                 <Image
-                  src="/logo.jpg"
+                  src="/Logo.svg"
                   alt="Cafoo Real Estate"
                   width={140}
                   height={50}
-                  className="h-12 w-auto"
+                  className="h-12 w-auto invert brightness-0"
                   priority
                 />
               </div>
@@ -107,7 +107,7 @@ export function Navigation() {
                 {content.nav.callUs}
               </Button>
               <Button className="bg-gradient-to-r from-primary to-secondary hover:brightness-110 text-white shadow-xl shadow-primary/20 border-0 px-8 rounded-full font-bold">
-                {content.nav.contact}
+                {content.nav.login || "Login"}
               </Button>
             </div>
 

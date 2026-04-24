@@ -22,32 +22,20 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/images/hero/hero-bg.png"
-          alt="Dubai Marina Luxury Skyline"
+          src="/images/herophoto.jpg"
+          alt="Dubai Luxury Real Estate"
           fill
           className="object-cover"
           priority
-          quality={100}
+          unoptimized={true}
         />
-        {/* Gradient Overlay - stronger for daylight photo */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+        {/* Gradient Overlay - reduced for more clarity */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent" />
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10 flex flex-col items-center">
-        <div className="max-w-4xl flex flex-col items-center text-center">
-          {/* Badge */}
-          <div 
-            className={cn(
-              "inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 mb-8 transition-all duration-1000",
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-secondary" />
-            <span className="text-xs text-white/80 font-bold uppercase tracking-widest">{content.hero.badge}</span>
-          </div>
-
+        <div className="relative z-10 container mx-auto px-4 h-full flex flex-col items-center justify-center text-center">
           {/* Main Heading */}
           <h1 
             className={cn(
@@ -146,9 +134,9 @@ export function HeroSection() {
             )}
           >
             {[
-              { value: "500+", label: content.hero.stats.properties },
-              { value: "1000+", label: content.hero.stats.clients },
-              { value: "10+", label: content.hero.stats.years },
+              { value: "560+", label: content.hero.stats.properties },
+              { value: "1280+", label: content.hero.stats.clients },
+              { value: "12+", label: content.hero.stats.years },
             ].map((stat) => (
               <div key={stat.label}>
                 <p className="text-3xl font-bold text-white mb-1" dir="ltr">{stat.value}</p>
@@ -157,7 +145,6 @@ export function HeroSection() {
             ))}
           </div>
         </div>
-      </div>
 
       {/* Subtle Scroll Indicator */}
       <div className="absolute bottom-10 left-10 z-10 flex items-center gap-4">

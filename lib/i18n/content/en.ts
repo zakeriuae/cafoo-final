@@ -21,6 +21,7 @@ export const en: LocaleContent = {
     about: 'About',
     contact: 'Contact',
     callUs: 'Call Us',
+    login: 'Login',
     whatsapp: 'WhatsApp',
   },
 
@@ -155,7 +156,7 @@ export const en: LocaleContent = {
     badge: 'About Cafoo',
     title: 'Your Trusted Partner in',
     titleHighlight: 'Dubai Real Estate',
-    description: 'Cafoo Real Estate Advisors is a premier real estate consultancy based in Dubai, dedicated to providing exceptional service to clients seeking to buy, sell, or invest in UAE properties.',
+    description: 'Founded by Isa Ghavasi, Cafoo Real Estate Advisors is a premier consultancy in Dubai specializing in smart property investments. We guide investors toward secure, high-yield opportunities in the UAE\'s most prestigious locations.',
     features: {
       expertise: {
         title: 'Expert Knowledge',
@@ -175,8 +176,8 @@ export const en: LocaleContent = {
       },
     },
     stats: {
-      transactions: 'Transactions',
-      volume: 'Sales Volume',
+      transactions: 'Investments',
+      volume: 'Investment Volume',
       satisfaction: 'Client Satisfaction',
     },
   },

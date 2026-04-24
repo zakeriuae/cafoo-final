@@ -141,9 +141,9 @@ export function DevelopersSection() {
               {duplicatedDevelopers.map((developer, index) => (
                 <div
                   key={`${developer.name}-${index}`}
-                  className="flex-shrink-0 mx-4 md:mx-6 group cursor-pointer"
+                  className="flex-shrink-0 mx-2 md:mx-3 group cursor-pointer"
                 >
-                  <div className="relative w-52 h-28 md:w-72 md:h-44 flex items-center justify-center transition-all duration-300 hover:scale-105">
+                  <div className="relative w-64 h-36 md:w-80 md:h-52 flex items-center justify-center transition-all duration-300 hover:scale-105">
                     <Image
                       src={developer.logo}
                       alt={developer.name}

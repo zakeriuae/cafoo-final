@@ -108,7 +108,7 @@ export function AreasSectionClientNew({ areas }: AreasSectionClientProps) {
                 )}>
                   {/* Image */}
                   <Image
-                    src={area.cover_image_url || "/images/placeholder.jpg"}
+                    src={area.slug === 'downtown-dubai' ? "/images/areas/downtown-user.jpg" : (area.cover_image_url || "/images/placeholder.jpg")}
                     alt={areaName}
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-105"
@@ -120,34 +120,19 @@ export function AreasSectionClientNew({ areas }: AreasSectionClientProps) {
                   {/* Content */}
                   <div className="absolute inset-0 p-8 flex flex-col justify-end z-10">
                     <h3 className={cn(
-                      "font-bold text-white mb-4 group-hover:text-secondary transition-colors",
+                      "font-bold text-white mb-2 group-hover:text-secondary transition-colors",
                       index === 0 ? "text-3xl md:text-4xl" : "text-2xl"
                     )}>
                       {areaName}
                     </h3>
                     
-                    {/* Stats Overlay */}
-                    <div className="flex items-center gap-6 pb-6 border-b border-white/20 mb-6">
+                    <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center gap-2">
-                        <Home className="h-4 w-4 text-white/70" />
-                        <span className="text-sm font-bold text-white">
+                        <Home className="h-4 w-4 text-secondary" />
+                        <span className="text-sm font-bold text-white/90">
                           {area.total_properties} {content.areas.properties}
                         </span>
                       </div>
-                      {area.average_price && (
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="h-4 w-4 text-white/70" />
-                          <span className="text-sm font-bold text-white" dir="ltr">
-                            {formatPrice(area.average_price)} {content.common.aed}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-white/70 font-medium">
-                        {area.slug.replace('-', ' ').toUpperCase()}
-                      </p>
                       <div className="flex items-center gap-1 text-secondary font-bold text-sm group-hover:gap-2 transition-all">
                         {content.areas.explore}
                         <ArrowRight className="h-4 w-4" />
