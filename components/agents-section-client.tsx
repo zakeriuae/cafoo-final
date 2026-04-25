@@ -57,7 +57,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
   }, [])
 
   return (
-    <section ref={sectionRef} id="agents" className="py-24 bg-white relative overflow-hidden">
+    <section ref={sectionRef} id="agents" className="py-24 bg-[#F0F7FF] relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div 
@@ -78,7 +78,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
             </p>
           </div>
           
-          <Button variant="outline" className="rounded-full px-8 h-12 border-border/60 hover:bg-muted/50 transition-all gap-2 group">
+          <Button variant="outline" className="rounded-full px-8 h-12 border-border/60 hover:bg-secondary hover:text-white hover:border-secondary transition-all gap-2 group font-bold">
             {content.agents.allTeam}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Button>
@@ -99,63 +99,71 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                 )}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <div className="relative bg-white rounded-[2.5rem] overflow-hidden border border-border/40 hover:border-secondary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-black/5 h-[500px]">
-                  {/* Image */}
-                  <Image
-                    src={agent.avatar_url || "/images/agents/placeholder.jpg"}
-                    alt={agentName}
-                    fill
-                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                  />
-                  
-                  {/* Overlay - Stronger at bottom for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90" />
-                  
-                  {/* Top Badge - Rating */}
-                  <div className={cn(
-                    "absolute top-6 flex items-center gap-1.5 px-4 py-2 rounded-full bg-secondary/10 backdrop-blur-md border border-secondary/20 z-20",
-                    isRtl ? "left-6" : "right-6"
-                  )}>
-                    <Award className="w-3.5 h-3.5 text-secondary" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">Top Agent</span>
+                <div 
+                  className="bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-secondary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5 flex flex-col h-full group"
+                >
+                  {/* Image Container - Square with Overlay */}
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image
+                      src={agent.avatar_url || "/images/agents/placeholder.jpg"}
+                      alt={agentName}
+                      fill
+                      className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                    />
+                    
+                    {/* Gradient Overlay for Text */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
+
+                    {/* Top Badge - Rating */}
+                    <div className={cn(
+                      "absolute top-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/90 backdrop-blur-md z-10",
+                      isRtl ? "left-4" : "right-4"
+                    )}>
+                      <Award className="w-3 h-3 text-white" />
+                      <span className="text-[10px] font-bold text-white uppercase tracking-wider">Top Agent</span>
+                    </div>
+
+                    {/* Name & Title Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                      <p className="text-secondary font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
+                        {agentTitle}
+                      </p>
+                      <h3 className="text-xl font-bold text-white group-hover:text-secondary transition-colors line-clamp-1">
+                        {agentName}
+                      </h3>
+                    </div>
                   </div>
 
-                  {/* Content Overlay */}
-                  <div className="absolute inset-0 p-8 flex flex-col justify-end z-10">
-                    <p className="text-secondary font-bold text-[10px] uppercase tracking-[0.2em] mb-2">
-                      {agentTitle}
-                    </p>
-                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-secondary transition-colors">
-                      {agentName}
-                    </h3>
-                    
+                  {/* Content Area - Stats and Actions */}
+                  <div className="p-6 flex flex-col flex-grow">
                     {/* Stats Row */}
-                    <div className="flex items-center gap-8 pb-4 border-b border-white/10 mb-4">
-                      <div>
-                        <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-1">{content.agents.experience}</p>
-                        <p className="text-xl font-bold text-white leading-none">{agent.experience_years}</p>
+                    <div className="flex items-center gap-6 py-4 border-b border-border/40 mb-6">
+                      <div className="flex-1">
+                        <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mb-1">{content.agents.experience}</p>
+                        <p className="text-lg font-bold text-foreground leading-none">{agent.experience_years} <span className="text-[10px] font-medium text-muted-foreground">Years</span></p>
                       </div>
-                      <div>
-                        <p className="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-1">{content.agents.deals}</p>
-                        <p className="text-xl font-bold text-white leading-none">{agent.total_listings}</p>
+                      <div className="w-px h-8 bg-border/40" />
+                      <div className="flex-1">
+                        <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mb-1">{content.agents.deals}</p>
+                        <p className="text-lg font-bold text-foreground leading-none">{agent.total_listings}</p>
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex gap-4">
+                    <div className="flex items-center justify-between mt-auto">
+                      <div className="flex gap-2">
                         {agent.phone && (
-                          <a href={`tel:${agent.phone}`} className="w-11 h-11 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all border border-white/10">
-                            <Phone className="h-4.5 w-4.5" />
+                          <a href={`tel:${agent.phone}`} className="w-10 h-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-secondary hover:text-white text-foreground transition-all border border-border/40">
+                            <Phone className="h-4 w-4" />
                           </a>
                         )}
                         {agent.whatsapp && (
-                          <a href={`https://wa.me/${agent.whatsapp.replace(/\+/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-11 h-11 flex items-center justify-center rounded-full bg-green-500/20 hover:bg-green-500/30 text-green-400 transition-all border border-green-500/20">
-                            <MessageCircle className="h-4.5 w-4.5" />
+                          <a href={`https://wa.me/${agent.whatsapp.replace(/\+/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white transition-all border border-green-500/20">
+                            <MessageCircle className="h-4 w-4" />
                           </a>
                         )}
                       </div>
-                      <Link href={`/${locale}/agents/${agent.slug}`} className="flex items-center gap-2 text-white font-bold text-sm group-hover:gap-3 transition-all cursor-pointer">
+                      <Link href={`/${locale}/agents/${agent.slug}`} className="flex items-center gap-1.5 text-secondary font-bold text-sm hover:gap-2.5 transition-all">
                         {content.agents.contact}
                         <ArrowRight className="h-4 w-4" />
                       </Link>

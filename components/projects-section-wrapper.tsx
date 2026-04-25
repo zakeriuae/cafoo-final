@@ -18,7 +18,7 @@ export async function ProjectsSection() {
       cover_image_url,
       payment_plan,
       area:areas(name, name_fa, slug),
-      developer:developers(name, name_fa, slug)
+      developer:developers(name, name_fa, slug, logo_url)
     `)
     .limit(6)
 
@@ -29,6 +29,7 @@ export async function ProjectsSection() {
     id: t.id,
     name: t.name,
     developer: t.developer?.name || "Developer",
+    developerLogo: t.developer?.logo_url,
     location: { 
       en: t.area?.name || "Dubai", 
       fa: t.area?.name_fa || t.area?.name || "دبی" 

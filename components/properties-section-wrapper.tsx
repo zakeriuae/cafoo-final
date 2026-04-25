@@ -21,7 +21,11 @@ export async function PropertiesSection() {
       featured,
       roi_percent,
       area:areas(name, name_fa, slug),
-      tower:towers(name, name_fa)
+      tower:towers(
+        name, 
+        name_fa, 
+        developer:developers(name, name_fa, logo_url)
+      )
     `)
     .limit(6)
 
@@ -36,6 +40,8 @@ export async function PropertiesSection() {
       fa: p.area?.name_fa || p.area?.name || "دبی" 
     },
     project: p.tower?.name || "",
+    developerName: p.tower?.developer?.name,
+    developerLogo: p.tower?.developer?.logo_url,
     price: p.price.toLocaleString(),
     rentPrice: p.listing_type === 'rent' ? p.price.toLocaleString() : "0",
     pricePerSqft: p.size ? Math.round(p.price / p.size).toLocaleString() : "0",

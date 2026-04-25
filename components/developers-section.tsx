@@ -9,67 +9,67 @@ import { cn } from "@/lib/utils"
 const developers = [
   {
     name: "EMAAR",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/emaar-kMJ6wvhYpIVfOmVwiKZze39Vo8kpQm.png",
+    logo: "/images/developers/emaar.png",
   },
   {
     name: "DAMAC",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/damac-lMXfBEJo7d9d1gfvy5ujgYORKBb41M.png",
+    logo: "/images/developers/damac.png",
   },
   {
     name: "SOBHA Realty",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/sobhan-Zlw2e7CtkwQ0w4kHQLAugzYlySR8Ma.png",
+    logo: "/images/developers/sobhan.png",
   },
   {
     name: "Nakheel",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/nakheel-D08jZy7zeDxU7R9cFYP9l3zAUKmV9e.png",
+    logo: "/images/developers/nakheel.png",
   },
   {
     name: "MERAAS",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/meraas-e7rGZiR6vsMh4sGzyUoHCuFBb9Iqb4.png",
+    logo: "/images/developers/meraas.png",
   },
   {
     name: "Dubai Properties",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/dubai-YFXl9B9poFFqLW7F4I8UEGnCv4xzY2.png",
+    logo: "/images/developers/dubai.png",
   },
   {
     name: "Binghatti",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/binghati-gq7dkP5dSvSQLxK6p86ApMO79YT1XZ.png",
+    logo: "/images/developers/binghati.png",
   },
   {
     name: "Aldar",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/aldar-hj3Fs5q4l0LtT7dXgPGhE4iSs9DuSw.png",
+    logo: "/images/developers/aldar.png",
   },
   {
     name: "RAK Properties",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/rak-k7bffxCBgBPj7VwJiX1o79nMhZLuPK.png",
+    logo: "/images/developers/rak.png",
   },
   {
     name: "Tiger Group",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/tiger-fiSDGfJivack9AGdp3DueGoSLdaTUU.png",
+    logo: "/images/developers/tiger.png",
   },
   {
     name: "Alef",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/alef-h4qZeK6LMkfgnvdqqpmXKrTBAlQvVo.png",
+    logo: "/images/developers/alef.png",
   },
   {
     name: "Arada",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/arada-eG44g8RQwCKwM76H7GcO71Sh8hfAnW.png",
+    logo: "/images/developers/arada.png",
   },
   {
     name: "Imtiaz Developments",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/imtiaz-3z3P4DVNOWN1BqtlNikXxChIBIvJ3C.png",
+    logo: "/images/developers/imtiaz.png",
   },
   {
     name: "Nshama",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/nshama-o72DY8hc79nO9Xi8mzW37FpP38HlTW.png",
+    logo: "/images/developers/nshama.png",
   },
   {
     name: "Wasl",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/wasl-lbtkTxgqrFTpnWxUCYDb8v6ypdtCDS.png",
+    logo: "/images/developers/wasl.png",
   },
   {
     name: "Beyond",
-    logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/beyond-qWVgsJIjMEUGAPsac3ixrpkq6agwcw.png",
+    logo: "/images/developers/beyond.png",
   },
 ]
 

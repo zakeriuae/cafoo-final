@@ -130,6 +130,8 @@ interface Property {
   title: { en: string; fa: string }
   location: { en: string; fa: string }
   project: string
+  developerLogo?: string
+  developerName?: string
   price: string
   rentPrice: string
   pricePerSqft: string
@@ -172,6 +174,32 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
     return () => observer.disconnect()
   }, [])
 
+  const getDeveloperLogo = (name: string, logoFromDb?: string) => {
+    if (logoFromDb && logoFromDb.startsWith('http')) return logoFromDb;
+    
+    const mapping: Record<string, string> = {
+      'emaar': '/images/developers/emaar.png',
+      'damac': '/images/developers/damac.png',
+      'sobha': '/images/developers/sobhan.png',
+      'nakheel': '/images/developers/nakheel.png',
+      'binghatti': '/images/developers/binghati.png',
+      'arada': '/images/developers/arada.png',
+      'tiger': '/images/developers/tiger.png',
+      'aldar': '/images/developers/aldar.png',
+      'wasl': '/images/developers/wasl.png',
+      'dubai properties': '/images/developers/dubai.png',
+      'meraas': '/images/developers/meraas.png',
+      'alef': '/images/developers/alef.png',
+      'imtiaz': '/images/developers/imtiaz.png',
+      'nshama': '/images/developers/nshama.png',
+      'beyond': '/images/developers/beyond.png',
+      'rak': '/images/developers/rak.png',
+    };
+
+    const foundKey = Object.keys(mapping).find(key => name.toLowerCase().includes(key));
+    return foundKey ? mapping[foundKey] : (logoFromDb || null);
+  };
+
   const filteredProperties = activeTab === "all" 
     ? initialProperties 
     : initialProperties.filter(p => p.type === activeTab || p.type === "both")
@@ -199,7 +227,7 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
   }
 
   return (
-    <section ref={sectionRef} id="properties" className="py-24 bg-white">
+    <section ref={sectionRef} id="properties" className="py-24 bg-[#F0F7FF]">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div 
@@ -222,7 +250,7 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
 
           <div className="flex flex-col items-end gap-6">
             <Link href={`/${locale}/properties`}>
-              <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-muted/50 transition-all gap-2 group">
+              <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-primary hover:text-white hover:border-primary transition-all gap-2 group font-bold">
                 {content.properties.viewAll}
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -261,7 +289,7 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 hover:shadow-xl hover:shadow-black/5">
+              <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5">
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden">
                   <Image
@@ -353,9 +381,22 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
 
                   {/* Bottom Info & Link */}
                   <div className="flex items-center justify-between mt-6">
-                    <p className="text-xs text-muted-foreground font-medium">
-                      by <span className="text-foreground/80">{property.project || "Developer"}</span>
-                    </p>
+                    <div className="flex items-center gap-2">
+                      {getDeveloperLogo(property.developerName || property.project, property.developerLogo) ? (
+                        <div className="relative h-20 w-48 -my-6">
+                          <Image
+                            src={getDeveloperLogo(property.developerName || property.project, property.developerLogo)!}
+                            alt={property.developerName || property.project}
+                            fill
+                            className="object-contain object-left filter grayscale group-hover:grayscale-0 transition-all duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground font-medium">
+                          by <span className="text-foreground/80">{property.developerName || property.project || "Developer"}</span>
+                        </p>
+                      )}
+                    </div>
                     <div className="flex items-center gap-1 text-primary font-bold text-sm group-hover:gap-2 transition-all">
                       {content.properties.viewDetails}
                       <ArrowRight className="h-4 w-4" />

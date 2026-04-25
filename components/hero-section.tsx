@@ -44,7 +44,7 @@ export function HeroSection() {
             )}
           >
             Luxury Living <br />
-            <span className="text-secondary drop-shadow-[1px_1px_0px_rgba(0,0,0,0.2)]">Redefined</span>
+            <span className="text-primary drop-shadow-[1px_1px_0px_rgba(0,0,0,0.2)]">Redefined</span>
           </h1>
 
           <p 
@@ -71,7 +71,7 @@ export function HeroSection() {
                   className={cn(
                     "px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-300",
                     searchType === "buy"
-                      ? "bg-secondary text-secondary-foreground shadow-lg shadow-secondary/20"
+                      ? "bg-primary text-white shadow-lg shadow-primary/20"
                       : "text-white/60 hover:text-white hover:bg-white/5"
                   )}
                 >
@@ -82,7 +82,7 @@ export function HeroSection() {
                   className={cn(
                     "px-6 py-2 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-300",
                     searchType === "rent"
-                      ? "bg-secondary text-secondary-foreground shadow-lg shadow-secondary/20"
+                      ? "bg-primary text-secondary-foreground shadow-lg shadow-primary/20"
                       : "text-white/60 hover:text-white hover:bg-white/5"
                   )}
                 >
@@ -96,7 +96,7 @@ export function HeroSection() {
                   <div className="relative group">
                     <MapPin className="absolute start-5 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                     <select 
-                      className="w-full h-14 rounded-2xl bg-white/5 border border-white/5 text-white focus:ring-1 focus:ring-secondary appearance-none cursor-pointer font-medium hover:bg-white/10 transition-all ps-12 pe-10 text-sm"
+                      className="w-full h-14 rounded-2xl bg-white/5 border border-white/5 text-white focus:ring-1 focus:ring-primary appearance-none cursor-pointer font-medium hover:bg-white/10 transition-all ps-12 pe-10 text-sm"
                     >
                       <option value="" className="bg-neutral-900">{content.hero.locations.all}</option>
                       <option value="downtown" className="bg-neutral-900">{content.hero.locations.downtown}</option>

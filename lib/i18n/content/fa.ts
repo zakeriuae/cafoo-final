@@ -87,6 +87,7 @@ export const fa: LocaleContent = {
     startingFrom: 'شروع از',
     paymentPlan: 'طرح پرداخت',
     handover: 'تحویل',
+    launchPrice: 'شروع قیمت',
     developer: 'سازنده',
     filters: {
       all: 'همه',

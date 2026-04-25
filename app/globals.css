@@ -234,6 +234,32 @@
 }
 
 /* Custom animations */
+@keyframes marquee-continuous {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-25%);
+  }
+}
+
+.animate-marquee-continuous {
+  animation: marquee-continuous 40s linear infinite;
+}
+
+@keyframes marquee-continuous-rtl {
+  0% {
+    transform: translateX(-25%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+[dir="rtl"] .animate-marquee-continuous {
+  animation: marquee-continuous-rtl 40s linear infinite;
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0);

@@ -88,118 +88,94 @@ export function AgentsListClient({ agents }: AgentsListClientProps) {
           const agentTitle = locale === 'fa' && agent.title_fa ? agent.title_fa : agent.title
           
           return (
-            <Card key={agent.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-              {/* Image */}
-              <Link href={`/${locale}/agents/${agent.slug}`}>
-                <div className="relative h-64 overflow-hidden">
+            <Card key={agent.id} className="group overflow-hidden rounded-[2rem] border border-border/40 hover:border-secondary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5 flex flex-col h-full">
+              {/* Image Container - Square with Overlay */}
+              <Link href={`/${locale}/agents/${agent.slug}`} className="block">
+                <div className="relative aspect-square overflow-hidden">
                   <Image
                     src={agent.avatar_url || "/images/placeholder-agent.jpg"}
                     alt={agentName}
                     fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
                   
                   {/* Featured Badge */}
                   {agent.featured && (
                     <div className={cn(
-                      "absolute top-4 flex items-center gap-1 px-3 py-1.5 rounded-full bg-secondary/90 backdrop-blur-sm",
+                      "absolute top-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/90 backdrop-blur-md z-10",
                       isRtl ? "left-4" : "right-4"
                     )}>
-                      <Star className="w-4 h-4 fill-current" />
-                      <span className="text-sm font-bold">{locale === 'fa' ? 'ویژه' : 'Featured'}</span>
+                      <Star className="w-3 h-3 fill-white text-white" />
+                      <span className="text-[10px] font-bold text-white uppercase tracking-wider">{locale === 'fa' ? 'ویژه' : 'Featured'}</span>
                     </div>
                   )}
 
                   {/* Name & Title Overlay */}
-                  <div className={cn(
-                    "absolute bottom-4 left-4 right-4",
-                    isRtl && "text-right"
-                  )}>
-                    <h3 className="text-xl font-bold text-white mb-1 group-hover:text-secondary transition-colors">
+                  <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                    <p className="text-secondary font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
+                      {agentTitle}
+                    </p>
+                    <h3 className="text-xl font-bold text-white group-hover:text-secondary transition-colors line-clamp-1">
                       {agentName}
                     </h3>
-                    <p className="text-white/80 text-sm">{agentTitle}</p>
                   </div>
                 </div>
               </Link>
 
-              {/* Content */}
-              <CardContent className="p-5">
-                {/* Stats */}
+              {/* Content Area */}
+              <CardContent className="p-6 flex flex-col flex-grow">
+                {/* Stats Row */}
                 <div className={cn(
-                  "flex items-center justify-between mb-5 pb-5 border-b border-border/50",
+                  "flex items-center gap-6 py-4 border-b border-border/40 mb-6",
                   isRtl && "flex-row-reverse"
                 )}>
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-foreground">{agent.experience_years}</p>
-                    <p className="text-xs text-muted-foreground">{content.agents.experience}</p>
+                  <div className="flex-1 text-center">
+                    <p className="text-lg font-bold text-foreground leading-none">{agent.experience_years}</p>
+                    <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mt-1">{content.agents.experience}</p>
                   </div>
-                  <div className="w-px h-10 bg-border" />
-                  <div className="text-center">
-                    <p className="text-lg font-bold text-foreground">{agent.total_listings}+</p>
-                    <p className="text-xs text-muted-foreground">{content.agents.deals}</p>
+                  <div className="w-px h-8 bg-border/40" />
+                  <div className="flex-1 text-center">
+                    <p className="text-lg font-bold text-foreground leading-none">{agent.total_listings}+</p>
+                    <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mt-1">{content.agents.deals}</p>
                   </div>
                 </div>
 
-                {/* Specialization */}
-                {agent.specializations && agent.specializations.length > 0 && (
-                  <div className={cn(
-                    "flex items-center gap-2 mb-4",
-                    isRtl && "flex-row-reverse"
-                  )}>
-                    <div className="p-1.5 rounded-lg bg-primary/10">
-                      <Award className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="text-sm text-foreground line-clamp-1">
-                      {agent.specializations[0]}
-                    </span>
-                  </div>
-                )}
-
-                {/* Languages */}
-                {agent.languages && agent.languages.length > 0 && (
-                  <div className={cn(
-                    "flex flex-wrap gap-1.5 mb-5",
-                    isRtl && "flex-row-reverse"
-                  )}>
-                    {agent.languages.slice(0, 3).map((lang) => (
-                      <span
-                        key={lang}
-                        className="px-2 py-1 bg-muted rounded-md text-xs font-medium text-muted-foreground"
-                      >
-                        {lang}
+                {/* Specialization & Languages */}
+                <div className="space-y-3 mb-6">
+                  {agent.specializations && agent.specializations.length > 0 && (
+                    <div className={cn("flex items-center gap-2", isRtl && "flex-row-reverse")}>
+                      <Award className="h-3.5 w-3.5 text-secondary" />
+                      <span className="text-xs text-muted-foreground line-clamp-1">
+                        {agent.specializations[0]}
                       </span>
-                    ))}
-                  </div>
-                )}
+                    </div>
+                  )}
+                  {agent.languages && agent.languages.length > 0 && (
+                    <div className={cn("flex flex-wrap gap-1.5", isRtl && "flex-row-reverse")}>
+                      {agent.languages.slice(0, 2).map((lang) => (
+                        <span key={lang} className="px-2 py-0.5 bg-muted rounded text-[10px] font-medium text-muted-foreground">
+                          {lang}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 {/* Actions */}
-                <div className={cn("flex gap-2", isRtl && "flex-row-reverse")}>
+                <div className="flex items-center gap-2 mt-auto">
                   {agent.phone && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="flex-1 h-10 rounded-xl"
-                      asChild
-                    >
-                      <a href={`tel:${agent.phone}`}>
-                        <Phone className="h-4 w-4 mr-1" />
-                        {content.agents.contact}
-                      </a>
-                    </Button>
+                    <a href={`tel:${agent.phone}`} className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl bg-muted/50 hover:bg-secondary hover:text-white text-foreground transition-all border border-border/40 text-xs font-bold">
+                      <Phone className="h-3.5 w-3.5" />
+                      {content.agents.contact}
+                    </a>
                   )}
                   {agent.whatsapp && (
-                    <Button 
-                      size="sm"
-                      className="flex-1 h-10 rounded-xl bg-green-500 hover:bg-green-600"
-                      asChild
-                    >
-                      <a href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        WhatsApp
-                      </a>
-                    </Button>
+                    <a href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-xl bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white transition-all border border-green-500/20">
+                      <MessageCircle className="h-4 w-4" />
+                    </a>
                   )}
                 </div>
               </CardContent>

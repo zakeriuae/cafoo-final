@@ -26,7 +26,7 @@ export function LocaleSwitcher() {
   // Render a placeholder on server to avoid hydration mismatch
   if (!mounted) {
     return (
-      <Button variant="ghost" size="sm" className="gap-2 text-foreground/80" disabled>
+      <Button variant="ghost" size="sm" className="gap-2 text-white/90" disabled>
         <Globe className="h-4 w-4" />
       </Button>
     );
@@ -50,10 +50,10 @@ export function LocaleSwitcher() {
         <Button 
           variant="ghost" 
           size="sm" 
-          className="gap-2 text-foreground/80 hover:text-foreground hover:bg-primary/10"
+          className="h-9 px-3 gap-2 text-white/80 hover:text-white hover:bg-white/5 border border-white/20 hover:border-white/40 rounded-full transition-all duration-300"
         >
-          <Globe className="h-4 w-4" />
-          <span className="hidden sm:inline">{localeNames[currentLocale]}</span>
+          <Globe className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline text-[11px] font-medium tracking-wide">{localeNames[currentLocale]}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[120px]">

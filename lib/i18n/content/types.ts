@@ -80,6 +80,7 @@ export interface LocaleContent {
     startingFrom: string;
     paymentPlan: string;
     handover: string;
+    launchPrice: string;
     developer: string;
     filters: {
       all: string;

@@ -86,6 +86,7 @@ export const en: LocaleContent = {
     startingFrom: 'Starting From',
     paymentPlan: 'Payment Plan',
     handover: 'Handover',
+    launchPrice: 'Launch Price',
     developer: 'Developer',
     filters: {
       all: 'All',

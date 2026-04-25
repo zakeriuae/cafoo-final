@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Calendar, Building2, ArrowRight, ArrowLeft, MessageCircle, Sparkles, TrendingUp } from "lucide-react"
@@ -12,6 +13,7 @@ interface Project {
   id: string | number
   name: string
   developer: string
+  developerLogo?: string
   location: { en: string; fa: string }
   launchPrice: string
   paymentPlan: string
@@ -57,12 +59,38 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
     return () => observer.disconnect()
   }, [])
 
+  const getDeveloperLogo = (name: string, logoFromDb?: string) => {
+    if (logoFromDb && logoFromDb.startsWith('http')) return logoFromDb;
+    
+    const mapping: Record<string, string> = {
+      'emaar': '/images/developers/emaar.png',
+      'damac': '/images/developers/damac.png',
+      'sobha': '/images/developers/sobhan.png',
+      'nakheel': '/images/developers/nakheel.png',
+      'binghatti': '/images/developers/binghati.png',
+      'arada': '/images/developers/arada.png',
+      'tiger': '/images/developers/tiger.png',
+      'aldar': '/images/developers/aldar.png',
+      'wasl': '/images/developers/wasl.png',
+      'dubai properties': '/images/developers/dubai.png',
+      'meraas': '/images/developers/meraas.png',
+      'alef': '/images/developers/alef.png',
+      'imtiaz': '/images/developers/imtiaz.png',
+      'nshama': '/images/developers/nshama.png',
+      'beyond': '/images/developers/beyond.png',
+      'rak': '/images/developers/rak.png',
+    };
+
+    const foundKey = Object.keys(mapping).find(key => name.toLowerCase().includes(key));
+    return foundKey ? mapping[foundKey] : (logoFromDb || null);
+  };
+
   const filteredProjects = activeFilter === "all" 
     ? projects 
     : projects.filter(p => p.status === activeFilter)
 
   return (
-    <section ref={sectionRef} id="projects" className="py-24 bg-white relative overflow-hidden">
+    <section ref={sectionRef} id="projects" className="py-24 bg-[#F0F7FF] relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div 
@@ -84,10 +112,12 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
           </div>
 
           <div className="flex flex-col items-end gap-6">
-            <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-muted/50 transition-all gap-2 group">
-              {content.projects.viewAll}
-              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href={`/${locale}/projects`}>
+              <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-primary hover:text-white hover:border-primary transition-all gap-2 group font-bold">
+                {content.projects.viewAll}
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
             
             {/* Filters */}
             <div className="flex p-1 bg-muted/30 rounded-full border border-border/40">
@@ -120,7 +150,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
             >
-              <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 hover:shadow-xl hover:shadow-black/5">
+              <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5">
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden">
                   <Image
@@ -160,32 +190,65 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
 
                 {/* Content */}
                 <div className="p-7">
-                  <p className="text-xs text-primary font-bold uppercase tracking-wider mb-2">{project.developer}</p>
-                  <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-4">{project.name}</h3>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between py-4 border-t border-b border-border/40">
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <MapPin className="h-4 w-4 text-muted-foreground/60" />
-                        <span className="text-sm font-medium">{project.location[locale as 'en' | 'fa']}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-muted-foreground">
-                        <Building2 className="h-4 w-4 text-muted-foreground/60" />
-                        <span className="text-sm font-medium">{project.type[locale as 'en' | 'fa']}</span>
-                      </div>
-                    </div>
+                  {/* Top Row: Name */}
+                  <div className="mb-2">
+                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                      {project.name}
+                    </h3>
+                  </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-primary/70" />
-                        <span className="text-sm font-semibold text-foreground/80">
-                          {content.projects.handover}: {project.deliveryTime}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1 text-primary font-bold text-sm group-hover:gap-2 transition-all cursor-pointer">
-                        {content.projects.viewDetails}
-                        <ArrowRight className="h-4 w-4" />
-                      </div>
+                  {/* Location - Property Style */}
+                  <div className="flex items-center gap-1.5 text-muted-foreground mb-6">
+                    <MapPin className="h-4 w-4 text-muted-foreground/60" />
+                    <span className="text-sm font-medium">
+                      {project.location[locale as 'en' | 'fa']}
+                    </span>
+                  </div>
+                  
+                  {/* Stats Box: Handover and Payment Plan */}
+                  <div className="grid grid-cols-2 gap-4 py-4 border-y border-border/40 mb-6">
+                    <div>
+                      <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mb-1">
+                        {content.projects.handover}
+                      </p>
+                      <p className="text-sm font-bold text-foreground leading-none">
+                        {project.deliveryTime}
+                      </p>
+                    </div>
+                    <div className="border-s border-border/40 ps-4">
+                      <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mb-1">
+                        {content.projects.paymentPlan}
+                      </p>
+                      <p className="text-sm font-bold text-foreground leading-none">
+                        {project.paymentPlan}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Row: Developer and View Details */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {getDeveloperLogo(project.developer, project.developerLogo) ? (
+                        <div className="relative h-20 w-48 -my-6">
+                          <Image
+                            src={getDeveloperLogo(project.developer, project.developerLogo)!}
+                            alt={project.developer}
+                            fill
+                            className="object-contain object-left filter grayscale group-hover:grayscale-0 transition-all duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <Building2 className="h-4 w-4 text-primary/70" />
+                          <span className="text-xs font-bold text-foreground/80 uppercase tracking-wide">
+                            {project.developer}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 text-primary font-bold text-sm group-hover:gap-2 transition-all cursor-pointer">
+                      {content.projects.viewDetails}
+                      <ArrowRight className="h-4 w-4" />
                     </div>
                   </div>
                 </div>

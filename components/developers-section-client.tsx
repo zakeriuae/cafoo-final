@@ -41,10 +41,43 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
     return () => observer.disconnect()
   }, [])
 
-  // Triple the developers array for seamless loop
-  const duplicatedDevelopers = [...developers, ...developers, ...developers]
+  const getDeveloperLogo = (name: string, logoFromDb?: string) => {
+    // If the name contains certain keywords, use local logos or stable remote ones
+    const mapping: Record<string, string> = {
+      'emaar': '/images/developers/emaar.png',
+      'damac': '/images/developers/damac.png',
+      'sobha': '/images/developers/sobhan.png',
+      'nakheel': '/images/developers/nakheel.png',
+      'binghatti': '/images/developers/binghati.png',
+      'arada': '/images/developers/arada.png',
+      'tiger': '/images/developers/tiger.png',
+      'aldar': '/images/developers/aldar.png',
+      'wasl': '/images/developers/wasl.png',
+      'dubai properties': '/images/developers/dubai.png',
+      'meraas': '/images/developers/meraas.png',
+      'alef': '/images/developers/alef.png',
+      'imtiaz': '/images/developers/imtiaz.png',
+      'nshama': '/images/developers/nshama.png',
+      'beyond': '/images/developers/beyond.png',
+      'rak': '/images/developers/rak.png',
+      'danube': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Danube_Properties_Logo.svg/2560px-Danube_Properties_Logo.svg.png',
+      'dar al arkan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Dar_Al_Arkan_Logo.svg/2560px-Dar_Al_Arkan_Logo.svg.png',
+      'omniyat': 'https://omniyat.com/images/common/logo.svg',
+    };
 
-  if (developers.length === 0) {
+    const foundKey = Object.keys(mapping).find(key => name.toLowerCase().includes(key));
+    if (foundKey) return mapping[foundKey];
+    
+    return logoFromDb || null;
+  };
+
+  // Keep all developers but filter those that have NO logo even with fallback
+  const validDevelopers = developers.filter(d => getDeveloperLogo(d.name, d.logo_url))
+  
+  // Quadruple the developers array for an even more seamless loop
+  const duplicatedDevelopers = [...validDevelopers, ...validDevelopers, ...validDevelopers, ...validDevelopers]
+
+  if (validDevelopers.length === 0) {
     return null
   }
 
@@ -84,27 +117,34 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
           {/* Scrolling Container */}
           <div className="overflow-hidden">
             <div 
-              className="flex animate-marquee hover:[animation-play-state:paused]"
+              className="flex animate-marquee-continuous hover:[animation-play-state:paused]"
               style={{ width: "fit-content" }}
             >
-              {duplicatedDevelopers.map((developer, index) => (
-                <div
-                  key={`${developer.id}-${index}`}
-                  className="flex-shrink-0 mx-4 md:mx-6 group cursor-pointer"
-                >
-                  <div className="relative w-52 h-28 md:w-72 md:h-44 flex items-center justify-center transition-all duration-300 hover:scale-105">
-                    {developer.logo_url && (
-                      <Image
-                        src={developer.logo_url}
-                        alt={locale === 'fa' && developer.name_fa ? developer.name_fa : developer.name}
-                        fill
-                        className="object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
-                        unoptimized
-                      />
-                    )}
+              {duplicatedDevelopers.map((developer, index) => {
+                const logo = getDeveloperLogo(developer.name, developer.logo_url ?? undefined);
+                return (
+                  <div
+                    key={`${developer.id}-${index}`}
+                    className="flex-shrink-0 mx-2 md:mx-4 group cursor-pointer"
+                  >
+                    <div className="relative w-40 h-24 md:w-56 md:h-32 flex items-center justify-center transition-all duration-300 hover:scale-105">
+                      {logo ? (
+                        <Image
+                          src={logo}
+                          alt={locale === 'fa' && developer.name_fa ? developer.name_fa : developer.name}
+                          fill
+                          className="object-contain grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                          unoptimized
+                        />
+                      ) : (
+                        <span className="text-base md:text-lg font-bold tracking-widest text-gray-400 group-hover:text-gray-700 transition-colors duration-300 uppercase text-center px-2">
+                          {developer.name}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

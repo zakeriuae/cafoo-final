@@ -57,7 +57,7 @@ export function AreasSectionClientNew({ areas }: AreasSectionClientProps) {
   }
 
   return (
-    <section ref={sectionRef} id="areas" className="py-24 bg-white relative overflow-hidden">
+    <section ref={sectionRef} id="areas" className="py-24 bg-[#F0F7FF] relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div 
@@ -79,7 +79,7 @@ export function AreasSectionClientNew({ areas }: AreasSectionClientProps) {
           </div>
 
           <Link href={`/${locale}/areas`}>
-            <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-muted/50 transition-all gap-2 group">
+            <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-primary hover:text-white hover:border-primary transition-all gap-2 group font-bold">
               {content.common.viewAll}
               <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
@@ -103,7 +103,7 @@ export function AreasSectionClientNew({ areas }: AreasSectionClientProps) {
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <div className={cn(
-                  "relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-secondary/20 transition-all duration-500 hover:shadow-xl hover:shadow-black/5",
+                  "relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-secondary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5",
                   index === 0 ? "h-full min-h-[500px]" : "h-[300px]"
                 )}>
                   {/* Image */}

@@ -91,7 +91,7 @@ export function AboutSection() {
   }, [isVisible])
 
   return (
-    <section id="about" ref={sectionRef} className="py-24 bg-gradient-to-b from-background to-muted/30 overflow-hidden">
+    <section id="about" ref={sectionRef} className="py-24 bg-[#F0F7FF] overflow-hidden">
       <div className="container mx-auto px-4">
         <div className={cn(
           "grid lg:grid-cols-2 gap-16 items-center",
@@ -193,18 +193,18 @@ export function AboutSection() {
                   ))}
                 </div>
                 {/* Brand Gradient Overlay - Bottom half only for a cleaner look */}
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-primary/30 via-secondary/10 to-transparent z-10" />
+                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-secondary/30 via-secondary/10 to-transparent z-10" />
                 {/* Dark gradient for text contrast at the very bottom */}
                 <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent z-10" />
               </div>
 
               {/* Floating Stats Card */}
               <div className={cn(
-                "absolute -bottom-8 bg-white border border-primary/10 rounded-2xl p-6 shadow-2xl z-30",
+                "absolute -bottom-8 bg-white border border-secondary/10 rounded-2xl p-6 shadow-2xl z-30",
                 isRtl ? "-right-8" : "-left-8"
               )}>
                 <div className={cn("flex items-center gap-4", isRtl && "flex-row-reverse")}>
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20">
                     <Award className="w-7 h-7 text-white" />
                   </div>
                   <div className={cn(isRtl && "text-right")}>
@@ -225,31 +225,35 @@ export function AboutSection() {
               </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 mt-16">
-              {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "group bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-5 hover:bg-card hover:border-primary/30 transition-all duration-500",
-                    isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  )}
-                  style={{ transitionDelay: `${stat.delay + 500}ms` }}
-                >
-                  <div className={cn(
-                    "flex items-center gap-3 mb-2",
-                    isRtl && "flex-row-reverse"
-                  )}>
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <stat.icon className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="text-2xl font-bold text-foreground" dir="ltr">
-                      {counters[stat.label] || 0}{stat.suffix}
+            {/* Stats Grid - Now directly on the section's light blue background */}
+            <div className="mt-20">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                {stats.filter(s => s.label === content.hero.stats.sales || s.label === content.hero.stats.volume).map((stat, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "group bg-white rounded-[2.5rem] p-10 shadow-[0_15px_40px_rgba(0,0,0,0.02)] hover:shadow-[0_25px_50px_rgba(0,0,0,0.05)] hover:-translate-y-1 transition-all duration-700 ease-out",
+                      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                    )}
+                    style={{ transitionDelay: `${stat.delay + 500}ms` }}
+                  >
+                    <div className={cn(
+                      "flex items-center gap-8",
+                      isRtl && "flex-row-reverse"
+                    )}>
+                      <div className="w-16 h-16 rounded-3xl bg-[#F8FAFC] flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500">
+                        <stat.icon className="w-8 h-8" />
+                      </div>
+                      <div className={cn(isRtl && "text-right")}>
+                        <div className="text-4xl font-bold text-[#1E293B] leading-none mb-3 tracking-tight" dir="ltr">
+                          {counters[stat.label] || 0}{stat.suffix}
+                        </div>
+                        <div className="text-slate-400 text-sm font-medium tracking-wide">{stat.label}</div>
+                      </div>
                     </div>
                   </div>
-                  <div className={cn("text-muted-foreground text-sm", isRtl && "text-right")}>{stat.label}</div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
