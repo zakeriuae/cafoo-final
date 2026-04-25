@@ -33,10 +33,10 @@ export default async function PropertyDetailPage({ params }: Props) {
     .from("properties")
     .select(`
       *,
-      area:areas(id, name, name_fa, slug),
-      tower:towers(id, name, name_fa, slug),
-      developer:developers(id, name, name_fa, logo_url),
-      assigned_agent:agents(id, name, name_fa, slug, title, title_fa, avatar_url, phone, whatsapp, email)
+      area:areas(*),
+      tower:towers(*, developer:developers(*)),
+      developer:developers(*),
+      assigned_agent:agents(*)
     `)
     .eq("slug", slug)
     .eq("content_status", "published")
@@ -54,7 +54,7 @@ export default async function PropertyDetailPage({ params }: Props) {
     .eq("property_type", property.property_type)
     .neq("id", property.id)
     .order("featured", { ascending: false })
-    .limit(3)
+    .limit(4)
 
   return (
     <main className="min-h-screen">

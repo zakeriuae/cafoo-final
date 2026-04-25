@@ -8,18 +8,24 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useI18n, useContent } from "@/lib/i18n"
 import { LocaleSwitcher } from "@/components/locale-switcher"
+import { usePathname } from "next/navigation"
 
 interface NavigationProps {
   variant?: "transparent" | "light"
 }
 
-export function Navigation({ variant = "transparent" }: NavigationProps) {
+export function Navigation({ variant: manualVariant }: NavigationProps) {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("")
   const { locale, isRtl } = useI18n()
   const content = useContent()
 
+  // Automatically determine variant if not manually provided
+  // Home page is transparent, everything else is light
+  const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/` || pathname === "/"
+  const variant = manualVariant || (isHomePage ? "transparent" : "light")
   const isLight = variant === "light"
 
   const navLinks = [

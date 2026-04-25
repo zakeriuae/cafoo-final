@@ -14,6 +14,7 @@ interface PropertyCardProps {
   onToggleFavorite?: (e: React.MouseEvent) => void;
   className?: string;
   viewMode?: "grid" | "list";
+  hideLabels?: boolean;
 }
 
 export function PropertyCard({ 
@@ -24,7 +25,8 @@ export function PropertyCard({
   isFavorite = false,
   onToggleFavorite,
   className,
-  viewMode = "grid"
+  viewMode = "grid",
+  hideLabels = false
 }: PropertyCardProps) {
   // Extract common fields depending on dummy data vs db data
   const title = property.title_fa && locale === 'fa' ? property.title_fa : (property.title[locale] || property.title);
@@ -135,7 +137,10 @@ export function PropertyCard({
           viewMode === "list" && "flex-1 justify-center"
         )}>
           {/* Title */}
-          <h3 className="font-bold text-xl text-foreground mb-3 line-clamp-1 group-hover:text-primary transition-colors">
+          <h3 className={cn(
+            "font-bold text-foreground mb-3 line-clamp-1 group-hover:text-primary transition-colors",
+            hideLabels ? "text-lg" : "text-xl"
+          )}>
             {title}
           </h3>
           
@@ -152,13 +157,13 @@ export function PropertyCard({
             <div className="flex items-center gap-2">
               <Bed className="h-4 w-4 text-primary/70" />
               <span className="text-sm font-semibold text-foreground/80">
-                {property.bedrooms} {content.properties?.beds || 'Beds'}
+                {property.bedrooms} {!hideLabels && (content.properties?.beds || 'Beds')}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <Bath className="h-4 w-4 text-primary/70" />
               <span className="text-sm font-semibold text-foreground/80">
-                {property.bathrooms} {content.properties?.baths || 'Baths'}
+                {property.bathrooms} {!hideLabels && (content.properties?.baths || 'Baths')}
               </span>
             </div>
             <div className="flex items-center gap-2">
