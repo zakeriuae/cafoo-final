@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Heart, Bed, Bath, Maximize, MapPin, Trash2, ExternalLink } from "lucide-react"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -159,8 +160,8 @@ export function SavedPropertiesClient({ savedProperties: initialProperties }: Sa
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-primary">
-                      AED {property.price.toLocaleString()}
+                    <p className="font-bold text-primary flex items-center gap-1">
+                      <AedSymbol size={16} /> {property.price.toLocaleString()}
                       {property.listing_type === "rent" && (
                         <span className="text-xs font-normal text-muted-foreground">/year</span>
                       )}

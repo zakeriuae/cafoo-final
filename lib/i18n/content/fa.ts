@@ -80,7 +80,7 @@ export const fa: LocaleContent = {
   // بخش پروژه‌ها
   projects: {
     badge: 'برج‌ها و محله‌ها',
-    title: 'مجموعه اختصاصی',
+    title: '',
     titleHighlight: 'برج‌ها و محله‌ها',
     subtitle: 'سرمایه‌گذاری در معتبرترین پروژه‌های آینده دبی از سازندگان برتر جهان',
     viewDetails: 'مشاهده جزئیات',
@@ -102,7 +102,7 @@ export const fa: LocaleContent = {
   properties: {
     badge: 'املاک ممتاز',
     title: 'املاک لوکس',
-    titleHighlight: 'برای شما',
+    titleHighlight: '',
     subtitle: 'مجموعه‌ای دست‌چین از بهترین املاک موجود برای فروش و اجاره در دبی',
     tabs: {
       sale: 'فروش',

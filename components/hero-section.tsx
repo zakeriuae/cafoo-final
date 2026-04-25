@@ -35,7 +35,7 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-        <div className="relative z-10 container mx-auto px-4 h-full flex flex-col items-center justify-center text-center">
+        <div className="relative z-10 container mx-auto h-full flex flex-col items-center justify-center text-center">
           {/* Main Heading */}
           <h1 
             className={cn(

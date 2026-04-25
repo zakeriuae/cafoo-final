@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 interface Area {
   id: string
@@ -41,7 +42,7 @@ export function AreasListClient({ areas }: AreasListClientProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto py-12">
       {/* Header */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-4">
@@ -116,7 +117,7 @@ export function AreasListClient({ areas }: AreasListClientProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <Building className="h-4 w-4 text-white/70" />
-                      <span className="text-white/90 text-sm" dir="ltr">{formatPrice(area.average_price)} AED</span>
+                      <span className="text-white/90 text-sm" dir="ltr"><AedSymbol size={13} className="mr-0.5" /> {formatPrice(area.average_price)}</span>
                     </div>
                   </div>
                 </div>

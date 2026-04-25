@@ -25,6 +25,7 @@ import {
 import { useContent } from "@/lib/i18n"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 interface Property {
   id: string
@@ -209,7 +210,7 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                   {locale === 'fa' ? 'قیمت' : 'Price'}
                 </p>
                 <p className="text-4xl font-bold text-primary" dir="ltr">
-                  AED {formatPrice(property.price)}
+                  <AedSymbol size={32} className="mr-1 -mt-1" /> {formatPrice(property.price)}
                   {property.listing_type === 'rent' && (
                     <span className="text-lg font-normal text-muted-foreground">/year</span>
                   )}
@@ -358,7 +359,7 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                               {title}
                             </h3>
                             <p className="text-lg font-bold text-primary" dir="ltr">
-                              AED {formatPrice(prop.price)}
+                              <AedSymbol size={16} className="mr-1 -mt-0.5" /> {formatPrice(prop.price)}
                             </p>
                           </CardContent>
                         </Card>

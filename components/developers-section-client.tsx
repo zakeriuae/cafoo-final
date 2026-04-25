@@ -42,11 +42,10 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
   }, [])
 
   const getDeveloperLogo = (name: string, logoFromDb?: string) => {
-    // If the name contains certain keywords, use local logos or stable remote ones
+    // Only use local files - no external broken URLs
     const mapping: Record<string, string> = {
       'emaar': '/images/developers/emaar.png',
       'damac': '/images/developers/damac.png',
-      'sobha': '/images/developers/sobhan.png',
       'nakheel': '/images/developers/nakheel.png',
       'binghatti': '/images/developers/binghati.png',
       'arada': '/images/developers/arada.png',
@@ -60,20 +59,20 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
       'nshama': '/images/developers/nshama.png',
       'beyond': '/images/developers/beyond.png',
       'rak': '/images/developers/rak.png',
-      'danube': 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Danube_Properties_Logo.svg/2560px-Danube_Properties_Logo.svg.png',
-      'dar al arkan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Dar_Al_Arkan_Logo.svg/2560px-Dar_Al_Arkan_Logo.svg.png',
-      'omniyat': 'https://omniyat.com/images/common/logo.svg',
     };
 
     const foundKey = Object.keys(mapping).find(key => name.toLowerCase().includes(key));
     if (foundKey) return mapping[foundKey];
-    
-    return logoFromDb || null;
+
+    // Only fall back to DB URL if it's a known working Supabase storage URL
+    if (logoFromDb && logoFromDb.includes('navwagghjtiokeatqjdu.supabase.co')) return logoFromDb;
+
+    return null;
   };
 
   // Keep all developers but filter those that have NO logo even with fallback
   const validDevelopers = developers.filter(d => getDeveloperLogo(d.name, d.logo_url))
-  
+
   // Quadruple the developers array for an even more seamless loop
   const duplicatedDevelopers = [...validDevelopers, ...validDevelopers, ...validDevelopers, ...validDevelopers]
 
@@ -85,7 +84,7 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
     <section ref={sectionRef} id="developers" className="py-20 bg-white relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div 
+        <div
           className={cn(
             "text-center mb-10 transition-all duration-1000",
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -104,7 +103,7 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
         </div>
 
         {/* Auto-scrolling Logos - Single Line */}
-        <div 
+        <div
           className={cn(
             "relative transition-all duration-1000 delay-300",
             isVisible ? "opacity-100" : "opacity-0"
@@ -116,7 +115,7 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
 
           {/* Scrolling Container */}
           <div className="overflow-hidden">
-            <div 
+            <div
               className="flex animate-marquee-continuous hover:[animation-play-state:paused]"
               style={{ width: "fit-content" }}
             >

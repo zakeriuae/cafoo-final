@@ -56,7 +56,7 @@ export function Navigation() {
           ? "bg-black/40 backdrop-blur-xl border-b border-white/10 py-1" 
           : "bg-transparent py-4"
       )}>
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <nav className={cn(
             "flex items-center justify-between h-20"
           )}>
@@ -145,7 +145,7 @@ export function Navigation() {
             isOpen ? "block" : "hidden"
           )}
         >
-          <div className="container mx-auto px-4 py-6 flex flex-col gap-2">
+          <div className="container mx-auto py-6 flex flex-col gap-2">
             {navLinks.map((link, index) => (
               <Link
                 key={link.href}

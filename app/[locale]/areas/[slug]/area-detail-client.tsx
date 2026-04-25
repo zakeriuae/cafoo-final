@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 interface Area {
   id: string
@@ -127,13 +128,13 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
             </div>
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm">
               <Building className="h-5 w-5 text-white" />
-              <span className="text-white" dir="ltr">{formatPrice(area.average_price)} AED {content.areas.avgPrice}</span>
+              <span className="text-white" dir="ltr"><AedSymbol size={14} className="mr-0.5" /> {formatPrice(area.average_price)} {content.areas.avgPrice}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto py-12">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
@@ -204,7 +205,7 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                               {propTitle}
                             </h3>
                             <p className="text-lg font-bold text-primary mb-3" dir="ltr">
-                              AED {formatPrice(property.price)}
+                              <AedSymbol size={16} className="mr-1 -mt-0.5" /> {formatPrice(property.price)}
                             </p>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               {property.bedrooms && (
@@ -268,7 +269,7 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                             </h3>
                             {tower.starting_price && (
                               <p className="text-sm text-muted-foreground" dir="ltr">
-                                From AED {formatPrice(tower.starting_price)}
+                                From <AedSymbol size={13} className="mr-0.5 -mt-0.5" /> {formatPrice(tower.starting_price)}
                               </p>
                             )}
                           </CardContent>

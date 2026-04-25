@@ -92,7 +92,7 @@ export function AboutSection() {
 
   return (
     <section id="about" ref={sectionRef} className="py-24 bg-[#F0F7FF] overflow-hidden">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <div className={cn(
           "grid lg:grid-cols-2 gap-16 items-center",
           isRtl && "lg:grid-flow-dense"

@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import { useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 interface Agent {
   id: string
@@ -108,7 +109,7 @@ export function AgentDetailClient({ agent, properties, locale }: AgentDetailClie
         </div>
       </div>
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         {/* Agent Profile Card */}
         <div className="relative -mt-32 mb-8">
           <Card className="overflow-hidden">
@@ -287,7 +288,7 @@ export function AgentDetailClient({ agent, properties, locale }: AgentDetailClie
                               {propTitle}
                             </h3>
                             <p className="text-lg font-bold text-primary mb-3" dir="ltr">
-                              AED {formatPrice(property.price)}
+                              <AedSymbol size={16} /> {formatPrice(property.price)}
                             </p>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               {property.bedrooms !== null && (

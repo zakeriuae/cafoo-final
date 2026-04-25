@@ -21,6 +21,7 @@ import {
 import { useState } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 interface Property {
   id: string
@@ -87,7 +88,7 @@ export function PropertiesListClient({ properties, areas, initialFilters }: Prop
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto py-12">
       {/* Header */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
@@ -243,7 +244,7 @@ export function PropertiesListClient({ properties, areas, initialFilters }: Prop
                     </p>
                   )}
                   <p className="text-xl font-bold text-primary mb-4" dir="ltr">
-                    AED {formatPrice(property.price)}
+                    <AedSymbol size={18} className="mr-1 -mt-0.5" /> {formatPrice(property.price)}
                     {property.listing_type === 'rent' && <span className="text-sm font-normal text-muted-foreground">/year</span>}
                   </p>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">

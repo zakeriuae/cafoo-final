@@ -79,7 +79,7 @@ export const en: LocaleContent = {
   // Projects Section
   projects: {
     badge: 'Towers & Districts',
-    title: 'Exclusive',
+    title: '',
     titleHighlight: 'Towers & Districts',
     subtitle: 'Invest in Dubai\'s most prestigious upcoming projects from world-renowned developers',
     viewDetails: 'View Details',
@@ -101,7 +101,7 @@ export const en: LocaleContent = {
   properties: {
     badge: 'Premium Listings',
     title: 'Luxury Properties',
-    titleHighlight: 'For You',
+    titleHighlight: '',
     subtitle: 'Handpicked selection of the finest properties available for sale and rent in Dubai',
     tabs: {
       sale: 'For Sale',
@@ -122,8 +122,8 @@ export const en: LocaleContent = {
   // Areas Section
   areas: {
     badge: 'Prime Locations',
-    title: 'Discover Dubai\'s',
-    titleHighlight: 'Best Areas',
+    title: '',
+    titleHighlight: 'Dubai\'s Best Areas',
     subtitle: 'Explore the most sought-after neighborhoods and communities in Dubai',
     avgPrice: 'Avg. Price',
     properties: 'Properties',

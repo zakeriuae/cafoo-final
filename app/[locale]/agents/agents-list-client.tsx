@@ -51,7 +51,7 @@ export function AgentsListClient({ agents }: AgentsListClientProps) {
   })
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto py-12">
       {/* Header */}
       <div className="text-center mb-12">
         <div className={cn(

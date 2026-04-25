@@ -19,6 +19,7 @@ import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 const properties = [
   {
@@ -228,7 +229,7 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
 
   return (
     <section ref={sectionRef} id="properties" className="py-24 bg-[#F0F7FF]">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         {/* Section Header */}
         <div 
           className={cn(
@@ -330,27 +331,27 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
                   {/* Bottom Price Overlay */}
                   <div className="absolute bottom-5 inset-x-5 z-10 flex items-end justify-between">
                     <div>
-                      <p className="text-2xl font-bold text-white tracking-tight" dir="ltr">
-                        {content.common.aed} {activeTab === "rent" || property.type === "rent" ? property.rentPrice : property.price}
+                      <p className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5" dir="ltr">
+                        <AedSymbol size={22} className="flex-shrink-0" /> {activeTab === "rent" || property.type === "rent" ? property.rentPrice : property.price}
                       </p>
                       <p className="text-white/70 text-xs font-medium mt-0.5">
                         {activeTab === "rent" || property.type === "rent" 
                           ? content.properties.perYear 
-                          : `${content.common.aed} ${property.pricePerSqft}/${content.properties.sqft}`}
+                          : <span className="flex items-center gap-1"><AedSymbol size={12} className="flex-shrink-0" /> {property.pricePerSqft}/{content.properties.sqft}</span>}
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-7">
+                <div className="p-6">
                   {/* Title */}
                   <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-1">
                     {property.title[locale as 'en' | 'fa']}
                   </h3>
 
                   {/* Location */}
-                  <div className="flex items-center gap-1.5 text-muted-foreground mb-6">
+                  <div className="flex items-center gap-1.5 text-muted-foreground mb-4">
                     <MapPin className="h-4 w-4 text-muted-foreground/60" />
                     <span className="text-sm font-medium">
                       {property.location[locale as 'en' | 'fa']}
@@ -358,7 +359,7 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
                   </div>
 
                   {/* Features */}
-                  <div className="flex items-center gap-6 pb-6 border-b border-border/40">
+                  <div className="flex items-center gap-6 pb-4 border-b border-border/40">
                     <div className="flex items-center gap-2">
                       <Bed className="h-4 w-4 text-primary/70" />
                       <span className="text-sm font-semibold text-foreground/80">
@@ -380,10 +381,10 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
                   </div>
 
                   {/* Bottom Info & Link */}
-                  <div className="flex items-center justify-between mt-6">
+                  <div className="flex items-center justify-between mt-5">
                     <div className="flex items-center gap-2">
                       {getDeveloperLogo(property.developerName || property.project, property.developerLogo) ? (
-                        <div className="relative h-20 w-48 -my-6">
+                        <div className="relative h-20 w-44 -my-5">
                           <Image
                             src={getDeveloperLogo(property.developerName || property.project, property.developerLogo)!}
                             alt={property.developerName || property.project}

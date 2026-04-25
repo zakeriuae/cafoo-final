@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Heart, MessageSquare, Share2, TrendingUp, ArrowRight } from "lucide-react"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -152,8 +153,8 @@ export default async function DashboardPage() {
                   <h3 className="font-medium text-sm truncate group-hover:text-primary">
                     {(item.property as any)?.title || "Property"}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
-                    AED {((item.property as any)?.price || 0).toLocaleString()}
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <AedSymbol size={12} /> {((item.property as any)?.price || 0).toLocaleString()}
                   </p>
                 </Link>
               ))}

@@ -58,7 +58,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
 
   return (
     <section ref={sectionRef} id="agents" className="py-24 bg-[#F0F7FF] relative overflow-hidden">
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto relative z-10">
         {/* Section Header */}
         <div 
           className={cn(

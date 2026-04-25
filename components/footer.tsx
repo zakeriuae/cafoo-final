@@ -65,7 +65,7 @@ export function Footer() {
 
   return (
     <footer className="bg-slate-900 text-white pt-20 pb-0 overflow-hidden">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         {/* Main Links Grid - Custom Column Spans */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12">
           {/* Brand & Social - Wider Column (span 4) */}
@@ -161,7 +161,7 @@ export function Footer() {
 
       {/* Bottom Bar: Literal end of footer with dark navy background */}
       <div className="bg-slate-950 py-8">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
           <div className={cn(
             "flex flex-col lg:flex-row items-center justify-between gap-8",
             isRtl && "lg:flex-row-reverse"

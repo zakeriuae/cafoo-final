@@ -8,6 +8,7 @@ import { MapPin, Calendar, Building2, ArrowRight, ArrowLeft, MessageCircle, Spar
 import { useState, useRef, useEffect } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 interface Project {
   id: string | number
@@ -91,7 +92,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
 
   return (
     <section ref={sectionRef} id="projects" className="py-24 bg-[#F0F7FF] relative overflow-hidden">
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto relative z-10">
         {/* Section Header */}
         <div 
           className={cn(
@@ -175,8 +176,8 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                   <div className="absolute bottom-5 inset-x-5 z-10 flex items-end justify-between">
                     <div>
                       <p className="text-white/70 text-xs font-medium mb-1">{content.projects.startingFrom}</p>
-                      <p className="text-2xl font-bold text-white tracking-tight" dir="ltr">
-                        {content.common.aed} {project.launchPrice}
+                      <p className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5" dir="ltr">
+                        <AedSymbol size={22} className="flex-shrink-0" /> {project.launchPrice}
                       </p>
                     </div>
                     {project.roi && (
@@ -189,7 +190,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                 </div>
 
                 {/* Content */}
-                <div className="p-7">
+                <div className="p-6">
                   {/* Top Row: Name */}
                   <div className="mb-2">
                     <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
@@ -198,7 +199,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                   </div>
 
                   {/* Location - Property Style */}
-                  <div className="flex items-center gap-1.5 text-muted-foreground mb-6">
+                  <div className="flex items-center gap-1.5 text-muted-foreground mb-4">
                     <MapPin className="h-4 w-4 text-muted-foreground/60" />
                     <span className="text-sm font-medium">
                       {project.location[locale as 'en' | 'fa']}
@@ -206,7 +207,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                   </div>
                   
                   {/* Stats Box: Handover and Payment Plan */}
-                  <div className="grid grid-cols-2 gap-4 py-4 border-y border-border/40 mb-6">
+                  <div className="grid grid-cols-2 gap-4 py-3 border-y border-border/40 mb-5">
                     <div>
                       <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mb-1">
                         {content.projects.handover}
@@ -229,7 +230,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {getDeveloperLogo(project.developer, project.developerLogo) ? (
-                        <div className="relative h-20 w-48 -my-6">
+                        <div className="relative h-20 w-44 -my-5">
                           <Image
                             src={getDeveloperLogo(project.developer, project.developerLogo)!}
                             alt={project.developer}

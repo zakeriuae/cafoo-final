@@ -21,6 +21,7 @@ import {
   XCircle,
 } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 
 interface ReferralCode {
   id: string
@@ -146,7 +147,7 @@ export function ReferralsClient({
     },
     {
       title: "Total Rewards",
-      value: `AED ${stats.totalRewards.toLocaleString()}`,
+      value: <span className="flex items-center gap-1"><AedSymbol size={20} className="text-amber-500" /> {stats.totalRewards.toLocaleString()}</span>,
       icon: DollarSign,
       color: "text-amber-500",
       bgColor: "bg-amber-500/10",
@@ -353,8 +354,8 @@ export function ReferralsClient({
                       <TableCell>{getStatusBadge(referral.status)}</TableCell>
                       <TableCell className="text-right">
                         {referral.reward_amount ? (
-                          <span className="font-medium text-green-600">
-                            AED {referral.reward_amount.toLocaleString()}
+                          <span className="font-medium text-green-600 flex items-center justify-end gap-1">
+                            <AedSymbol size={14} className="text-green-600" /> {referral.reward_amount.toLocaleString()}
                           </span>
                         ) : (
                           <span className="text-muted-foreground">-</span>
