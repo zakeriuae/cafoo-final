@@ -9,27 +9,33 @@ import { cn } from "@/lib/utils"
 import { useI18n, useContent } from "@/lib/i18n"
 import { LocaleSwitcher } from "@/components/locale-switcher"
 
-export function Navigation() {
+interface NavigationProps {
+  variant?: "transparent" | "light"
+}
+
+export function Navigation({ variant = "transparent" }: NavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("")
   const { locale, isRtl } = useI18n()
   const content = useContent()
 
+  const isLight = variant === "light"
+
   const navLinks = [
-    { href: "#projects", label: content.nav.projects },
-    { href: "#properties", label: content.nav.properties },
-    { href: "#areas", label: content.nav.areas },
-    { href: "#developers", label: content.nav.developers },
-    { href: "#agents", label: content.nav.agents },
-    { href: "#about", label: content.nav.about },
+    { href: `/${locale}#projects`, label: content.nav.projects },
+    { href: `/${locale}#properties`, label: content.nav.properties },
+    { href: `/${locale}#areas`, label: content.nav.areas },
+    { href: `/${locale}#developers`, label: content.nav.developers },
+    { href: `/${locale}#agents`, label: content.nav.agents },
+    { href: `/${locale}#about`, label: content.nav.about },
   ]
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
       
-      const sections = navLinks.map(link => link.href.substring(1))
+      const sections = navLinks.map(link => link.href.split('#')[1])
       for (const section of sections.reverse()) {
         const element = document.getElementById(section)
         if (element) {
@@ -53,12 +59,14 @@ export function Navigation() {
       <header className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled 
-          ? "bg-black/40 backdrop-blur-xl border-b border-white/10 py-1" 
-          : "bg-transparent py-4"
+          ? "bg-white/90 backdrop-blur-xl border-b border-slate-200 py-0" 
+          : isLight 
+            ? "bg-white border-b border-slate-100 py-2"
+            : "bg-transparent py-2"
       )}>
         <div className="container mx-auto">
           <nav className={cn(
-            "flex items-center justify-between h-20"
+            "flex items-center justify-between h-16"
           )}>
             {/* Logo */}
             <Link href={`/${locale}`} className="flex items-center group">
@@ -68,7 +76,10 @@ export function Navigation() {
                   alt="Cafoo Real Estate"
                   width={140}
                   height={50}
-                  className="h-12 w-auto invert brightness-0"
+                  className={cn(
+                    "h-12 w-auto transition-all",
+                    (isScrolled || isLight) ? "brightness-0" : "invert brightness-0"
+                  )}
                   priority
                 />
               </div>
@@ -82,13 +93,15 @@ export function Navigation() {
                   href={link.href}
                   className={cn(
                     "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg",
-                    activeSection === link.href.substring(1)
-                      ? "text-secondary"
-                      : "text-white/80 hover:text-white hover:bg-white/10"
+                    activeSection === link.href.split('#')[1]
+                      ? "text-primary font-bold"
+                      : (isScrolled || isLight) 
+                        ? "text-slate-600 hover:text-primary hover:bg-slate-50"
+                        : "text-white/80 hover:text-white hover:bg-white/10"
                   )}
                 >
                   {link.label}
-                  {activeSection === link.href.substring(1) && (
+                  {activeSection === link.href.split('#')[1] && (
                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
                   )}
                 </Link>
@@ -97,23 +110,35 @@ export function Navigation() {
 
             {/* CTA Buttons */}
             <div className={cn("hidden lg:flex items-center gap-3", isRtl && "flex-row-reverse")}>
-              <LocaleSwitcher />
-              <div className="w-px h-6 bg-white/20 mx-2" />
+              <LocaleSwitcher variant={variant} />
+              <div className={cn(
+                "w-px h-6 mx-2",
+                (isScrolled || isLight) ? "bg-slate-200" : "bg-white/20"
+              )} />
               <Button 
                 variant="ghost" 
-                className="text-white/80 hover:text-white hover:bg-white/10"
+                className={cn(
+                  "transition-colors",
+                  (isScrolled || isLight) 
+                    ? "text-slate-600 hover:text-primary hover:bg-slate-50"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
+                )}
               >
                 <Phone className={cn("w-4 h-4", isRtl ? "ml-2" : "mr-2")} />
                 {content.nav.callUs}
               </Button>
-              <Button className="bg-gradient-to-r from-primary to-secondary hover:brightness-110 text-white shadow-xl shadow-primary/20 border-0 px-8 rounded-full font-bold">
+              <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 border-0 px-8 rounded-xl font-bold">
                 {content.nav.login || "Login"}
               </Button>
             </div>
 
-            {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2.5 text-foreground rounded-xl hover:bg-muted/50 transition-colors"
+              className={cn(
+                "lg:hidden p-2.5 rounded-xl transition-colors",
+                (isScrolled || isLight) 
+                  ? "text-slate-900 hover:bg-slate-100" 
+                  : "text-white hover:bg-white/10"
+              )}
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >

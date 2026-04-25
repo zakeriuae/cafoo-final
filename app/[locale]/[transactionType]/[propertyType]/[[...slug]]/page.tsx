@@ -77,7 +77,7 @@ export default async function SeoPropertyPage({ params, searchParams }: Props) {
 
     return (
       <main className="min-h-screen">
-        <Navigation />
+        <Navigation variant="light" />
         <div className="pt-20">
           <PropertyDetailClient 
             property={property}
@@ -122,7 +122,7 @@ export default async function SeoPropertyPage({ params, searchParams }: Props) {
 
   return (
     <main className="min-h-screen">
-      <Navigation />
+      <Navigation variant="light" />
       <div className="pt-24">
         {/* Pass route parameters as initialFilters if needed */}
         <PropertiesListClient 

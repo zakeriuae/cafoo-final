@@ -20,6 +20,8 @@ import Link from "next/link"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
+import { buildSeoUrl } from "@/lib/seo-router"
+import { PropertyCard } from "@/components/ui/property-card"
 
 const properties = [
   {
@@ -38,6 +40,8 @@ const properties = [
     featured: true,
     roi: "7.2%",
     slug: "luxurious-3br-apartment-downtown",
+    areaSlug: "downtown-dubai",
+    towerSlug: "boulevard-crescent",
   },
   {
     id: 2,
@@ -55,6 +59,8 @@ const properties = [
     featured: true,
     roi: "6.8%",
     slug: "stunning-2br-marina-view",
+    areaSlug: "dubai-marina",
+    towerSlug: "marina-promenade",
   },
   {
     id: 3,
@@ -72,6 +78,8 @@ const properties = [
     featured: false,
     roi: "8.6%",
     slug: "premium-1br-business-bay",
+    areaSlug: "business-bay",
+    towerSlug: "the-opus",
   },
   {
     id: 4,
@@ -89,6 +97,8 @@ const properties = [
     featured: true,
     roi: "5.5%",
     slug: "elegant-4br-penthouse",
+    areaSlug: "palm-jumeirah",
+    towerSlug: "atlantis-the-royal",
   },
   {
     id: 5,
@@ -106,6 +116,8 @@ const properties = [
     featured: false,
     roi: "6.0%",
     slug: "modern-2br-burj-view",
+    areaSlug: "downtown-dubai",
+    towerSlug: "address-sky-view",
   },
   {
     id: 6,
@@ -123,6 +135,8 @@ const properties = [
     featured: false,
     roi: "5.4%",
     slug: "spacious-3br-villa",
+    areaSlug: "emirates-hills",
+    towerSlug: "emirates-hills-villas",
   },
 ]
 
@@ -144,6 +158,8 @@ interface Property {
   featured: boolean
   roi: string
   slug: string
+  areaSlug?: string
+  towerSlug?: string
 }
 
 interface PropertiesSectionClientProps {
@@ -280,133 +296,34 @@ export default function PropertiesSectionClient({ initialProperties }: Propertie
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProperties.map((property, index) => (
-            <Link 
-              key={property.id} 
-              href={`/${locale}/properties/${property.slug}`}
-              className={cn(
-                "group transition-all duration-700 block",
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-              )}
-              style={{ transitionDelay: `${index * 100}ms` }}
-            >
-              <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5">
-                {/* Image */}
-                <div className="relative h-72 overflow-hidden">
-                  <Image
-                    src={property.image}
-                    alt={property.title[locale as 'en' | 'fa']}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                  />
-                  
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
-                  
-                  {/* Top Actions */}
-                  <div className="absolute top-4 inset-x-4 flex items-start justify-between z-10">
-                    <Badge className={cn(
-                      "backdrop-blur-md text-white border-0 px-4 py-1.5 rounded-full text-xs font-semibold",
-                      property.type === 'rent' ? "bg-blue-500/80" : "bg-green-500/80"
-                    )}>
-                      {getPropertyType(property)}
-                    </Badge>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        toggleFavorite(property.id);
-                      }}
-                      className="p-2.5 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:scale-110 shadow-sm"
-                    >
-                      <Heart 
-                        className={cn(
-                          "h-4 w-4 transition-colors",
-                          favorites.includes(property.id) 
-                            ? "fill-red-500 text-red-500" 
-                            : "text-foreground"
-                        )} 
-                      />
-                    </button>
-                  </div>
+          {filteredProperties.map((property, index) => {
+            const propertyUrl = buildSeoUrl({
+              transactionType: property.type === 'rent' ? 'for-rent' : 'for-sale',
+              propertyType: 'property', // dummy data doesn't specify if it's villa or apartment explicitly except in title
+              city: 'dubai',
+              area: property.areaSlug || 'area',
+              project: property.towerSlug || 'project',
+              unit: property.slug
+            }, locale);
 
-                  {/* Bottom Price Overlay */}
-                  <div className="absolute bottom-5 inset-x-5 z-10 flex items-end justify-between">
-                    <div>
-                      <p className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5" dir="ltr">
-                        <AedSymbol size={22} className="flex-shrink-0" /> {activeTab === "rent" || property.type === "rent" ? property.rentPrice : property.price}
-                      </p>
-                      <p className="text-white/70 text-xs font-medium mt-0.5">
-                        {activeTab === "rent" || property.type === "rent" 
-                          ? content.properties.perYear 
-                          : <span className="flex items-center gap-1"><AedSymbol size={12} className="flex-shrink-0" /> {property.pricePerSqft}/{content.properties.sqft}</span>}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6">
-                  {/* Title */}
-                  <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-1">
-                    {property.title[locale as 'en' | 'fa']}
-                  </h3>
-
-                  {/* Location */}
-                  <div className="flex items-center gap-1.5 text-muted-foreground mb-4">
-                    <MapPin className="h-4 w-4 text-muted-foreground/60" />
-                    <span className="text-sm font-medium">
-                      {property.location[locale as 'en' | 'fa']}
-                    </span>
-                  </div>
-
-                  {/* Features */}
-                  <div className="flex items-center gap-6 pb-4 border-b border-border/40">
-                    <div className="flex items-center gap-2">
-                      <Bed className="h-4 w-4 text-primary/70" />
-                      <span className="text-sm font-semibold text-foreground/80">
-                        {property.bedrooms} {content.properties.beds}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Bath className="h-4 w-4 text-primary/70" />
-                      <span className="text-sm font-semibold text-foreground/80">
-                        {property.bathrooms} {content.properties.baths}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Maximize className="h-4 w-4 text-primary/70" />
-                      <span className="text-sm font-semibold text-foreground/80" dir="ltr">
-                        {property.size} {content.properties.sqft}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Bottom Info & Link */}
-                  <div className="flex items-center justify-between mt-5">
-                    <div className="flex items-center gap-2">
-                      {getDeveloperLogo(property.developerName || property.project, property.developerLogo) ? (
-                        <div className="relative h-20 w-44 -my-5">
-                          <Image
-                            src={getDeveloperLogo(property.developerName || property.project, property.developerLogo)!}
-                            alt={property.developerName || property.project}
-                            fill
-                            className="object-contain object-left filter grayscale group-hover:grayscale-0 transition-all duration-500"
-                          />
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground font-medium">
-                          by <span className="text-foreground/80">{property.developerName || property.project || "Developer"}</span>
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 text-primary font-bold text-sm group-hover:gap-2 transition-all">
-                      {content.properties.viewDetails}
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+            return (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                locale={locale}
+                content={content}
+                propertyUrl={propertyUrl}
+                isFavorite={favorites.includes(property.id)}
+                onToggleFavorite={(e) => {
+                  e.preventDefault();
+                  toggleFavorite(property.id);
+                }}
+                className={cn(
+                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+                )}
+              />
+            )
+          })}
         </div>
       </div>
     </section>

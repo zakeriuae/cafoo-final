@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { PropertyCard } from "@/components/ui/property-card"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,7 @@ import { useState } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
+import { buildSeoUrl } from "@/lib/seo-router"
 
 interface Property {
   id: string
@@ -202,74 +204,24 @@ export function PropertiesListClient({ properties, areas, initialFilters }: Prop
           const areaName = property.area 
             ? (locale === 'fa' && property.area.name_fa ? property.area.name_fa : property.area.name)
             : null
+          const propertyUrl = buildSeoUrl({
+            transactionType: property.listing_type === 'rent' ? 'for-rent' : 'for-sale',
+            propertyType: property.property_type || 'property',
+            city: 'dubai',
+            area: property.area?.slug || 'area',
+            project: property.tower?.slug || 'project',
+            unit: property.slug
+          }, locale);
 
           return (
-            <Link key={property.id} href={`/${locale}/properties/${property.slug}`}>
-              <Card className={cn(
-                "group overflow-hidden hover:shadow-xl transition-all duration-300",
-                viewMode === "list" && "flex flex-col md:flex-row"
-              )}>
-                <div className={cn(
-                  "relative",
-                  viewMode === "grid" ? "h-56" : "h-48 md:h-auto md:w-80 flex-shrink-0"
-                )}>
-                  <Image
-                    src={property.cover_image_url || "/images/placeholder.jpg"}
-                    alt={propTitle}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <Badge className="bg-primary">
-                      {listingTypeLabels[property.listing_type] || property.listing_type}
-                    </Badge>
-                    {property.featured && (
-                      <Badge variant="secondary">
-                        {locale === 'fa' ? 'ویژه' : 'Featured'}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                <CardContent className={cn(
-                  "p-5",
-                  viewMode === "list" && "flex-1"
-                )}>
-                  <h3 className="font-semibold text-lg mb-2 line-clamp-1 group-hover:text-primary transition-colors">
-                    {propTitle}
-                  </h3>
-                  {areaName && (
-                    <p className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
-                      <MapPin className="h-4 w-4" />
-                      {areaName}
-                    </p>
-                  )}
-                  <p className="text-xl font-bold text-primary mb-4" dir="ltr">
-                    <AedSymbol size={18} className="mr-1 -mt-0.5" /> {formatPrice(property.price)}
-                    {property.listing_type === 'rent' && <span className="text-sm font-normal text-muted-foreground">/year</span>}
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    {property.bedrooms !== null && (
-                      <span className="flex items-center gap-1">
-                        <Bed className="h-4 w-4" />
-                        {property.bedrooms === 0 ? 'Studio' : property.bedrooms}
-                      </span>
-                    )}
-                    {property.bathrooms && (
-                      <span className="flex items-center gap-1">
-                        <Bath className="h-4 w-4" />
-                        {property.bathrooms}
-                      </span>
-                    )}
-                    {property.size && (
-                      <span className="flex items-center gap-1">
-                        <Maximize className="h-4 w-4" />
-                        {property.size} sqft
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+            <PropertyCard 
+              key={property.id}
+              property={property}
+              locale={locale}
+              content={content}
+              propertyUrl={propertyUrl}
+              viewMode={viewMode}
+            />
           )
         })}
       </div>

@@ -9,6 +9,7 @@ import { useState, useRef, useEffect } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
+import { buildSeoUrl } from "@/lib/seo-router"
 
 interface Project {
   id: string | number
@@ -24,6 +25,8 @@ interface Project {
   image: string
   featured: boolean
   roi?: string
+  slug: string
+  areaSlug?: string
 }
 
 interface ProjectsSectionClientProps {
@@ -142,11 +145,21 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, index) => (
-            <div 
+          {filteredProjects.map((project, index) => {
+            const projectUrl = buildSeoUrl({
+              transactionType: project.status === "Off-Plan" ? 'off-plan' : 'for-sale',
+              propertyType: 'apartment', // Projects are usually multiple units, but for URL hierarchy we use the default
+              city: 'dubai',
+              area: project.areaSlug || 'area',
+              project: project.slug
+            }, locale);
+
+            return (
+            <Link 
               key={project.id} 
+              href={projectUrl}
               className={cn(
-                "group transition-all duration-700",
+                "group transition-all duration-700 block",
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
               )}
               style={{ transitionDelay: `${index * 100}ms` }}
@@ -254,8 +267,8 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            </Link>
+          )})}
         </div>
       </div>
     </section>

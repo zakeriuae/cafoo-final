@@ -58,7 +58,7 @@ export default async function PropertyDetailPage({ params }: Props) {
 
   return (
     <main className="min-h-screen">
-      <Navigation />
+      <Navigation variant="light" />
       <div className="pt-20">
         <PropertyDetailClient 
           property={property}

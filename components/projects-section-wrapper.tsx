@@ -42,7 +42,8 @@ export async function ProjectsSection() {
     image: t.cover_image_url || "/images/hero/hero-bg.png",
     featured: t.featured,
     roi: "8.0%",
-    slug: t.slug
+    slug: t.slug,
+    areaSlug: t.area?.slug
   })) || []
 
   if (formattedProjects.length === 0) {
