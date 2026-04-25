@@ -64,13 +64,13 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-slate-900 text-white pt-20 pb-0 overflow-hidden">
+    <footer className="bg-slate-900 text-white pt-10 pb-0 overflow-hidden">
       <div className="container mx-auto">
         {/* Main Links Grid - Custom Column Spans */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-6">
           {/* Brand & Social - Wider Column (span 4) */}
           <div className={cn("lg:col-span-4", isRtl && "text-right")}>
-            <Link href={`/${locale}`} className="inline-block mb-8">
+            <Link href={`/${locale}`} className="inline-block mb-4">
               <Image
                 src="/Logo.svg"
                 alt="Cafoo Real Estate"
@@ -79,7 +79,7 @@ export function Footer() {
                 className="h-14 w-auto invert brightness-0"
               />
             </Link>
-            <p className="text-slate-300 text-base leading-relaxed mb-8 max-w-sm">
+            <p className="text-slate-300 text-sm leading-relaxed mb-4 max-w-sm">
               {content.footer.description}
             </p>
             <div className={cn("flex items-center gap-4", isRtl && "flex-row-reverse")}>
@@ -98,10 +98,10 @@ export function Footer() {
 
           {/* Quick Links - Narrower Column (span 2) */}
           <div className={cn("lg:col-span-2 lg:ml-auto", isRtl && "text-right lg:ml-0 lg:mr-auto")}>
-            <h4 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">
+            <h4 className="text-white font-bold mb-4 uppercase tracking-widest text-[10px]">
               {content.footer.quickLinks}
             </h4>
-            <ul className="space-y-4">
+            <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-slate-400 hover:text-primary transition-colors text-sm">
@@ -114,10 +114,10 @@ export function Footer() {
 
           {/* Property Types - Narrower Column (span 2) */}
           <div className={cn("lg:col-span-2", isRtl && "text-right")}>
-            <h4 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">
+            <h4 className="text-white font-bold mb-4 uppercase tracking-widest text-[10px]">
               {content.footer.propertyTypes}
             </h4>
-            <ul className="space-y-4">
+            <ul className="space-y-2">
               {propertyTypes.map((link) => (
                 <li key={link.label}>
                   <Link href={link.href} className="text-slate-400 hover:text-primary transition-colors text-sm">
@@ -130,10 +130,10 @@ export function Footer() {
 
           {/* Contact Info - Standard Column (span 4) */}
           <div className={cn("lg:col-span-4 lg:pl-10", isRtl && "text-right lg:pl-0 lg:pr-10")}>
-            <h4 className="text-white font-bold mb-8 uppercase tracking-widest text-xs">
+            <h4 className="text-white font-bold mb-4 uppercase tracking-widest text-[10px]">
               {content.footer.contactInfo}
             </h4>
-            <div className="space-y-6">
+            <div className="space-y-3">
               <a href="tel:+971503491050" className={cn("flex items-center gap-4 group", isRtl && "flex-row-reverse")}>
                 <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
                   <Phone className="h-5 w-5" />
@@ -160,7 +160,7 @@ export function Footer() {
       </div>
 
       {/* Bottom Bar: Literal end of footer with dark navy background */}
-      <div className="bg-slate-950 py-8">
+      <div className="bg-slate-950 py-4">
         <div className="container mx-auto">
           <div className={cn(
             "flex flex-col lg:flex-row items-center justify-between gap-8",

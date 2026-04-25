@@ -319,11 +319,10 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                     <AedSymbol size={28} className="text-primary" /> {formatPrice(property.price)}
                     {property.listing_type === 'rent' && <span className="text-xl text-slate-400 font-medium lowercase">/ year</span>}
                   </p>
-                  {property.verified && (
-                    <Badge className="bg-green-50 text-green-600 border border-green-100 rounded-xl px-4 py-1 flex items-center gap-2 font-bold text-[10px] uppercase tracking-wider">
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                      {locale === 'fa' ? 'تایید شده' : 'Verified'}
-                    </Badge>
+                  {detectedDeveloper && detectedDeveloper.logo_url && (
+                    <div className="relative h-12 w-32 md:h-16 md:w-40 overflow-hidden shrink-0">
+                      <Image src={detectedDeveloper.logo_url} alt={detectedDeveloper.name} fill className="object-contain object-right opacity-80 hover:opacity-100 filter grayscale hover:grayscale-0 transition-all duration-500" />
+                    </div>
                   )}
                 </div>
                 <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight tracking-tight">{propTitle}</h1>
@@ -384,13 +383,6 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                       : `Located in the prestigious ${towerName}, this residence offers a unique living experience in the heart of ${areaName}. Developed by the renowned ${detectedDeveloper?.name}, the project stands as a testament to modern architectural excellence and premium craftsmanship. Residents enjoy world-class amenities including infinity pools, lush green landscapes, and seamless connectivity to Dubai's key commercial and leisure destinations. Every square inch has been meticulously designed to provide maximum space efficiency and comfort.`
                     }
                   </p>
-
-                  <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 italic text-primary font-medium text-center">
-                    {locale === 'fa'
-                      ? 'برای دریافت کاتالوگ کامل پروژه و هماهنگی جهت بازدید حضوری، با مشاور اختصاصی این ملک تماس بگیرید.'
-                      : 'For a full project brochure and private viewing arrangements, please contact the dedicated property consultant.'
-                    }
-                  </div>
                 </div>
               </div>
             </div>
@@ -542,12 +534,27 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                 <h3 className="text-lg font-bold text-slate-900">{locale === 'fa' ? 'موقعیت مکانی' : 'Location & Address'}</h3>
                 <span className="text-xs text-primary font-bold bg-primary/5 px-3 py-1 rounded-full uppercase tracking-wider">{areaName}</span>
               </div>
-              <div className="relative h-64 w-full rounded-2xl overflow-hidden border border-slate-100 bg-slate-100">
-                {/* Map Placeholder with branding */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50">
-                  <MapPin className="h-8 w-8 text-primary mb-3 animate-bounce" />
-                  <p className="text-slate-900 font-bold text-sm uppercase tracking-tight">{property.address || `${towerName}, ${areaName}, Dubai`}</p>
-                  <p className="text-slate-400 text-[10px] font-medium mt-1">Map View Coming Soon</p>
+              <div className="relative h-80 w-full rounded-2xl overflow-hidden border border-slate-100 bg-slate-100 shadow-inner">
+                {(() => {
+                  const lat = property.latitude || 25.1972;
+                  const lon = property.longitude || 55.2744;
+                  return (
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      frameBorder="0"
+                      scrolling="no"
+                      marginHeight={0}
+                      marginWidth={0}
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${lon - 0.005}%2C${lat - 0.005}%2C${lon + 0.005}%2C${lat + 0.005}&layer=mapnik&marker=${lat}%2C${lon}`}
+                      className="grayscale hover:grayscale-0 transition-all duration-700 contrast-[1.1]"
+                    />
+                  );
+                })()}
+                {/* Branding Overlay */}
+                <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg shadow-sm border border-slate-200 z-10 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-bold text-slate-900 uppercase tracking-wider">{areaName}</span>
                 </div>
               </div>
             </div>
@@ -699,43 +706,45 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
         </div>
       </div>
 
-      {/* 6. Similar Properties - Ultimate Width Alignment */}
+      {/* 6. Similar Properties - Matched Alignment */}
       {similarProperties.length > 0 && (
-        <div className="container mx-auto px-4 py-20 border-t border-slate-100">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 leading-none">
-                {locale === 'fa' ? 'املاک مشابه' : 'Similar Listings'}
-              </h2>
-              <p className="text-slate-400 font-bold mt-2 uppercase tracking-widest text-[10px]">{locale === 'fa' ? 'شاید این موارد را بپسندید' : 'You might also be interested in these'}</p>
+        <div className="border-t border-slate-100 bg-slate-50/30">
+          <div className="max-w-[1440px] mx-auto px-4 py-20">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-900 leading-none">
+                  {locale === 'fa' ? 'املاک مشابه' : 'Similar Listings'}
+                </h2>
+                <p className="text-slate-400 font-bold mt-2 uppercase tracking-widest text-[10px]">{locale === 'fa' ? 'شاید این موارد را بپسندید' : 'You might also be interested in these'}</p>
+              </div>
+              <Link href={`/${locale}/properties`}>
+                <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-primary hover:text-white hover:border-primary transition-all gap-2 group font-bold">
+                  {locale === 'fa' ? 'مشاهده همه' : 'View All Properties'}
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
             </div>
-            <Link href={`/${locale}/properties`}>
-              <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-primary hover:text-white hover:border-primary transition-all gap-2 group font-bold">
-                {locale === 'fa' ? 'مشاهده همه' : 'View All Properties'}
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {similarProperties.slice(0, 4).map((prop) => {
-              const mappedProp = {
-                ...prop,
-                title: { en: prop.title, fa: prop.title_fa || prop.title },
-                image: prop.cover_image_url,
-                type: prop.listing_type,
-                location: { en: areaName || 'Dubai', fa: areaName || 'دبی' }
-              };
-              return (
-                <PropertyCard
-                  key={prop.id}
-                  property={mappedProp}
-                  locale={locale}
-                  content={content}
-                  propertyUrl={`/${locale}/properties/${prop.slug}`}
-                  hideLabels={true}
-                />
-              )
-            })}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {similarProperties.slice(0, 4).map((prop) => {
+                const mappedProp = {
+                  ...prop,
+                  title: { en: prop.title, fa: prop.title_fa || prop.title },
+                  image: prop.cover_image_url,
+                  type: prop.listing_type,
+                  location: { en: areaName || 'Dubai', fa: areaName || 'دبی' }
+                };
+                return (
+                  <PropertyCard
+                    key={prop.id}
+                    property={mappedProp}
+                    locale={locale}
+                    content={content}
+                    propertyUrl={`/${locale}/properties/${prop.slug}`}
+                    hideLabels={true}
+                  />
+                )
+              })}
+            </div>
           </div>
         </div>
       )}
