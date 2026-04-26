@@ -28,6 +28,7 @@ import { useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
 import { PropertyCard } from "@/components/ui/property-card"
+import { buildSeoUrl } from "@/lib/seo-router"
 
 interface Agent {
   id: string
@@ -60,10 +61,24 @@ interface Property {
   slug: string
   cover_image_url: string | null
   price: number
-  bedrooms: number | null
-  bathrooms: number | null
   size: number | null
   listing_type: string
+  property_type: string
+  area?: {
+    name: string
+    name_fa: string | null
+    slug: string
+  } | null
+  tower?: {
+    name: string
+    name_fa: string | null
+    slug: string
+  } | null
+  developer?: {
+    id: string
+    name: string
+    logo_url: string | null
+  } | null
 }
 
 interface Tower {
@@ -73,9 +88,19 @@ interface Tower {
   slug: string
   cover_image_url: string | null
   starting_price: number | null
-  handover_date: string | null
+  delivery_date: string | null
   payment_plan: string | null
   is_off_plan: boolean
+  area?: {
+    name: string
+    name_fa: string | null
+    slug: string
+  } | null
+  developer?: {
+    id: string
+    name: string
+    logo_url: string | null
+  } | null
 }
 
 interface AgentDetailClientProps {
@@ -149,8 +174,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
 
                 {/* Info */}
                 <div className="flex-1 text-center md:text-start">
-                  <h1 className="text-3xl md:text-4xl font-bold mb-2">{agentName}</h1>
-                  <p className="text-xl text-muted-foreground mb-4">{agentTitle}</p>
+                  <h1 className="text-2xl md:text-3xl font-bold mb-2 text-slate-900">{agentName}</h1>
+                  <p className="text-lg text-slate-500 font-medium mb-4">{agentTitle}</p>
 
                   {/* Stats */}
                   <div className="flex flex-wrap justify-center md:justify-start gap-6 mb-6">
@@ -159,8 +184,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                         <Briefcase className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-bold text-lg">{agent.experience_years}</p>
-                        <p className="text-xs text-muted-foreground">{content.agents.experience}</p>
+                        <p className="font-bold text-base text-slate-900">{agent.experience_years}</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{content.agents.experience}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -168,8 +193,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                         <Star className="h-5 w-5 text-secondary" />
                       </div>
                       <div>
-                        <p className="font-bold text-lg">{agent.total_listings}+</p>
-                        <p className="text-xs text-muted-foreground">{content.agents.deals}</p>
+                        <p className="font-bold text-base text-slate-900">{agent.total_listings}+</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{content.agents.deals}</p>
                       </div>
                     </div>
                     {agent.languages && agent.languages.length > 0 && (
@@ -178,8 +203,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                           <Languages className="h-5 w-5 text-green-500" />
                         </div>
                         <div>
-                          <p className="font-bold text-lg">{agent.languages.length}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="font-bold text-base text-slate-900">{agent.languages.length}</p>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
                             {locale === 'fa' ? 'زبان' : 'Languages'}
                           </p>
                         </div>
@@ -193,17 +218,17 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                 {/* Right Column: Contact Buttons */}
                 <div className="flex flex-col gap-3 min-w-[240px] justify-center">
                   {agent.phone && (
-                    <Button size="lg" className="h-14 px-8 rounded-2xl font-black text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
+                    <Button size="lg" className="h-14 px-8 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
                       <a href={`tel:${agent.phone}`}>
-                        <Phone className="h-6 w-6 mr-3" />
+                        <Phone className="h-5 w-5 mr-3" />
                         {locale === 'fa' ? 'تماس' : 'Call'}
                       </a>
                     </Button>
                   )}
                   {(agent.whatsapp || agent.phone) && (
-                    <Button size="lg" className="h-14 px-8 rounded-2xl font-black text-lg bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
+                    <Button size="lg" className="h-14 px-8 rounded-2xl font-bold text-base bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
                       <a href={`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                        <MessageCircle className="h-6 w-6 mr-3" />
+                        <MessageCircle className="h-5 w-5 mr-3" />
                         WhatsApp
                       </a>
                     </Button>
@@ -278,7 +303,7 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
         </div>
 
         {/* Main Content Sections */}
-        <div className="space-y-20 pb-20">
+        <div className="space-y-10 pb-20">
           {/* Bio & Info Row */}
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Main Area: Bio */}
@@ -286,10 +311,10 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
               {agentBio && (
                 <Card className="border-none shadow-sm bg-white rounded-[2rem]">
                   <CardContent className="p-6 md:py-6 md:px-10">
-                    <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
-                      <div className="h-8 w-1.5 bg-primary rounded-full" />
+                    <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-slate-900">
+                      <div className="h-6 w-1.5 bg-primary rounded-full" />
                       {locale === 'fa' ? 'درباره من' : 'About Me'}
-                    </h2>
+                    </h3>
                     <p className="text-slate-600 leading-relaxed whitespace-pre-line text-lg">
                       {agentBio}
                     </p>
@@ -307,8 +332,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                     {/* Languages */}
                     {agent.languages && agent.languages.length > 0 && (
                       <div>
-                        <h3 className="text-xl font-black mb-6 flex items-center gap-3">
-                          <div className="h-6 w-1 bg-primary rounded-full" />
+                        <h3 className="text-lg font-bold mb-6 flex items-center gap-3 text-slate-900">
+                          <div className="h-5 w-1 bg-primary rounded-full" />
                           {locale === 'fa' ? 'زبان‌ها' : 'Languages'}
                         </h3>
                         <div className="flex flex-wrap gap-2">
@@ -324,8 +349,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                     {/* Specializations */}
                     {agent.specializations && agent.specializations.length > 0 && (
                       <div className={agent.languages && agent.languages.length > 0 ? "pt-6" : ""}>
-                          <h3 className="text-xl font-black mb-6 flex items-center gap-3">
-                            <div className="h-6 w-1 bg-primary rounded-full" />
+                          <h3 className="text-lg font-bold mb-6 flex items-center gap-3 text-slate-900">
+                            <div className="h-5 w-1 bg-primary rounded-full" />
                             {locale === 'fa' ? 'تخصص‌ها' : 'Specializations'}
                           </h3>
                           <div className="flex flex-wrap gap-2">
@@ -347,18 +372,26 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
 
           {/* Towers & Projects Section (Full Width) */}
           {towers.length > 0 && (
-            <div className="pt-10">
-              <div className="mb-10">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-2">
+            <div className="pt-4">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">
                   {locale === 'fa' ? 'پروژه‌ها و برج‌های من' : 'My Towers & Projects'}
                 </h2>
-                <div className="h-1.5 w-24 bg-primary rounded-full" />
+                <div className="h-1.5 w-16 bg-primary rounded-full" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {towers.map((tower) => {
                   const towerName = locale === 'fa' && tower.name_fa ? tower.name_fa : tower.name
+                  const towerUrl = buildSeoUrl({
+                    transactionType: 'off-plan',
+                    propertyType: 'property', // default for towers
+                    city: 'dubai',
+                    area: tower.area?.slug,
+                    project: tower.slug
+                  }, locale);
+
                   return (
-                    <Link key={tower.id} href={`/${locale}/towers/${tower.slug}`} className="group block">
+                    <Link key={tower.id} href={towerUrl} className="group block">
                       <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-black/5 h-full flex flex-col">
                         {/* Image */}
                         <div className="relative h-64 overflow-hidden">
@@ -393,6 +426,16 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
 
                         {/* Content */}
                         <div className="p-6 flex-1 flex flex-col">
+                          {/* Area / District Badge */}
+                          {tower.area && (
+                            <div className="flex items-center gap-1.5 mb-2 text-slate-400">
+                              <MapPin className="h-3 w-3" />
+                              <span className="text-[10px] font-bold uppercase tracking-widest">
+                                {locale === 'fa' && tower.area.name_fa ? tower.area.name_fa : tower.area.name}
+                              </span>
+                            </div>
+                          )}
+
                           <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-4">
                             {towerName}
                           </h3>
@@ -404,7 +447,7 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                                 {locale === 'fa' ? 'تحویل' : 'Handover'}
                               </p>
                               <p className="text-xs font-bold text-foreground leading-none">
-                                {tower.handover_date || '2026'}
+                                {tower.delivery_date || '2026'}
                               </p>
                             </div>
                             <div className="border-s border-border/40 ps-4">
@@ -414,10 +457,51 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                               <p className="text-xs font-bold text-foreground leading-none">
                                 {tower.payment_plan || '70/30'}
                               </p>
+                          </div>
+                        </div>
+
+                        {/* Footer Link */}
+                        <div className="mt-auto pt-5 flex items-center justify-between border-t border-border/40">
+                          <div className="relative h-6 w-32">
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-20 w-32 grayscale-0 opacity-100 transition-all duration-500">
+                              {(() => {
+                                const devName = tower.developer?.name || '';
+                                const mapping: Record<string, string> = {
+                                  'emaar': '/images/developers/emaar.png',
+                                  'damac': '/images/developers/damac.png',
+                                  'sobha': '/images/developers/sobhan.png',
+                                  'nakheel': '/images/developers/nakheel.png',
+                                  'binghatti': '/images/developers/binghati.png',
+                                  'arada': '/images/developers/arada.png',
+                                  'tiger': '/images/developers/tiger.png',
+                                  'aldar': '/images/developers/aldar.png',
+                                  'wasl': '/images/developers/wasl.png',
+                                  'danube': '/images/developers/danube.png',
+                                };
+                                const foundKey = Object.keys(mapping).find(key => devName.toLowerCase().includes(key));
+                                const logoUrl = foundKey ? mapping[foundKey] : tower.developer?.logo_url;
+
+                                if (logoUrl) {
+                                  return (
+                                    <Image
+                                      src={logoUrl}
+                                      alt={devName}
+                                      fill
+                                      className="object-contain object-left"
+                                    />
+                                  );
+                                }
+                                return <div className="h-full w-full bg-slate-50/50 rounded-lg animate-pulse" />;
+                              })()}
                             </div>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm font-bold text-primary group-hover:gap-2 transition-all">
+                            {locale === 'fa' ? 'مشاهده جزئیات' : 'View Details'}
+                            <ArrowRight className={cn("h-4 w-4", locale === 'fa' ? "rotate-180" : "")} />
                           </div>
                         </div>
                       </div>
+                    </div>
                     </Link>
                   )
                 })}
@@ -436,24 +520,35 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
 
           {/* Properties Section (Full Width) */}
           {properties.length > 0 && (
-            <div className="pt-10">
-              <div className="mb-10">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-2">
+            <div className="pt-4">
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">
                   {locale === 'fa' ? 'املاک من' : 'My Properties'}
                 </h2>
-                <div className="h-1.5 w-24 bg-primary rounded-full" />
+                <div className="h-1.5 w-16 bg-primary rounded-full" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {properties.map((property) => (
-                  <PropertyCard 
-                    key={property.id}
-                    property={property}
-                    locale={locale}
-                    content={content}
-                    propertyUrl={`/${locale}/properties/${property.slug}`}
-                    hideLabels={true}
-                  />
-                ))}
+                {properties.map((property) => {
+                  const propertyUrl = buildSeoUrl({
+                    transactionType: property.listing_type === 'sale' ? 'for-sale' : 'for-rent',
+                    propertyType: property.property_type || 'apartment',
+                    city: 'dubai',
+                    area: property.area?.slug,
+                    project: property.tower?.slug,
+                    unit: property.slug
+                  }, locale);
+
+                  return (
+                    <PropertyCard 
+                      key={property.id}
+                      property={property}
+                      locale={locale}
+                      content={content}
+                      propertyUrl={propertyUrl}
+                      hideLabels={true}
+                    />
+                  )
+                })}
                 {/* Placeholder Cards */}
                 {properties.length % 4 !== 0 && Array.from({ length: 4 - (properties.length % 4) }).map((_, i) => (
                   <div key={`property-placeholder-${i}`} className="hidden lg:block border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 min-h-[400px] flex flex-col items-center justify-center p-8 text-slate-300">

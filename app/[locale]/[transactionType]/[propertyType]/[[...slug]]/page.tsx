@@ -98,7 +98,8 @@ export default async function SeoPropertyPage({ params, searchParams }: Props) {
       .select(`
         *,
         area:areas(id, name, name_fa, slug),
-        developer:developers(id, name, name_fa, logo_url)
+        developer:developers(id, name, name_fa, logo_url),
+        assigned_agent:agents(id, name, name_fa, slug, title, title_fa, avatar_url, phone, whatsapp, email)
       `)
       .eq("slug", routeParams.project)
       .single();

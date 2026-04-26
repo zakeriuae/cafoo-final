@@ -178,26 +178,56 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
 
   // Smart Developer Mapping Logic
   const getDetectedDeveloper = () => {
-    if (property.developer) return property.developer;
-    if (property.tower?.developer) return property.tower.developer;
-
+    let dev = property.developer || property.tower?.developer || null;
     const towerNameLower = (property.tower?.name || "").toLowerCase();
 
-    // Mapping keywords to known developers
-    if (towerNameLower.includes('address') || towerNameLower.includes('creek') || towerNameLower.includes('marina sands')) {
-      return { id: 'emaar', name: 'Emaar Properties', name_fa: 'اعمار', logo_url: '/images/developers/emaar.png' };
-    }
-    if (towerNameLower.includes('aykon') || towerNameLower.includes('damac')) {
-      return { id: 'damac', name: 'DAMAC Properties', name_fa: 'داماک', logo_url: '/images/developers/damac.png' };
-    }
-    if (towerNameLower.includes('sobha')) {
-      return { id: 'sobha', name: 'Sobha Realty', name_fa: 'سبها', logo_url: '/images/developers/sobhan.png' };
-    }
-    if (towerNameLower.includes('binghatti')) {
-      return { id: 'binghatti', name: 'Binghatti', name_fa: 'بن غاطی', logo_url: '/images/developers/binghati.png' };
+    // If no dev in DB, try to detect from tower name
+    if (!dev) {
+      if (towerNameLower.includes('address') || towerNameLower.includes('creek') || towerNameLower.includes('marina sands')) {
+        dev = { id: 'emaar', name: 'Emaar Properties', name_fa: 'اعمار', logo_url: null };
+      } else if (towerNameLower.includes('aykon') || towerNameLower.includes('damac')) {
+        dev = { id: 'damac', name: 'DAMAC Properties', name_fa: 'داماک', logo_url: null };
+      } else if (towerNameLower.includes('sobha')) {
+        dev = { id: 'sobha', name: 'Sobha Realty', name_fa: 'سبها', logo_url: null };
+      } else if (towerNameLower.includes('binghatti')) {
+        dev = { id: 'binghatti', name: 'Binghatti', name_fa: 'بن غاطی', logo_url: null };
+      } else if (towerNameLower.includes('danube')) {
+        dev = { id: 'danube', name: 'Danube Properties', name_fa: 'دانوب', logo_url: null };
+      }
     }
 
-    return null;
+    if (!dev) return null;
+
+    // Apply local image mapping
+    const mapping: Record<string, string> = {
+      'emaar': '/images/developers/emaar.png',
+      'damac': '/images/developers/damac.png',
+      'sobha': '/images/developers/sobhan.png',
+      'sobhan': '/images/developers/sobhan.png',
+      'nakheel': '/images/developers/nakheel.png',
+      'binghatti': '/images/developers/binghati.png',
+      'arada': '/images/developers/arada.png',
+      'tiger': '/images/developers/tiger.png',
+      'aldar': '/images/developers/aldar.png',
+      'wasl': '/images/developers/wasl.png',
+      'danube': '/images/developers/danube.png',
+      'dubai properties': '/images/developers/dubai.png',
+      'meraas': '/images/developers/meraas.png',
+      'alef': '/images/developers/alef.png',
+      'imtiaz': '/images/developers/imtiaz.png',
+      'nshama': '/images/developers/nshama.png',
+      'beyond': '/images/developers/beyond.png',
+      'rak': '/images/developers/rak.png',
+    };
+
+    const searchName = dev.name.toLowerCase();
+    const foundKey = Object.keys(mapping).find(key => searchName.includes(key));
+    
+    if (foundKey) {
+      return { ...dev, logo_url: mapping[foundKey] };
+    }
+    
+    return dev;
   };
 
   const detectedDeveloper = getDetectedDeveloper();
@@ -609,18 +639,20 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                 <div className="bg-white rounded-[2rem] overflow-hidden shadow-xl shadow-slate-200/40 border border-slate-100 transition-all hover:shadow-2xl hover:shadow-slate-200/60 group">
                   <div className="p-8">
                     <div className="flex items-center gap-5 mb-8">
-                      <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-md ring-4 ring-slate-50 group-hover:ring-primary/10 transition-all duration-500">
+                      <Link href={`/${locale}/agents/${property.assigned_agent.slug}`} className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-md ring-4 ring-slate-50 group-hover:ring-primary/10 transition-all duration-500 flex-shrink-0">
                         <Image
                           src={property.assigned_agent.avatar_url || "/images/placeholder-agent.jpg"}
                           alt={property.assigned_agent.name}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-700"
                         />
-                      </div>
+                      </Link>
                       <div>
-                        <h4 className="text-lg font-bold text-slate-900 leading-none">
-                          {locale === 'fa' && property.assigned_agent.name_fa ? property.assigned_agent.name_fa : property.assigned_agent.name}
-                        </h4>
+                        <Link href={`/${locale}/agents/${property.assigned_agent.slug}`} className="block hover:text-primary transition-colors">
+                          <h4 className="text-lg font-bold text-slate-900 leading-none">
+                            {locale === 'fa' && property.assigned_agent.name_fa ? property.assigned_agent.name_fa : property.assigned_agent.name}
+                          </h4>
+                        </Link>
                         <div className="flex items-center gap-2 mt-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                           <p className="text-primary font-bold text-[10px] uppercase tracking-widest">
@@ -762,6 +794,15 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                   />
                 )
               })}
+              {/* Placeholder Cards */}
+              {similarProperties.slice(0, 4).length < 4 && Array.from({ length: 4 - similarProperties.slice(0, 4).length }).map((_, i) => (
+                <div key={`similar-placeholder-${i}`} className="hidden lg:block border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 min-h-[400px] flex flex-col items-center justify-center p-8 text-slate-300">
+                  <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                    <div className="w-6 h-6 border-2 border-slate-200 rounded-md" />
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-widest">{locale === 'fa' ? 'بزودی' : 'Coming Soon'}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

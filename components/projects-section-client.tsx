@@ -64,18 +64,20 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
   }, [])
 
   const getDeveloperLogo = (name: string, logoFromDb?: string) => {
-    if (logoFromDb && logoFromDb.startsWith('http')) return logoFromDb;
+    if (!name) return logoFromDb || null;
     
     const mapping: Record<string, string> = {
       'emaar': '/images/developers/emaar.png',
       'damac': '/images/developers/damac.png',
       'sobha': '/images/developers/sobhan.png',
+      'sobhan': '/images/developers/sobhan.png',
       'nakheel': '/images/developers/nakheel.png',
       'binghatti': '/images/developers/binghati.png',
       'arada': '/images/developers/arada.png',
       'tiger': '/images/developers/tiger.png',
       'aldar': '/images/developers/aldar.png',
       'wasl': '/images/developers/wasl.png',
+      'danube': '/images/developers/danube.png',
       'dubai properties': '/images/developers/dubai.png',
       'meraas': '/images/developers/meraas.png',
       'alef': '/images/developers/alef.png',
@@ -85,8 +87,12 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
       'rak': '/images/developers/rak.png',
     };
 
-    const foundKey = Object.keys(mapping).find(key => name.toLowerCase().includes(key));
-    return foundKey ? mapping[foundKey] : (logoFromDb || null);
+    const searchName = name.toLowerCase();
+    const foundKey = Object.keys(mapping).find(key => searchName.includes(key));
+    
+    if (foundKey) return mapping[foundKey];
+    if (logoFromDb && logoFromDb.startsWith('http')) return logoFromDb;
+    return logoFromDb || null;
   };
 
   const filteredProjects = activeFilter === "all" 
@@ -241,24 +247,24 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
 
                   {/* Bottom Row: Developer and View Details */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {getDeveloperLogo(project.developer, project.developerLogo) ? (
-                        <div className="relative h-20 w-44 -my-5">
+                    <div className="relative h-6 w-32">
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 h-20 w-32 grayscale-0 opacity-100 transition-all duration-500">
+                        {getDeveloperLogo(project.developer, project.developerLogo) ? (
                           <Image
                             src={getDeveloperLogo(project.developer, project.developerLogo)!}
                             alt={project.developer}
                             fill
-                            className="object-contain object-left filter grayscale group-hover:grayscale-0 transition-all duration-500"
+                            className="object-contain object-left"
                           />
-                        </div>
-                      ) : (
-                        <>
-                          <Building2 className="h-4 w-4 text-primary/70" />
-                          <span className="text-xs font-bold text-foreground/80 uppercase tracking-wide">
-                            {project.developer}
-                          </span>
-                        </>
-                      )}
+                        ) : (
+                          <div className="flex items-center gap-2 h-full">
+                            <Building2 className="h-4 w-4 text-primary/70" />
+                            <span className="text-xs font-bold text-foreground/80 uppercase tracking-wide">
+                              {project.developer}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-1 text-primary font-bold text-sm group-hover:gap-2 transition-all cursor-pointer">
                       {content.projects.viewDetails}

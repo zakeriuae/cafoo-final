@@ -75,6 +75,18 @@ interface Tower {
     name_fa: string | null
     logo_url: string | null
   } | null
+  assigned_agent: {
+    id: string
+    name: string
+    name_fa: string | null
+    slug: string
+    title: string
+    title_fa: string | null
+    avatar_url: string | null
+    phone: string | null
+    whatsapp: string | null
+    email: string | null
+  } | null
 }
 
 interface TowerProperty {
@@ -257,21 +269,51 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                     </div>
                   </div>
 
-                  {tower.developer?.logo_url ? (
+              {(() => {
+                const devName = tower.developer?.name || '';
+                const mapping: Record<string, string> = {
+                  'emaar': '/images/developers/emaar.png',
+                  'damac': '/images/developers/damac.png',
+                  'sobha': '/images/developers/sobhan.png',
+                  'sobhan': '/images/developers/sobhan.png',
+                  'nakheel': '/images/developers/nakheel.png',
+                  'binghatti': '/images/developers/binghati.png',
+                  'arada': '/images/developers/arada.png',
+                  'tiger': '/images/developers/tiger.png',
+                  'aldar': '/images/developers/aldar.png',
+                  'wasl': '/images/developers/wasl.png',
+                  'danube': '/images/developers/danube.png',
+                  'dubai properties': '/images/developers/dubai.png',
+                  'meraas': '/images/developers/meraas.png',
+                  'alef': '/images/developers/alef.png',
+                  'imtiaz': '/images/developers/imtiaz.png',
+                  'nshama': '/images/developers/nshama.png',
+                  'beyond': '/images/developers/beyond.png',
+                  'rak': '/images/developers/rak.png',
+                };
+                const searchName = devName.toLowerCase();
+                const foundKey = Object.keys(mapping).find(key => searchName.includes(key));
+                const logoUrl = foundKey ? mapping[foundKey] : tower.developer?.logo_url;
+
+                if (logoUrl) {
+                  return (
                     <div className="relative h-40 w-80 -my-12">
                       <Image
-                        src={tower.developer.logo_url}
-                        alt={tower.developer.name || 'Developer'}
+                        src={logoUrl}
+                        alt={devName || 'Developer'}
                         fill
                         className="object-contain object-right"
                       />
                     </div>
-                  ) : (
-                    <Badge className="bg-green-50 text-green-600 border border-green-100 rounded-xl px-4 py-1 flex items-center gap-2 font-bold text-[10px] uppercase tracking-wider mt-2">
-                      <Building2 className="h-3.5 w-3.5" />
-                      {locale === 'fa' ? 'پروژه تایید شده' : 'Verified Project'}
-                    </Badge>
-                  )}
+                  );
+                }
+                return (
+                  <Badge className="bg-green-50 text-green-600 border border-green-100 rounded-xl px-4 py-1 flex items-center gap-2 font-bold text-[10px] uppercase tracking-wider mt-2">
+                    <Building2 className="h-3.5 w-3.5" />
+                    {locale === 'fa' ? 'پروژه تایید شده' : 'Verified Project'}
+                  </Badge>
+                );
+              })()}
                 </div>
               </div>
 
@@ -434,24 +476,56 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
           {/* Sidebar Area (4 columns) */}
           <div className="lg:col-span-4">
             <div className="sticky top-24 space-y-4">
+              {/* Agent Card */}
               <div className="bg-white rounded-[2rem] overflow-hidden shadow-xl shadow-slate-200/40 border border-slate-100 group">
                 <div className="p-8">
                   <div className="flex items-center gap-5 mb-8">
-                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-md ring-4 ring-slate-50 group-hover:ring-primary/10 transition-all duration-500">
-                      <Image src={"/logoc.svg"} alt={"Project Specialist"} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                    </div>
+                    <Link 
+                      href={tower.assigned_agent ? `/${locale}/agents/${tower.assigned_agent.slug}` : "#"} 
+                      className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-md ring-4 ring-slate-50 group-hover:ring-primary/10 transition-all duration-500 flex-shrink-0"
+                    >
+                      <Image 
+                        src={tower.assigned_agent?.avatar_url || "/logoc.svg"} 
+                        alt={tower.assigned_agent?.name || "Project Specialist"} 
+                        fill 
+                        className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                      />
+                    </Link>
                     <div>
-                      <h4 className="text-lg font-bold text-slate-900 leading-none">{locale === 'fa' ? 'کارشناس پروژه' : 'Project Specialist'}</h4>
+                      <Link 
+                        href={tower.assigned_agent ? `/${locale}/agents/${tower.assigned_agent.slug}` : "#"}
+                        className="block hover:text-primary transition-colors"
+                      >
+                        <h4 className="text-lg font-bold text-slate-900 leading-none">
+                          {tower.assigned_agent 
+                            ? (locale === 'fa' && tower.assigned_agent.name_fa ? tower.assigned_agent.name_fa : tower.assigned_agent.name)
+                            : (locale === 'fa' ? 'کارشناس پروژه' : 'Project Specialist')}
+                        </h4>
+                      </Link>
                       <div className="flex items-center gap-2 mt-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                        <p className="text-primary font-bold text-[10px] uppercase tracking-widest">Cafoo Real Estate</p>
+                        <p className="text-primary font-bold text-[10px] uppercase tracking-widest">
+                          {tower.assigned_agent 
+                            ? (locale === 'fa' && tower.assigned_agent.title_fa ? tower.assigned_agent.title_fa : tower.assigned_agent.title)
+                            : 'Cafoo Real Estate'}
+                        </p>
                       </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <Button className="h-12 rounded-2xl bg-slate-900 text-white font-bold text-xs" asChild><a href={`tel:+971503491050`}><Phone className="h-4 w-4" /></a></Button>
-                    <Button className="h-12 rounded-2xl bg-[#25D366] text-white font-bold text-xs" asChild><a href={`https://wa.me/971503491050`} target="_blank" rel="noopener noreferrer"><MessageCircle className="h-4 w-4" /></a></Button>
-                    <Button className="h-12 rounded-2xl bg-primary text-white font-bold text-xs">{locale === 'fa' ? 'درخواست' : 'Inquire'}</Button>
+                    <Button className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-sm" asChild>
+                      <a href={`tel:${tower.assigned_agent?.phone || '+971503491050'}`}>
+                        <Phone className="h-4 w-4" />
+                      </a>
+                    </Button>
+                    <Button className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-green-100/20" asChild>
+                      <a href={`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                        <MessageCircle className="h-4 w-4" />
+                      </a>
+                    </Button>
+                    <Button className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center shadow-lg shadow-primary/20 transition-all active:scale-95">
+                      {locale === 'fa' ? 'درخواست' : 'Inquire'}
+                    </Button>
                   </div>
                 </div>
               </div>

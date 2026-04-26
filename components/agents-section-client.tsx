@@ -102,37 +102,39 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                 <div 
                   className="bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-secondary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5 flex flex-col h-full group"
                 >
-                  {/* Image Container - Square with Overlay */}
-                  <div className="relative aspect-square overflow-hidden">
-                    <Image
-                      src={agent.avatar_url || "/images/agents/placeholder.jpg"}
-                      alt={agentName}
-                      fill
-                      className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
-                    
-                    {/* Gradient Overlay for Text */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
+                  <Link href={`/${locale}/agents/${agent.slug}`} className="block">
+                    {/* Image Container - Square with Overlay */}
+                    <div className="relative aspect-square overflow-hidden">
+                      <Image
+                        src={agent.avatar_url || "/images/agents/placeholder.jpg"}
+                        alt={agentName}
+                        fill
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                      />
+                      
+                      {/* Gradient Overlay for Text */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
 
-                    {/* Top Badge - Rating */}
-                    <div className={cn(
-                      "absolute top-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/90 backdrop-blur-md z-10",
-                      isRtl ? "left-4" : "right-4"
-                    )}>
-                      <Award className="w-3 h-3 text-white" />
-                      <span className="text-[10px] font-bold text-white uppercase tracking-wider">Top Agent</span>
-                    </div>
+                      {/* Top Badge - Rating */}
+                      <div className={cn(
+                        "absolute top-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/90 backdrop-blur-md z-10",
+                        isRtl ? "left-4" : "right-4"
+                      )}>
+                        <Award className="w-3 h-3 text-white" />
+                        <span className="text-[10px] font-bold text-white uppercase tracking-wider">Top Agent</span>
+                      </div>
 
-                    {/* Name & Title Overlay */}
-                    <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
-                      <p className="text-secondary font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
-                        {agentTitle}
-                      </p>
-                      <h3 className="text-xl font-bold text-white group-hover:text-secondary transition-colors line-clamp-1">
-                        {agentName}
-                      </h3>
+                      {/* Name & Title Overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                        <p className="text-secondary font-bold text-[10px] uppercase tracking-[0.2em] mb-1">
+                          {agentTitle}
+                        </p>
+                        <h3 className="text-xl font-bold text-white group-hover:text-secondary transition-colors line-clamp-1">
+                          {agentName}
+                        </h3>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
 
                   {/* Content Area - Stats and Actions */}
                   <div className="p-6 flex flex-col flex-grow">

@@ -40,19 +40,20 @@ export function PropertyCard({
   const listingType = property.listing_type || property.type;
   
   const getDeveloperLogo = (name: string, logoFromDb?: string) => {
-    if (!name) return null;
-    if (logoFromDb && logoFromDb.startsWith('http')) return logoFromDb;
+    if (!name) return logoFromDb || null;
     
     const mapping: Record<string, string> = {
       'emaar': '/images/developers/emaar.png',
       'damac': '/images/developers/damac.png',
       'sobha': '/images/developers/sobhan.png',
+      'sobhan': '/images/developers/sobhan.png',
       'nakheel': '/images/developers/nakheel.png',
       'binghatti': '/images/developers/binghati.png',
       'arada': '/images/developers/arada.png',
       'tiger': '/images/developers/tiger.png',
       'aldar': '/images/developers/aldar.png',
       'wasl': '/images/developers/wasl.png',
+      'danube': '/images/developers/danube.png',
       'dubai properties': '/images/developers/dubai.png',
       'meraas': '/images/developers/meraas.png',
       'alef': '/images/developers/alef.png',
@@ -62,8 +63,12 @@ export function PropertyCard({
       'rak': '/images/developers/rak.png',
     };
 
-    const foundKey = Object.keys(mapping).find(key => name.toLowerCase().includes(key));
-    return foundKey ? mapping[foundKey] : (logoFromDb || null);
+    const searchName = name.toLowerCase();
+    const foundKey = Object.keys(mapping).find(key => searchName.includes(key));
+    
+    if (foundKey) return mapping[foundKey];
+    if (logoFromDb && logoFromDb.startsWith('http')) return logoFromDb;
+    return logoFromDb || null;
   };
 
   const devName = property.developer?.name || property.developerName || property.project;
@@ -176,21 +181,23 @@ export function PropertyCard({
 
           {/* Bottom Info & Link */}
           <div className="flex items-center justify-between mt-auto pt-2">
-            <div className="flex items-center gap-2">
-              {getDeveloperLogo(devName, devLogo) ? (
-                <div className="relative h-20 w-44 -my-5">
+            <div className="relative h-6 w-32">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-20 w-32 grayscale-0 opacity-100 transition-all duration-500">
+                {getDeveloperLogo(devName, devLogo) ? (
                   <Image
                     src={getDeveloperLogo(devName, devLogo)!}
                     alt={devName}
                     fill
-                    className="object-contain object-left filter grayscale group-hover:grayscale-0 transition-all duration-500"
+                    className="object-contain object-left"
                   />
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground font-medium">
-                  by <span className="text-foreground/80">{devName || "Developer"}</span>
-                </p>
-              )}
+                ) : (
+                  <div className="flex items-center h-full">
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+                      {locale === 'fa' ? 'توسط سازنده' : 'by Developer'}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-1 text-primary font-bold text-sm group-hover:gap-2 transition-all">
               {content.properties?.viewDetails || 'View Details'}

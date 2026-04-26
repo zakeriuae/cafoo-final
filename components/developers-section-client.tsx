@@ -51,7 +51,7 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
       'arada': '/images/developers/arada.png',
       'tiger': '/images/developers/tiger.png',
       'aldar': '/images/developers/aldar.png',
-      'wasl': '/images/developers/wasl.png',
+      'danube': '/images/developers/danube.png',
       'dubai properties': '/images/developers/dubai.png',
       'meraas': '/images/developers/meraas.png',
       'alef': '/images/developers/alef.png',
@@ -59,6 +59,8 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
       'nshama': '/images/developers/nshama.png',
       'beyond': '/images/developers/beyond.png',
       'rak': '/images/developers/rak.png',
+      'sobhan': '/images/developers/sobhan.png',
+      'sobha': '/images/developers/sobhan.png',
     };
 
     const foundKey = Object.keys(mapping).find(key => name.toLowerCase().includes(key));
@@ -126,7 +128,7 @@ export default function DevelopersSectionClient({ developers }: DevelopersSectio
                     key={`${developer.id}-${index}`}
                     className="flex-shrink-0 mx-2 md:mx-4 group cursor-pointer"
                   >
-                    <div className="relative w-40 h-24 md:w-56 md:h-32 flex items-center justify-center transition-all duration-300 hover:scale-105">
+                    <div className="relative w-48 h-28 md:w-64 md:h-40 flex items-center justify-center transition-all duration-300 hover:scale-110">
                       {logo ? (
                         <Image
                           src={logo}
