@@ -306,19 +306,6 @@ export function HeroSection() {
 
       <div className="relative z-10 w-full max-w-[960px] mx-auto px-4 py-20">
 
-        {/* Badge */}
-        <div className={cn("flex justify-center mb-6 transition-all duration-700", visible?"opacity-100 translate-y-0":"opacity-0 -translate-y-4")}>
-          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute h-full w-full rounded-full bg-primary opacity-75" />
-              <span className="relative h-2 w-2 rounded-full bg-primary" />
-            </span>
-            <span className="text-white/90 text-xs font-bold tracking-widest uppercase">
-              {fa ? "پلتفرم برتر دبی" : "Dubai's Premier Real Estate Platform"}
-            </span>
-          </div>
-        </div>
-
         {/* Heading */}
         <div className={cn("text-center mb-10 transition-all duration-700 delay-100", visible?"opacity-100 translate-y-0":"opacity-0 translate-y-6")}>
           <h1 className="text-6xl md:text-8xl font-black text-white leading-[1.03] tracking-tight mb-4" style={{textShadow:"0 4px 32px rgba(0,0,0,0.5)"}}>

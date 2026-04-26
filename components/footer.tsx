@@ -190,8 +190,8 @@ export function Footer() {
         target="_blank"
         rel="noopener noreferrer"
         className={cn(
-          "fixed bottom-6 z-50 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 hover:scale-110 transition-transform duration-300 animate-pulse hover:animate-none",
-          isRtl ? "left-6" : "right-6"
+          "fixed bottom-8 z-50 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 hover:scale-110 transition-transform duration-300 animate-pulse hover:animate-none",
+          isRtl ? "left-12" : "right-12"
         )}
       >
         <MessageCircle className="h-7 w-7 text-white" />
@@ -201,9 +201,9 @@ export function Footer() {
       <button
         onClick={scrollToTop}
         className={cn(
-          "fixed bottom-6 z-50 w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30 transition-all duration-300",
+          "fixed bottom-8 z-50 w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30 transition-all duration-300",
           showScrollTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none",
-          isRtl ? "left-24" : "right-24"
+          isRtl ? "left-32" : "right-32"
         )}
       >
         <ArrowUp className="h-5 w-5 text-white" />
