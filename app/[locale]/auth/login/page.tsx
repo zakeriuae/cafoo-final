@@ -20,23 +20,31 @@ function LoginContent() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 
   const handleGoogleLogin = async () => {
-    setIsGoogleLoading(true)
-    setError(null)
-    const supabase = createClient()
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${next}`,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'select_account',
+    try {
+      setIsGoogleLoading(true)
+      setError(null)
+      console.log("Initiating Google Login...")
+      
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=${next}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'select_account',
+          },
         },
-      },
-    })
+      })
 
-    if (error) {
-      setError(error.message)
+      if (error) {
+        console.error("Supabase OAuth Error:", error)
+        setError(error.message)
+        setIsGoogleLoading(false)
+      }
+    } catch (err: any) {
+      console.error("Unexpected Login Error:", err)
+      setError("An unexpected error occurred. Please try again.")
       setIsGoogleLoading(false)
     }
   }
