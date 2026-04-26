@@ -14,6 +14,34 @@ import {
 async function getStats() {
   const supabase = await createClient()
   
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  const isAdmin = profile?.role === 'admin'
+  
+  let currentAgentId = null
+  if (!isAdmin && user) {
+    const { data: agent } = await supabase.from('agents').select('id').eq('user_id', user.id).single()
+    currentAgentId = agent?.id
+  }
+
+  let propertiesQuery = supabase.from('properties').select('*', { count: 'exact', head: true })
+  let towersQuery = supabase.from('towers').select('*', { count: 'exact', head: true })
+  let areasQuery = supabase.from('areas').select('*', { count: 'exact', head: true })
+  let leadsQuery = supabase.from('leads').select('*', { count: 'exact', head: true })
+  let newLeadsQuery = supabase.from('leads').select('*', { count: 'exact', head: true }).eq('status', 'new')
+  
+  // Also count agents, but agents only see themselves (so count 1) if they are an agent
+  let agentsQuery = supabase.from('agents').select('*', { count: 'exact', head: true })
+
+  if (!isAdmin && currentAgentId) {
+    propertiesQuery = propertiesQuery.eq('agent_id', currentAgentId)
+    towersQuery = towersQuery.eq('assigned_agent_id', currentAgentId)
+    areasQuery = areasQuery.eq('assigned_agent_id', currentAgentId)
+    leadsQuery = leadsQuery.eq('agent_id', currentAgentId)
+    newLeadsQuery = newLeadsQuery.eq('agent_id', currentAgentId)
+    agentsQuery = agentsQuery.eq('id', currentAgentId)
+  }
+
   const [
     { count: propertiesCount },
     { count: towersCount },
@@ -22,12 +50,12 @@ async function getStats() {
     { count: leadsCount },
     { count: newLeadsCount },
   ] = await Promise.all([
-    supabase.from('properties').select('*', { count: 'exact', head: true }),
-    supabase.from('towers').select('*', { count: 'exact', head: true }),
-    supabase.from('areas').select('*', { count: 'exact', head: true }),
-    supabase.from('agents').select('*', { count: 'exact', head: true }),
-    supabase.from('leads').select('*', { count: 'exact', head: true }),
-    supabase.from('leads').select('*', { count: 'exact', head: true }).eq('status', 'new'),
+    propertiesQuery,
+    towersQuery,
+    areasQuery,
+    agentsQuery,
+    leadsQuery,
+    newLeadsQuery,
   ])
 
   return {
@@ -43,11 +71,27 @@ async function getStats() {
 async function getRecentLeads() {
   const supabase = await createClient()
   
-  const { data } = await supabase
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  const isAdmin = profile?.role === 'admin'
+  
+  let currentAgentId = null
+  if (!isAdmin && user) {
+    const { data: agent } = await supabase.from('agents').select('id').eq('user_id', user.id).single()
+    currentAgentId = agent?.id
+  }
+
+  let query = supabase
     .from('leads')
     .select('*, property:properties(title), agent:agents(name)')
     .order('created_at', { ascending: false })
     .limit(5)
+
+  if (!isAdmin && currentAgentId) {
+    query = query.eq('agent_id', currentAgentId)
+  }
+
+  const { data } = await query
 
   return data || []
 }
