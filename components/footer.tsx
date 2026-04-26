@@ -178,7 +178,7 @@ export function Footer() {
                 {content.footer.links.terms}
               </Link>
               <span className="w-1 h-1 rounded-full bg-slate-800" />
-              <LocaleSwitcher />
+              <LocaleSwitcher isLight={false} />
             </div>
           </div>
         </div>

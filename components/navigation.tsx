@@ -149,7 +149,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
 
             {/* CTA Buttons */}
             <div className={cn("hidden lg:flex items-center gap-3", isRtl && "flex-row-reverse")}>
-              <LocaleSwitcher variant={variant} />
+              <LocaleSwitcher isLight={isScrolled || isLight} />
               <div className={cn(
                 "w-px h-6 mx-2",
                 (isScrolled || isLight) ? "bg-slate-200" : "bg-white/20"
@@ -170,8 +170,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="relative group focus:outline-none">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-30 group-hover:opacity-100 transition duration-300"></div>
-                      <Avatar className="h-10 w-10 border-2 border-white relative shadow-lg">
+                      <Avatar className="h-10 w-10 relative">
                         <AvatarImage src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={user.user_metadata.full_name} />
                         <AvatarFallback className="bg-primary text-white font-bold">
                           {user.user_metadata.full_name?.substring(0, 2).toUpperCase() || "CU"}
@@ -274,7 +273,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">
               <div className="flex items-center justify-between px-4 py-2 bg-muted/30 rounded-xl">
                 <span className="text-sm font-medium text-foreground/70">{content.nav.language || "Language"}</span>
-                <LocaleSwitcher />
+                <LocaleSwitcher isLight={true} />
               </div>
               <Button 
                 variant="outline" 
