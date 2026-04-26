@@ -27,9 +27,11 @@ interface TowerFormProps {
   areas: Area[]
   developers: Developer[]
   agents: Agent[]
+  isAdmin: boolean
+  currentAgentId?: string | null
 }
 
-export function TowerForm({ tower, areas, developers, agents }: TowerFormProps) {
+export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAgentId }: TowerFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [featured, setFeatured] = useState(tower?.featured || false)
@@ -312,18 +314,22 @@ export function TowerForm({ tower, areas, developers, agents }: TowerFormProps) 
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="assigned_agent_id">Assigned Agent</Label>
-                  <Select name="assigned_agent_id" defaultValue={tower?.assigned_agent_id || 'none'}>
-                    <SelectTrigger><SelectValue placeholder="Select agent" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No Agent</SelectItem>
-                      {agents.map((agent) => (
-                        <SelectItem key={agent.id} value={agent.id}>{agent.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {isAdmin ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="assigned_agent_id">Assigned Agent</Label>
+                    <Select name="assigned_agent_id" defaultValue={tower?.assigned_agent_id || 'none'}>
+                      <SelectTrigger><SelectValue placeholder="Select agent" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Agent</SelectItem>
+                        {agents.map((agent) => (
+                          <SelectItem key={agent.id} value={agent.id}>{agent.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <input type="hidden" name="assigned_agent_id" value={tower?.assigned_agent_id || currentAgentId || ''} />
+                )}
               </CardContent>
             </Card>
 

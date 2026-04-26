@@ -70,6 +70,11 @@ const columns: Column<Area>[] = [
 ]
 
 export default async function AreasPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  const isAdmin = profile?.role === 'admin'
+
   const areas = await getAreas()
 
   return (
@@ -80,7 +85,7 @@ export default async function AreasPage() {
       columns={columns}
       createHref="/admin/areas/new"
       editHref={(id) => `/admin/areas/${id}/edit`}
-      deleteAction={deleteArea}
+      deleteAction={isAdmin ? deleteArea : undefined}
       searchPlaceholder="Search areas..."
     />
   )

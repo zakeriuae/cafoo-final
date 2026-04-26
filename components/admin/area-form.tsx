@@ -25,9 +25,11 @@ import Link from 'next/link'
 interface AreaFormProps {
   area?: Area
   agents: Agent[]
+  isAdmin: boolean
+  currentAgentId?: string | null
 }
 
-export function AreaForm({ area, agents }: AreaFormProps) {
+export function AreaForm({ area, agents, isAdmin, currentAgentId }: AreaFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [featured, setFeatured] = useState(area?.featured || false)
@@ -330,32 +332,36 @@ export function AreaForm({ area, agents }: AreaFormProps) {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Assignment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <Label htmlFor="assigned_agent_id">Assigned Agent</Label>
-                  <Select 
-                    name="assigned_agent_id" 
-                    defaultValue={area?.assigned_agent_id || 'none'}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select agent" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No Agent</SelectItem>
-                      {agents.map((agent) => (
-                        <SelectItem key={agent.id} value={agent.id}>
-                          {agent.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
+            {isAdmin ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Assignment</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label htmlFor="assigned_agent_id">Assigned Agent</Label>
+                    <Select 
+                      name="assigned_agent_id" 
+                      defaultValue={area?.assigned_agent_id || 'none'}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select agent" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Agent</SelectItem>
+                        {agents.map((agent) => (
+                          <SelectItem key={agent.id} value={agent.id}>
+                            {agent.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <input type="hidden" name="assigned_agent_id" value={area?.assigned_agent_id || currentAgentId || ''} />
+            )}
 
             <div className="flex gap-2">
               <Button type="submit" className="flex-1" disabled={isLoading}>

@@ -86,6 +86,11 @@ const columns: Column<Tower>[] = [
 ]
 
 export default async function TowersPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  const isAdmin = profile?.role === 'admin'
+
   const towers = await getTowers()
 
   return (
@@ -96,7 +101,7 @@ export default async function TowersPage() {
       columns={columns}
       createHref="/admin/towers/new"
       editHref={(id) => `/admin/towers/${id}/edit`}
-      deleteAction={deleteTower}
+      deleteAction={isAdmin ? deleteTower : undefined}
       searchPlaceholder="Search towers..."
     />
   )

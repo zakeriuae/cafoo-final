@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   // Get counts
   const [savedCount, inquiriesCount, referralsCount] = await Promise.all([
     supabase
-      .from("saved_properties")
+      .from("favorites")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user?.id),
     supabase
@@ -20,21 +20,21 @@ export default async function DashboardPage() {
       .select("id", { count: "exact", head: true })
       .eq("user_id", user?.id),
     supabase
-      .from("referrals")
+      .from("referral_clicks")
       .select("id", { count: "exact", head: true })
-      .eq("referrer_user_id", user?.id),
+      .eq("referrer_id", user?.id),
   ])
 
   // Get user profile
   const { data: profile } = await supabase
-    .from("user_profiles")
+    .from("profiles")
     .select("*")
     .eq("id", user?.id)
     .single()
 
   // Get recent saved properties
   const { data: recentSaved } = await supabase
-    .from("saved_properties")
+    .from("favorites")
     .select(`
       id,
       created_at,

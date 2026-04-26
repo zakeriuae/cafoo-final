@@ -26,12 +26,24 @@ export default async function EditTowerPage({ params }: Props) {
     notFound()
   }
 
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  const isAdmin = profile?.role === 'admin'
+  
+  let currentAgentId = null
+  if (!isAdmin && user) {
+    const { data: agent } = await supabase.from('agents').select('id').eq('user_id', user.id).single()
+    currentAgentId = agent?.id
+  }
+
   return (
     <TowerForm
       tower={tower}
       areas={areas || []}
       developers={developers || []}
       agents={agents || []}
+      isAdmin={isAdmin}
+      currentAgentId={currentAgentId}
     />
   )
 }
