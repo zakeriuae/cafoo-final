@@ -129,11 +129,9 @@
   }
   html {
     scroll-behavior: smooth;
-    overflow-x: hidden;
   }
   body {
     @apply bg-background text-foreground;
-    overflow-x: hidden;
   }
   
   .container {

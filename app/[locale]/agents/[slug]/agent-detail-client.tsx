@@ -20,11 +20,14 @@ import {
   Bath,
   Maximize,
   Instagram,
-  Linkedin
+  Linkedin,
+  Send,
+  Facebook
 } from "lucide-react"
 import { useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
+import { PropertyCard } from "@/components/ui/property-card"
 
 interface Agent {
   id: string
@@ -46,6 +49,8 @@ interface Agent {
   total_listings: number
   social_instagram: string | null
   social_linkedin: string | null
+  social_telegram: string | null
+  social_facebook: string | null
 }
 
 interface Property {
@@ -61,13 +66,26 @@ interface Property {
   listing_type: string
 }
 
+interface Tower {
+  id: string
+  name: string
+  name_fa: string | null
+  slug: string
+  cover_image_url: string | null
+  starting_price: number | null
+  handover_date: string | null
+  payment_plan: string | null
+  is_off_plan: boolean
+}
+
 interface AgentDetailClientProps {
   agent: Agent
   properties: Property[]
+  towers: Tower[]
   locale: string
 }
 
-export function AgentDetailClient({ agent, properties, locale }: AgentDetailClientProps) {
+export function AgentDetailClient({ agent, properties, towers, locale }: AgentDetailClientProps) {
   const content = useContent()
   const isRtl = locale === 'fa'
   
@@ -75,7 +93,8 @@ export function AgentDetailClient({ agent, properties, locale }: AgentDetailClie
   const agentTitle = locale === 'fa' && agent.title_fa ? agent.title_fa : agent.title
   const agentBio = locale === 'fa' && agent.bio_fa ? agent.bio_fa : agent.bio
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | null) => {
+    if (!price) return "N/A"
     return new Intl.NumberFormat('en-US').format(price)
   }
 
@@ -86,9 +105,9 @@ export function AgentDetailClient({ agent, properties, locale }: AgentDetailClie
   }
 
   return (
-    <div>
+    <div className="min-h-screen bg-[#F0F7FF]">
       {/* Hero Section */}
-      <div className="relative h-64 md:h-80 bg-gradient-to-r from-primary to-primary/80">
+      <div className="relative h-40 md:h-48 bg-gradient-to-r from-primary to-primary/80">
         {agent.cover_image_url && (
           <Image
             src={agent.cover_image_url}
@@ -109,15 +128,15 @@ export function AgentDetailClient({ agent, properties, locale }: AgentDetailClie
         </div>
       </div>
 
-      <div className="container mx-auto">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-8">
         {/* Agent Profile Card */}
-        <div className="relative -mt-32 mb-8">
+        <div className="relative -mt-24 mb-8">
           <Card className="overflow-hidden">
-            <CardContent className="p-6 md:p-8">
-              <div className="flex flex-col md:flex-row gap-6 md:gap-8">
+            <CardContent className="p-6 md:py-6 md:px-10">
+              <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
                 {/* Avatar */}
                 <div className="flex-shrink-0 mx-auto md:mx-0">
-                  <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden border-4 border-background shadow-xl">
+                  <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden shadow-xl">
                     <Image
                       src={agent.avatar_url || "/images/placeholder-agent.jpg"}
                       alt={agentName}
@@ -168,204 +187,285 @@ export function AgentDetailClient({ agent, properties, locale }: AgentDetailClie
                     )}
                   </div>
 
-                  {/* Contact Buttons */}
-                  <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                    {agent.phone && (
-                      <Button size="lg" variant="outline" asChild>
-                        <a href={`tel:${agent.phone}`}>
-                          <Phone className="h-5 w-5 mr-2" />
-                          {agent.phone}
-                        </a>
-                      </Button>
-                    )}
-                    {agent.whatsapp && (
-                      <Button size="lg" className="bg-green-500 hover:bg-green-600" asChild>
-                        <a href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                          <MessageCircle className="h-5 w-5 mr-2" />
-                          WhatsApp
-                        </a>
-                      </Button>
-                    )}
-                    {agent.email && (
-                      <Button size="lg" variant="secondary" asChild>
-                        <a href={`mailto:${agent.email}`}>
-                          <Mail className="h-5 w-5 mr-2" />
-                          {locale === 'fa' ? 'ایمیل' : 'Email'}
-                        </a>
-                      </Button>
-                    )}
-                  </div>
+                  {/* Social Links Moved here if needed, but I'll put them in the right column too */}
+                </div>
+
+                {/* Right Column: Contact Buttons */}
+                <div className="flex flex-col gap-3 min-w-[240px] justify-center">
+                  {agent.phone && (
+                    <Button size="lg" className="h-14 px-8 rounded-2xl font-black text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
+                      <a href={`tel:${agent.phone}`}>
+                        <Phone className="h-6 w-6 mr-3" />
+                        {locale === 'fa' ? 'تماس' : 'Call'}
+                      </a>
+                    </Button>
+                  )}
+                  {(agent.whatsapp || agent.phone) && (
+                    <Button size="lg" className="h-14 px-8 rounded-2xl font-black text-lg bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
+                      <a href={`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
+                        <MessageCircle className="h-6 w-6 mr-3" />
+                        WhatsApp
+                      </a>
+                    </Button>
+                  )}
 
                   {/* Social Links */}
-                  {(agent.social_instagram || agent.social_linkedin) && (
-                    <div className="flex justify-center md:justify-start gap-3 mt-4">
-                      {agent.social_instagram && (
-                        <a href={`https://instagram.com/${agent.social_instagram}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors">
-                          <Instagram className="h-5 w-5" />
-                        </a>
+                  <div className="flex justify-center md:justify-end gap-4 mt-3">
+                    {/* Instagram */}
+                    <a 
+                      href={agent.social_instagram ? `https://instagram.com/${agent.social_instagram}` : "#"} 
+                      target={agent.social_instagram ? "_blank" : "_self"}
+                      rel="noopener noreferrer" 
+                      className={cn(
+                        "p-4 rounded-2xl transition-all duration-300",
+                        agent.social_instagram 
+                          ? "bg-[#E4405F]/10 text-[#E4405F] hover:bg-[#E4405F] hover:text-white" 
+                          : "bg-slate-50 text-slate-300 cursor-not-allowed"
                       )}
-                      {agent.social_linkedin && (
-                        <a href={`https://linkedin.com/in/${agent.social_linkedin}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors">
-                          <Linkedin className="h-5 w-5" />
-                        </a>
+                    >
+                      <Instagram className="h-6 w-6" />
+                    </a>
+
+                    {/* LinkedIn */}
+                    <a 
+                      href={agent.social_linkedin ? `https://linkedin.com/in/${agent.social_linkedin}` : "#"} 
+                      target={agent.social_linkedin ? "_blank" : "_self"}
+                      rel="noopener noreferrer" 
+                      className={cn(
+                        "p-4 rounded-2xl transition-all duration-300",
+                        agent.social_linkedin 
+                          ? "bg-[#0077B5]/10 text-[#0077B5] hover:bg-[#0077B5] hover:text-white" 
+                          : "bg-slate-50 text-slate-300 cursor-not-allowed"
                       )}
-                    </div>
-                  )}
+                    >
+                      <Linkedin className="h-6 w-6" />
+                    </a>
+
+                    {/* Telegram */}
+                    <a 
+                      href={agent.social_telegram ? `https://t.me/${agent.social_telegram}` : "#"} 
+                      target={agent.social_telegram ? "_blank" : "_self"}
+                      rel="noopener noreferrer" 
+                      className={cn(
+                        "p-4 rounded-2xl transition-all duration-300",
+                        agent.social_telegram 
+                          ? "bg-[#229ED9]/10 text-[#229ED9] hover:bg-[#229ED9] hover:text-white" 
+                          : "bg-slate-50 text-slate-300 cursor-not-allowed"
+                      )}
+                    >
+                      <Send className="h-6 w-6" />
+                    </a>
+
+                    {/* Facebook */}
+                    <a 
+                      href={agent.social_facebook ? `https://facebook.com/${agent.social_facebook}` : "#"} 
+                      target={agent.social_facebook ? "_blank" : "_self"}
+                      rel="noopener noreferrer" 
+                      className={cn(
+                        "p-4 rounded-2xl transition-all duration-300",
+                        agent.social_facebook 
+                          ? "bg-[#1877F2]/10 text-[#1877F2] hover:bg-[#1877F2] hover:text-white" 
+                          : "bg-slate-50 text-slate-300 cursor-not-allowed"
+                      )}
+                    >
+                      <Facebook className="h-6 w-6" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 pb-12">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Bio */}
-            {agentBio && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-bold mb-4">
-                    {locale === 'fa' ? 'درباره من' : 'About Me'}
-                  </h2>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {agentBio}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Specializations */}
-            {agent.specializations && agent.specializations.length > 0 && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-2xl font-bold mb-4">
-                    {locale === 'fa' ? 'تخصص‌ها' : 'Specializations'}
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {agent.specializations.map((spec) => (
-                      <Badge key={spec} variant="secondary" className="px-4 py-2 text-sm">
-                        <Award className="h-4 w-4 mr-2" />
-                        {spec}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Properties */}
-            {properties.length > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold">
-                    {locale === 'fa' ? 'لیست‌های من' : 'My Listings'}
-                  </h2>
-                  <Link href={`/${locale}/properties?agent=${agent.slug}`}>
-                    <Button variant="outline">
-                      {content.common.viewAll}
-                    </Button>
-                  </Link>
-                </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                  {properties.map((property) => {
-                    const propTitle = locale === 'fa' && property.title_fa ? property.title_fa : property.title
-                    return (
-                      <Link key={property.id} href={`/${locale}/properties/${property.slug}`}>
-                        <Card className="group overflow-hidden hover:shadow-lg transition-all">
-                          <div className="relative h-48">
-                            <Image
-                              src={property.cover_image_url || "/images/placeholder.jpg"}
-                              alt={propTitle}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                            <Badge className="absolute top-3 left-3">
-                              {listingTypeLabels[property.listing_type]}
-                            </Badge>
-                          </div>
-                          <CardContent className="p-4">
-                            <h3 className="font-semibold mb-2 line-clamp-1 group-hover:text-primary transition-colors">
-                              {propTitle}
-                            </h3>
-                            <p className="text-lg font-bold text-primary mb-3" dir="ltr">
-                              <AedSymbol size={16} /> {formatPrice(property.price)}
-                            </p>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              {property.bedrooms !== null && (
-                                <span className="flex items-center gap-1">
-                                  <Bed className="h-4 w-4" />
-                                  {property.bedrooms === 0 ? 'Studio' : property.bedrooms}
-                                </span>
-                              )}
-                              {property.bathrooms && (
-                                <span className="flex items-center gap-1">
-                                  <Bath className="h-4 w-4" />
-                                  {property.bathrooms}
-                                </span>
-                              )}
-                              {property.size && (
-                                <span className="flex items-center gap-1">
-                                  <Maximize className="h-4 w-4" />
-                                  {property.size} sqft
-                                </span>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
-              {/* Languages */}
-              {agent.languages && agent.languages.length > 0 && (
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-bold mb-4">
-                      {locale === 'fa' ? 'زبان‌ها' : 'Languages'}
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {agent.languages.map((lang) => (
-                        <Badge key={lang} variant="outline" className="px-3 py-1.5">
-                          {lang}
-                        </Badge>
-                      ))}
-                    </div>
+        {/* Main Content Sections */}
+        <div className="space-y-20 pb-20">
+          {/* Bio & Info Row */}
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Area: Bio */}
+            <div className="lg:col-span-2 space-y-12">
+              {agentBio && (
+                <Card className="border-none shadow-sm bg-white rounded-[2rem]">
+                  <CardContent className="p-6 md:py-6 md:px-10">
+                    <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
+                      <div className="h-8 w-1.5 bg-primary rounded-full" />
+                      {locale === 'fa' ? 'درباره من' : 'About Me'}
+                    </h2>
+                    <p className="text-slate-600 leading-relaxed whitespace-pre-line text-lg">
+                      {agentBio}
+                    </p>
                   </CardContent>
                 </Card>
               )}
+            </div>
 
-              {/* Quick Contact */}
-              <Card className="bg-primary text-primary-foreground">
-                <CardContent className="p-6 text-center">
-                  <MessageCircle className="h-10 w-10 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold mb-2">
-                    {locale === 'fa' ? 'تماس با من' : 'Get in Touch'}
-                  </h3>
-                  <p className="text-sm opacity-90 mb-4">
-                    {locale === 'fa' 
-                      ? 'سوالی دارید؟ با من تماس بگیرید'
-                      : 'Have a question? Feel free to reach out'
-                    }
-                  </p>
-                  {agent.whatsapp && (
-                    <Button variant="secondary" className="w-full" asChild>
-                      <a href={`https://wa.me/${agent.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        WhatsApp
-                      </a>
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 space-y-8">
+                {/* Languages & Specializations Card */}
+                {((agent.languages && agent.languages.length > 0) || (agent.specializations && agent.specializations.length > 0)) && (
+                  <Card className="border-none shadow-sm bg-white rounded-[2rem]">
+                  <CardContent className="p-8 space-y-6">
+                    {/* Languages */}
+                    {agent.languages && agent.languages.length > 0 && (
+                      <div>
+                        <h3 className="text-xl font-black mb-6 flex items-center gap-3">
+                          <div className="h-6 w-1 bg-primary rounded-full" />
+                          {locale === 'fa' ? 'زبان‌ها' : 'Languages'}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {agent.languages.map((lang) => (
+                            <Badge key={lang} variant="outline" className="px-4 py-2 text-sm font-bold rounded-xl border-slate-100 text-slate-600 bg-slate-50/50">
+                              {lang}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Specializations */}
+                    {agent.specializations && agent.specializations.length > 0 && (
+                      <div className={agent.languages && agent.languages.length > 0 ? "pt-6" : ""}>
+                          <h3 className="text-xl font-black mb-6 flex items-center gap-3">
+                            <div className="h-6 w-1 bg-primary rounded-full" />
+                            {locale === 'fa' ? 'تخصص‌ها' : 'Specializations'}
+                          </h3>
+                          <div className="flex flex-wrap gap-2">
+                            {agent.specializations.map((spec) => (
+                              <Badge key={spec} variant="secondary" className="px-4 py-2 text-xs font-bold rounded-xl bg-slate-50 border-slate-100 text-slate-700">
+                                <Award className="h-3 w-3 mr-2 text-primary" />
+                                {spec}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Towers & Projects Section (Full Width) */}
+          {towers.length > 0 && (
+            <div className="pt-10">
+              <div className="mb-10">
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-2">
+                  {locale === 'fa' ? 'پروژه‌ها و برج‌های من' : 'My Towers & Projects'}
+                </h2>
+                <div className="h-1.5 w-24 bg-primary rounded-full" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {towers.map((tower) => {
+                  const towerName = locale === 'fa' && tower.name_fa ? tower.name_fa : tower.name
+                  return (
+                    <Link key={tower.id} href={`/${locale}/towers/${tower.slug}`} className="group block">
+                      <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-black/5 h-full flex flex-col">
+                        {/* Image */}
+                        <div className="relative h-64 overflow-hidden">
+                          <Image
+                            src={tower.cover_image_url || "/images/placeholder.jpg"}
+                            alt={towerName}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
+                          
+                          {/* Top Badges */}
+                          <div className="absolute top-4 start-4 flex gap-2">
+                            <Badge className={cn(
+                              "backdrop-blur-md text-white border-0 px-4 py-1.5 rounded-full text-xs font-semibold",
+                              tower.is_off_plan ? "bg-secondary/80" : "bg-green-500/80"
+                            )}>
+                              {tower.is_off_plan ? (locale === 'fa' ? 'در حال ساخت' : 'Off Plan') : (locale === 'fa' ? 'آماده تحویل' : 'Ready')}
+                            </Badge>
+                          </div>
+
+                          {/* Price Overlay */}
+                          <div className="absolute bottom-5 inset-x-5 z-10 flex items-end justify-between">
+                            <div>
+                              <p className="text-white/70 text-[10px] uppercase font-bold tracking-widest mb-1">{locale === 'fa' ? 'شروع قیمت از' : 'Starting From'}</p>
+                              <p className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5" dir="ltr">
+                                <AedSymbol size={22} className="flex-shrink-0" /> {formatPrice(tower.starting_price)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6 flex-1 flex flex-col">
+                          <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-4">
+                            {towerName}
+                          </h3>
+                          
+                          {/* Stats Box */}
+                          <div className="grid grid-cols-2 gap-4 py-3 border-y border-border/40 mt-auto">
+                            <div>
+                              <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mb-1">
+                                {locale === 'fa' ? 'تحویل' : 'Handover'}
+                              </p>
+                              <p className="text-xs font-bold text-foreground leading-none">
+                                {tower.handover_date || '2026'}
+                              </p>
+                            </div>
+                            <div className="border-s border-border/40 ps-4">
+                              <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-widest mb-1">
+                                {locale === 'fa' ? 'پرداخت' : 'Payment'}
+                              </p>
+                              <p className="text-xs font-bold text-foreground leading-none">
+                                {tower.payment_plan || '70/30'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+                {/* Placeholder Cards for Towers */}
+                {towers.length % 4 !== 0 && Array.from({ length: 4 - (towers.length % 4) }).map((_, i) => (
+                  <div key={`tower-placeholder-${i}`} className="hidden lg:block border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 min-h-[400px] flex flex-col items-center justify-center p-8 text-slate-300">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                      <div className="w-6 h-6 border-2 border-slate-200 rounded-md" />
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest">{locale === 'fa' ? 'بزودی' : 'Coming Soon'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Properties Section (Full Width) */}
+          {properties.length > 0 && (
+            <div className="pt-10">
+              <div className="mb-10">
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 mb-2">
+                  {locale === 'fa' ? 'املاک من' : 'My Properties'}
+                </h2>
+                <div className="h-1.5 w-24 bg-primary rounded-full" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {properties.map((property) => (
+                  <PropertyCard 
+                    key={property.id}
+                    property={property}
+                    locale={locale}
+                    content={content}
+                    propertyUrl={`/${locale}/properties/${property.slug}`}
+                    hideLabels={true}
+                  />
+                ))}
+                {/* Placeholder Cards */}
+                {properties.length % 4 !== 0 && Array.from({ length: 4 - (properties.length % 4) }).map((_, i) => (
+                  <div key={`property-placeholder-${i}`} className="hidden lg:block border-2 border-dashed border-slate-200 rounded-[2rem] bg-slate-50/50 min-h-[400px] flex flex-col items-center justify-center p-8 text-slate-300">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                      <div className="w-6 h-6 border-2 border-slate-200 rounded-md" />
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest">{locale === 'fa' ? 'بزودی' : 'Coming Soon'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

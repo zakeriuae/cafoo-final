@@ -44,10 +44,19 @@ export default async function AgentDetailPage({ params }: Props) {
   const { data: properties } = await supabase
     .from("properties")
     .select("id, title, title_fa, slug, cover_image_url, price, bedrooms, bathrooms, size, listing_type")
-    .eq("assigned_agent_id", agent.id)
+    .eq("agent_id", agent.id)
     .eq("content_status", "published")
     .order("featured", { ascending: false })
-    .limit(6)
+    .limit(10)
+
+  // Fetch agent's towers/projects
+  const { data: towers } = await supabase
+    .from("towers")
+    .select("id, name, name_fa, slug, cover_image_url, starting_price, handover_date, payment_plan, is_off_plan")
+    .eq("assigned_agent_id", agent.id)
+    .eq("status", "published")
+    .order("featured", { ascending: false })
+    .limit(10)
 
   return (
     <main className="min-h-screen">
@@ -56,6 +65,7 @@ export default async function AgentDetailPage({ params }: Props) {
         <AgentDetailClient 
           agent={agent}
           properties={properties || []}
+          towers={towers || []}
           locale={locale}
         />
       </div>

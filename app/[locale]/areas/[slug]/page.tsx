@@ -52,7 +52,10 @@ export default async function AreaDetailPage({ params }: Props) {
   // Fetch towers in this area
   const { data: towers } = await supabase
     .from("towers")
-    .select("*")
+    .select(`
+      *,
+      developer:developers(name, name_fa, logo_url)
+    `)
     .eq("area_id", area.id)
     .eq("status", "published")
     .order("featured", { ascending: false })

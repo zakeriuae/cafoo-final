@@ -215,13 +215,13 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
             {isRtl ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             {areaName && (
               <>
-                <Link href={`/${locale}/for-sale/property/dubai/${property.area?.slug}`} className="hover:text-primary transition-colors no-underline">{areaName}</Link>
+                <Link href={`/${locale}/areas/${property.area?.slug}`} className="hover:text-primary transition-colors no-underline">{areaName}</Link>
                 {isRtl ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </>
             )}
             {towerName && (
               <>
-                <Link href={`/${locale}/for-sale/property/dubai/${property.area?.slug}/${property.tower?.slug}`} className="hover:text-primary transition-colors no-underline">{towerName}</Link>
+                <Link href={`/${locale}/towers/${property.tower?.slug}`} className="hover:text-primary transition-colors no-underline">{towerName}</Link>
                 {isRtl ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </>
             )}
@@ -313,23 +313,34 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
             
             {/* 1. Header & Quick Stats */}
             <div className="p-6 md:p-8">
-              <div className="flex flex-col gap-2 mb-6">
-                <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex flex-col gap-2">
                   <p className="text-3xl md:text-4xl font-bold text-slate-900 flex items-center gap-2" dir="ltr">
                     <AedSymbol size={28} className="text-primary" /> {formatPrice(property.price)}
                     {property.listing_type === 'rent' && <span className="text-xl text-slate-400 font-medium lowercase">/ year</span>}
                   </p>
-                  {detectedDeveloper && detectedDeveloper.logo_url && (
-                    <div className="relative h-12 w-32 md:h-16 md:w-40 overflow-hidden shrink-0">
-                      <Image src={detectedDeveloper.logo_url} alt={detectedDeveloper.name} fill className="object-contain object-right opacity-80 hover:opacity-100 filter grayscale hover:grayscale-0 transition-all duration-500" />
-                    </div>
-                  )}
+                  <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight tracking-tight">{propTitle}</h1>
+                  <div className="flex items-center gap-2 text-slate-500">
+                    <MapPin className="h-4 w-4 text-primary/70" />
+                    <span className="text-sm font-medium">{areaName}{towerName ? `, ${towerName}` : ''}, Dubai</span>
+                  </div>
                 </div>
-                <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight tracking-tight">{propTitle}</h1>
-                <div className="flex items-center gap-2 text-slate-500">
-                  <MapPin className="h-4 w-4 text-primary/70" />
-                  <span className="text-sm font-medium">{areaName}{towerName ? `, ${towerName}` : ''}, Dubai</span>
-                </div>
+
+                {detectedDeveloper?.logo_url ? (
+                  <div className="relative h-40 w-80 -my-12">
+                    <Image
+                      src={detectedDeveloper.logo_url}
+                      alt={detectedDeveloper.name || 'Developer'}
+                      fill
+                      className="object-contain object-right"
+                    />
+                  </div>
+                ) : property.verified && (
+                  <Badge className="bg-green-50 text-green-600 border border-green-100 rounded-xl px-4 py-1 flex items-center gap-2 font-bold text-[10px] uppercase tracking-wider mt-2">
+                    <ShieldCheck className="h-3.5 w-3.5" />
+                    {locale === 'fa' ? 'تایید شده' : 'Verified'}
+                  </Badge>
+                )}
               </div>
 
               <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-50">
@@ -383,6 +394,13 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                       : `Located in the prestigious ${towerName}, this residence offers a unique living experience in the heart of ${areaName}. Developed by the renowned ${detectedDeveloper?.name}, the project stands as a testament to modern architectural excellence and premium craftsmanship. Residents enjoy world-class amenities including infinity pools, lush green landscapes, and seamless connectivity to Dubai's key commercial and leisure destinations. Every square inch has been meticulously designed to provide maximum space efficiency and comfort.`
                     }
                   </p>
+
+                  <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 italic text-primary font-medium text-center">
+                    {locale === 'fa'
+                      ? 'برای دریافت کاتالوگ کامل پروژه و هماهنگی جهت بازدید حضوری، با مشاور اختصاصی این ملک تماس بگیرید.'
+                      : 'For a full project brochure and private viewing arrangements, please contact the dedicated property consultant.'
+                    }
+                  </div>
                 </div>
               </div>
             </div>
