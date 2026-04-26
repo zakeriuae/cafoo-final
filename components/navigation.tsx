@@ -133,9 +133,11 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                 <Phone className={cn("w-4 h-4", isRtl ? "ml-2" : "mr-2")} />
                 {content.nav.callUs}
               </Button>
-              <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 border-0 px-8 rounded-xl font-bold">
-                {content.nav.login || "Login"}
-              </Button>
+              <Link href={`/${locale}/auth/login`}>
+                <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 border-0 px-8 rounded-xl font-bold">
+                  {content.nav.login || "Login"}
+                </Button>
+              </Link>
             </div>
 
             <button
