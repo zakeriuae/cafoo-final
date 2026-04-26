@@ -1,9 +1,57 @@
 "use client"
 
+// ── Counter Component ───────────────────────────────────────────────────────
+function Counter({ end, duration = 2000, suffix = "+" }: { end: number; duration?: number; suffix?: string }) {
+  const [count, setCount] = useState(0)
+  const [hasStarted, setHasStarted] = useState(false)
+  const elementRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) setHasStarted(true) },
+      { threshold: 0.1 }
+    )
+    if (elementRef.current) observer.observe(elementRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!hasStarted) return
+
+    let startTime: number | null = null
+    let animationFrame: number
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+      
+      // Ease-out function (Power 4)
+      const easeOut = 1 - Math.pow(1 - progress, 4)
+      
+      setCount(Math.floor(easeOut * end))
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate)
+      }
+    }
+
+    animationFrame = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animationFrame)
+  }, [hasStarted, end, duration])
+
+  return (
+    <span ref={elementRef}>
+      {new Intl.NumberFormat().format(count)}{suffix}
+    </span>
+  )
+}
+
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Search, MapPin, ChevronDown, BedDouble, Ruler, Calendar, SlidersHorizontal, Home, Briefcase, DollarSign } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
@@ -149,6 +197,8 @@ export function HeroSection() {
   const content = useContent()
   const fa = locale === "fa"
 
+  const router = useRouter()
+
   const [intent, setIntent]     = useState<Intent>("buy")
   const [buyStage, setBuyStage] = useState<BuyStage>("all")
   const [category, setCategory] = useState<Category>("residential")
@@ -164,6 +214,39 @@ export function HeroSection() {
   const [payment, setPayment]   = useState(50)
 
   useEffect(() => { setVisible(true) }, [])
+
+  const handleSearch = () => {
+    const params = new URLSearchParams()
+
+    // listing type
+    if (intent === "buy") params.set("listing", buyStage === "off-plan" ? "off_plan" : "sale")
+    else params.set("listing", "rent")
+
+    // property type
+    if (propType && propType !== "any") params.set("type", propType)
+
+    // bedrooms
+    if (beds && beds !== "any") params.set("bedrooms", beds)
+
+    // location text (area name search)
+    if (location.trim()) params.set("area", location.trim())
+
+    // price range
+    if (priceMin) params.set("priceMin", priceMin)
+    if (priceMax) params.set("priceMax", priceMax)
+
+    // area sqft
+    if (areaMin) params.set("areaMin", areaMin)
+    if (areaMax) params.set("areaMax", areaMax)
+
+    // rental frequency
+    if (intent === "rent" && freq !== "yearly") params.set("freq", freq)
+
+    // off-plan handover
+    if (buyStage === "off-plan" && handover !== "any") params.set("handover", handover)
+
+    router.push(`/${locale}/properties?${params.toString()}`)
+  }
 
   /* options */
   const resTypes = [
@@ -249,7 +332,7 @@ export function HeroSection() {
         </div>
 
         {/* ══ SEARCH BOX ══ */}
-        <div className={cn("transition-all duration-700 delay-200", visible?"opacity-100 translate-y-0":"opacity-0 translate-y-10")}>
+        <div className={cn("relative z-[100] transition-all duration-700 delay-200", visible?"opacity-100 translate-y-0":"opacity-0 translate-y-10")}>
           <div className="bg-white rounded-[1.75rem] shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-visible ring-1 ring-white/50">
 
             {/* Row 1 */}
@@ -277,15 +360,21 @@ export function HeroSection() {
                 </div>
                 <div className="flex-1">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{fa?"مکان":"Location"}</p>
-                  <input type="text" value={location} onChange={e => setLocation(e.target.value)}
-                    placeholder={fa?"منطقه، برج یا پروژه...":"Area, tower or project..."}
-                    className="w-full text-[14px] font-semibold text-slate-800 bg-transparent outline-none placeholder:text-slate-400 placeholder:font-normal" />
+                  <input
+                  type="text"
+                  value={location}
+                  onChange={e => setLocation(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && handleSearch()}
+                  placeholder={fa?"منطقه، برج یا پروژه...": "Area, tower or project..."}
+                  className="w-full text-[14px] font-semibold text-slate-800 bg-transparent outline-none placeholder:text-slate-400 placeholder:font-normal" />
                 </div>
               </div>
 
               {/* CTA */}
               <div className="flex items-center px-3 py-3">
-                <Button className="w-full sm:w-auto h-12 px-8 bg-primary hover:bg-primary/90 text-white text-sm font-black rounded-2xl shadow-lg shadow-primary/30 gap-2.5 transition-all active:scale-95">
+                <Button
+                  onClick={handleSearch}
+                  className="w-full sm:w-auto h-12 px-8 bg-primary hover:bg-primary/90 text-white text-sm font-black rounded-2xl shadow-lg shadow-primary/30 gap-2.5 transition-all active:scale-95">
                   <Search className="h-4 w-4" strokeWidth={3} />
                   {fa?"جستجو":"Search"}
                 </Button>
@@ -407,19 +496,40 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className={cn("flex items-center justify-center gap-12 mt-16 transition-all duration-700 delay-300", visible?"opacity-100 translate-y-0":"opacity-0 translate-y-8")}>
-          {[
-            { value:"560+",   label: content.hero.stats.properties },
-            { value:"1,280+", label: content.hero.stats.clients    },
-            { value:"12+",    label: content.hero.stats.years      },
-          ].map((s,i) => (
-            <div key={i} className="text-center group cursor-default">
-              <p className="text-[2.75rem] font-black text-white tracking-tight leading-none mb-2 drop-shadow-lg group-hover:text-primary transition-colors duration-300" dir="ltr">{s.value}</p>
-              <div className="h-[2px] w-8 bg-primary mx-auto mb-2 rounded-full opacity-70 group-hover:w-12 group-hover:opacity-100 transition-all duration-300" />
-              <p className="text-[10px] text-white/50 uppercase font-bold tracking-[0.22em]">{s.label}</p>
-            </div>
-          ))}
+        {/* Stats Section with Counters */}
+        <div className={cn(
+          "flex flex-wrap items-center justify-center gap-x-12 gap-y-8 mt-16 transition-all duration-700 delay-300", 
+          visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        )}>
+          <div className="text-center group cursor-default">
+            <p className="text-[2.75rem] font-black text-white tracking-tight leading-none mb-2 drop-shadow-lg group-hover:text-primary transition-colors duration-300" dir="ltr">
+              <Counter end={560} />
+            </p>
+            <div className="h-[2px] w-8 bg-primary mx-auto mb-2 rounded-full opacity-70 group-hover:w-12 group-hover:opacity-100 transition-all duration-300" />
+            <p className="text-[10px] text-white/50 uppercase font-bold tracking-[0.22em]">
+              {content.hero.stats.properties}
+            </p>
+          </div>
+
+          <div className="text-center group cursor-default">
+            <p className="text-[2.75rem] font-black text-white tracking-tight leading-none mb-2 drop-shadow-lg group-hover:text-primary transition-colors duration-300" dir="ltr">
+              <Counter end={1280} />
+            </p>
+            <div className="h-[2px] w-8 bg-primary mx-auto mb-2 rounded-full opacity-70 group-hover:w-12 group-hover:opacity-100 transition-all duration-300" />
+            <p className="text-[10px] text-white/50 uppercase font-bold tracking-[0.22em]">
+              {content.hero.stats.clients}
+            </p>
+          </div>
+
+          <div className="text-center group cursor-default">
+            <p className="text-[2.75rem] font-black text-white tracking-tight leading-none mb-2 drop-shadow-lg group-hover:text-primary transition-colors duration-300" dir="ltr">
+              <Counter end={12} />
+            </p>
+            <div className="h-[2px] w-8 bg-primary mx-auto mb-2 rounded-full opacity-70 group-hover:w-12 group-hover:opacity-100 transition-all duration-300" />
+            <p className="text-[10px] text-white/50 uppercase font-bold tracking-[0.22em]">
+              {content.hero.stats.years}
+            </p>
+          </div>
         </div>
       </div>
 

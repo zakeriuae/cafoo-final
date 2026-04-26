@@ -11,19 +11,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { 
   Home, 
   Search, 
-  Bed, 
-  Bath, 
-  Maximize, 
+  BedDouble, 
+  Ruler, 
+  Calendar, 
   MapPin,
   SlidersHorizontal,
   Grid3X3,
-  List
+  List,
+  X,
+  ArrowRight,
+  ChevronDown,
+  Briefcase,
+  DollarSign,
+  Trash2,
+  Loader2
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
-import { AedSymbol } from "@/components/ui/aed-symbol"
 import { buildSeoUrl } from "@/lib/seo-router"
+import { createClient } from "@/lib/supabase/client"
 
 interface Property {
   id: string
@@ -42,201 +50,304 @@ interface Property {
   tower: { name: string; name_fa: string | null } | null
 }
 
-interface Area {
-  id: string
-  name: string
-  name_fa: string | null
-  slug: string
-}
-
 interface PropertiesListClientProps {
   properties: Property[]
-  areas: Area[]
-  initialFilters: {
-    area?: string
-    type?: string
-    listing?: string
-    bedrooms?: string
-  }
+  initialFilters: any
 }
 
-export function PropertiesListClient({ properties, areas, initialFilters }: PropertiesListClientProps) {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [listingType, setListingType] = useState(initialFilters.listing || "all")
-  const [propertyType, setPropertyType] = useState(initialFilters.type || "all")
-  const [bedrooms, setBedrooms] = useState(initialFilters.bedrooms || "all")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+export function PropertiesListClient({ properties: initialProperties, initialFilters }: PropertiesListClientProps) {
+  const router = useRouter()
+  const pathname = usePathname()
   const { isRtl, locale } = useI18n()
   const content = useContent()
+  const fa = locale === 'fa'
+  const supabase = createClient()
 
-  const filteredProperties = properties.filter(property => {
-    const title = locale === 'fa' && property.title_fa ? property.title_fa : property.title
-    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesListing = listingType === "all" || property.listing_type === listingType
-    const matchesType = propertyType === "all" || property.property_type === propertyType
-    const matchesBedrooms = bedrooms === "all" || property.bedrooms?.toString() === bedrooms
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [localFilters, setLocalFilters] = useState(initialFilters)
+  
+  // Infinite Scroll States
+  const [displayProperties, setDisplayProperties] = useState<Property[]>(initialProperties)
+  const [page, setPage] = useState(0)
+  const [hasMore, setHasMore] = useState(initialProperties.length === 50)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const observerRef = useRef<HTMLDivElement>(null)
+
+  // Sync with initial properties when filters change (server-side refresh)
+  useEffect(() => {
+    setDisplayProperties(initialProperties)
+    setLocalFilters(initialFilters)
+    setPage(0)
+    setHasMore(initialProperties.length === 50)
+  }, [initialProperties, initialFilters])
+
+  const updateLocalFilter = (key: string, value: string) => {
+    setLocalFilters(prev => {
+      const next = { ...prev, [key]: value }
+      if (value === 'all' || value === '' || value === 'any') delete (next as any)[key]
+      return next
+    })
+  }
+
+  const applyFilters = () => {
+    const params = new URLSearchParams()
+    Object.entries(localFilters).forEach(([key, value]) => {
+      if (value) params.set(key, value as string)
+    })
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  const clearFilters = () => {
+    setLocalFilters({})
+    router.push(pathname)
+  }
+
+  const removeTag = (key: string) => {
+    const next = { ...localFilters }
+    delete (next as any)[key]
+    setLocalFilters(next)
+    const params = new URLSearchParams()
+    Object.entries(next).forEach(([k, v]) => { if (v) params.set(k, v as string) })
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
+  // ── LOAD MORE FUNCTION ───────────────────────────────────────────────────
+  const loadMore = async () => {
+    if (isLoadingMore || !hasMore) return
+    setIsLoadingMore(true)
     
-    return matchesSearch && matchesListing && matchesType && matchesBedrooms
-  })
+    const nextPage = page + 1
+    const from = nextPage * 50
+    const to = from + 49
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US').format(price)
+    let query = supabase
+      .from("properties")
+      .select("*, area:areas(name, name_fa, slug), tower:towers(name, name_fa)")
+      .eq("content_status", "published")
+      .order("featured", { ascending: false })
+      .order("created_at", { ascending: false })
+      .range(from, to)
+
+    // Re-apply same filters for client-side fetch
+    if (initialFilters.listing) query = query.eq("listing_type", initialFilters.listing)
+    if (initialFilters.type && initialFilters.type !== 'any') query = query.eq("property_type", initialFilters.type)
+    if (initialFilters.bedrooms && initialFilters.bedrooms !== 'any') {
+      if (initialFilters.bedrooms === 'studio') query = query.eq("bedrooms", 0)
+      else if (parseInt(initialFilters.bedrooms) >= 4) query = query.gte("bedrooms", 4)
+      else query = query.eq("bedrooms", parseInt(initialFilters.bedrooms))
+    }
+    if (initialFilters.priceMin) query = query.gte("price", parseInt(initialFilters.priceMin))
+    if (initialFilters.priceMax) query = query.lte("price", parseInt(initialFilters.priceMax))
+    if (initialFilters.area) query = query.or(`title.ilike.%${initialFilters.area}%,description.ilike.%${initialFilters.area}%`)
+
+    const { data, error } = await query
+    
+    if (data && data.length > 0) {
+      setDisplayProperties(prev => [...prev, ...data])
+      setPage(nextPage)
+      setHasMore(data.length === 50)
+    } else {
+      setHasMore(false)
+    }
+    
+    setIsLoadingMore(false)
   }
 
-  const listingTypeLabels: Record<string, string> = {
-    sale: locale === 'fa' ? 'فروش' : 'For Sale',
-    rent: locale === 'fa' ? 'اجاره' : 'For Rent',
-    off_plan: locale === 'fa' ? 'پیش‌فروش' : 'Off Plan',
-  }
+  // Intersection Observer Effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => { if (entries[0].isIntersecting && hasMore) loadMore() },
+      { threshold: 0.5 }
+    )
+    if (observerRef.current) observer.observe(observerRef.current)
+    return () => observer.disconnect()
+  }, [hasMore, page, isLoadingMore])
+
+  const [category, setCategory] = useState<"residential" | "commercial">(
+    (initialFilters.type === 'office' || initialFilters.type === 'shop' || initialFilters.type === 'warehouse') 
+    ? "commercial" : "residential"
+  )
 
   return (
-    <div className="container mx-auto py-12">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-          <Home className="w-4 h-4" />
-          {content.properties.badge}
-        </div>
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-          {content.properties.title}
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-          {content.properties.subtitle}
-        </p>
-      </div>
+    <div className="min-h-screen bg-slate-50/40 pb-20 pt-6">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-10">
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
+              <Link href={`/${locale}`} className="hover:text-primary transition-colors">HOME</Link>
+              <ArrowRight className="w-2.5 h-2.5" />
+              <span className="text-slate-600">PROPERTIES</span>
+            </div>
+            <h1 className="text-4xl font-serif font-bold text-slate-900 leading-none">
+              {fa ? "جستجوی ملک" : "Property Search"}
+              <span className="text-primary ml-2 opacity-20">/</span>
+              <span className="text-primary/60 ml-2 text-2xl font-sans font-bold">
+                {displayProperties.length} {fa ? "ملک" : "Results"}
+              </span>
+            </h1>
+          </div>
 
-      {/* Filters */}
-      <Card className="mb-8">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* Search */}
-            <div className="relative lg:col-span-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder={locale === 'fa' ? "جستجوی ملک..." : "Search properties..."}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-11"
+          <div className="flex bg-white border border-slate-200 p-1 rounded-xl shrink-0">
+            <button onClick={() => setViewMode("grid")} className={cn("p-2 rounded-lg transition-all", viewMode === "grid" ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-600")}><Grid3X3 className="h-4 w-4" /></button>
+            <button onClick={() => setViewMode("list")} className={cn("p-2 rounded-lg transition-all", viewMode === "list" ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-600")}><List className="h-4 w-4" /></button>
+          </div>
+        </div>
+
+        {/* ══ SEARCH BAR ══ */}
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden mb-6">
+          <div className="flex flex-wrap items-center">
+            <div className="flex border-r border-slate-100 bg-slate-50/50">
+              {['sale', 'rent', 'off_plan'].map((t) => (
+                <button
+                  key={t}
+                  onClick={() => updateLocalFilter('listing', t)}
+                  className={cn(
+                    "px-5 py-4 text-[11px] font-bold uppercase tracking-widest transition-all border-b-2",
+                    localFilters.listing === t ? "text-primary border-primary bg-white" : "text-slate-400 border-transparent hover:text-slate-600"
+                  )}
+                >
+                  {t === 'sale' ? (fa?'خرید':'Sale') : t === 'rent' ? (fa?'اجاره':'Rent') : (fa?'پیش‌فروش':'Off-Plan')}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center px-4 border-r border-slate-100 gap-1">
+              <button onClick={() => setCategory("residential")} className={cn("px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all", category==="residential"?"bg-primary/10 text-primary":"text-slate-400")}>
+                {fa ? "مسکونی" : "RESIDENTIAL"}
+              </button>
+              <button onClick={() => setCategory("commercial")} className={cn("px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all", category==="commercial"?"bg-primary/10 text-primary":"text-slate-400")}>
+                {fa ? "تجاری" : "COMMERCIAL"}
+              </button>
+            </div>
+
+            <div className="border-r border-slate-100 min-w-[140px]">
+              <Select value={localFilters.type || "any"} onValueChange={(v) => updateLocalFilter('type', v)}>
+                <SelectTrigger className="h-14 border-none shadow-none font-bold text-xs text-slate-700 rounded-none focus:ring-0">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(category === "residential" ? [
+                    { value:"any", label: fa?"همه انواع":"All Types" },
+                    { value:"apartment", label: fa?"آپارتمان":"Apartment" },
+                    { value:"villa", label: fa?"ویلا":"Villa" },
+                    { value:"townhouse", label: fa?"تاون‌هاوس":"Townhouse" },
+                    { value:"studio", label: fa?"استودیو":"Studio" },
+                  ] : [
+                    { value:"any", label: fa?"همه انواع":"All Types" },
+                    { value:"office", label: fa?"دفتر کار":"Office" },
+                    { value:"shop", label: fa?"مغازه":"Shop" },
+                    { value:"warehouse", label: fa?"انبار":"Warehouse" },
+                  ]).map(t => (
+                    <SelectItem key={t.value} value={t.value} className="text-xs font-bold">{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-1 px-4 border-r border-slate-100">
+              <DollarSign className="w-3 h-3 text-slate-300" />
+              <input placeholder="Min" className="w-16 h-10 bg-transparent text-[11px] font-bold outline-none" value={localFilters.priceMin || ""} onChange={e => updateLocalFilter('priceMin', e.target.value)} />
+              <span className="text-slate-200">|</span>
+              <input placeholder="Max" className="w-16 h-10 bg-transparent text-[11px] font-bold outline-none" value={localFilters.priceMax || ""} onChange={e => updateLocalFilter('priceMax', e.target.value)} />
+            </div>
+
+            <div className="flex-1 flex items-center px-4 relative min-w-[200px]">
+              <MapPin className="w-4 h-4 text-primary mr-3" />
+              <input 
+                placeholder={fa ? "جستجوی مکان..." : "Area, tower or project..."}
+                className="w-full h-14 bg-transparent text-xs font-bold outline-none placeholder:text-slate-400"
+                value={localFilters.area || ""}
+                onChange={(e) => updateLocalFilter('area', e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && applyFilters()}
               />
             </div>
 
-            {/* Listing Type */}
-            <Select value={listingType} onValueChange={setListingType}>
-              <SelectTrigger className="h-11">
-                <SelectValue placeholder={locale === 'fa' ? 'نوع آگهی' : 'Listing Type'} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{locale === 'fa' ? 'همه' : 'All Types'}</SelectItem>
-                <SelectItem value="sale">{locale === 'fa' ? 'فروش' : 'For Sale'}</SelectItem>
-                <SelectItem value="rent">{locale === 'fa' ? 'اجاره' : 'For Rent'}</SelectItem>
-                <SelectItem value="off_plan">{locale === 'fa' ? 'پیش‌فروش' : 'Off Plan'}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Property Type */}
-            <Select value={propertyType} onValueChange={setPropertyType}>
-              <SelectTrigger className="h-11">
-                <SelectValue placeholder={locale === 'fa' ? 'نوع ملک' : 'Property Type'} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{locale === 'fa' ? 'همه' : 'All Properties'}</SelectItem>
-                <SelectItem value="apartment">{locale === 'fa' ? 'آپارتمان' : 'Apartment'}</SelectItem>
-                <SelectItem value="villa">{locale === 'fa' ? 'ویلا' : 'Villa'}</SelectItem>
-                <SelectItem value="townhouse">{locale === 'fa' ? 'تاون‌هاوس' : 'Townhouse'}</SelectItem>
-                <SelectItem value="penthouse">{locale === 'fa' ? 'پنت‌هاوس' : 'Penthouse'}</SelectItem>
-                <SelectItem value="studio">{locale === 'fa' ? 'استودیو' : 'Studio'}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Bedrooms */}
-            <Select value={bedrooms} onValueChange={setBedrooms}>
-              <SelectTrigger className="h-11">
-                <SelectValue placeholder={locale === 'fa' ? 'اتاق خواب' : 'Bedrooms'} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{locale === 'fa' ? 'همه' : 'Any'}</SelectItem>
-                <SelectItem value="0">{locale === 'fa' ? 'استودیو' : 'Studio'}</SelectItem>
-                <SelectItem value="1">1 {locale === 'fa' ? 'خوابه' : 'BR'}</SelectItem>
-                <SelectItem value="2">2 {locale === 'fa' ? 'خوابه' : 'BR'}</SelectItem>
-                <SelectItem value="3">3 {locale === 'fa' ? 'خوابه' : 'BR'}</SelectItem>
-                <SelectItem value="4">4+ {locale === 'fa' ? 'خوابه' : 'BR'}</SelectItem>
-              </SelectContent>
-            </Select>
+            <button onClick={applyFilters} className="h-14 px-8 bg-primary text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-primary/90 transition-all flex items-center gap-2">
+              <Search className="w-4 h-4" strokeWidth={3} />
+              {fa ? "جستجو" : "SEARCH"}
+            </button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Results Header */}
-      <div className="flex items-center justify-between mb-6">
-        <p className="text-muted-foreground">
-          {locale === 'fa' 
-            ? `${filteredProperties.length} ملک یافت شد`
-            : `${filteredProperties.length} properties found`
-          }
-        </p>
-        <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("grid")}
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "list" ? "default" : "outline"}
-            size="icon"
-            onClick={() => setViewMode("list")}
-          >
-            <List className="h-4 w-4" />
-          </Button>
         </div>
-      </div>
 
-      {/* Properties Grid */}
-      <div className={cn(
-        "grid gap-6",
-        viewMode === "grid" 
-          ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-          : "grid-cols-1"
-      )}>
-        {filteredProperties.map((property) => {
-          const propTitle = locale === 'fa' && property.title_fa ? property.title_fa : property.title
-          const areaName = property.area 
-            ? (locale === 'fa' && property.area.name_fa ? property.area.name_fa : property.area.name)
-            : null
-          const propertyUrl = buildSeoUrl({
-            transactionType: property.listing_type === 'rent' ? 'for-rent' : 'for-sale',
-            propertyType: property.property_type || 'property',
-            city: 'dubai',
-            area: property.area?.slug || 'area',
-            project: property.tower?.slug || 'project',
-            unit: property.slug
-          }, locale);
+        {/* Chips */}
+        {Object.keys(localFilters).length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 mb-8">
+            {Object.entries(localFilters).map(([key, value]) => {
+              if (!value || value === 'any') return null
+              return (
+                <Badge key={key} variant="secondary" className="px-3 py-1.5 rounded-lg gap-2 bg-white border border-slate-200 text-slate-600 shadow-none">
+                  <span className="text-[9px] font-black text-slate-300 uppercase tracking-tighter">{key}</span>
+                  <span className="font-bold text-[10px]">{value}</span>
+                  <button onClick={() => removeTag(key)}><X className="w-3 h-3 text-slate-300 hover:text-primary" /></button>
+                </Badge>
+              )
+            })}
+            <button onClick={clearFilters} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black text-red-500 hover:bg-red-50 transition-all uppercase tracking-widest border border-transparent hover:border-red-100">
+              <Trash2 className="w-3 h-3" />
+              {fa ? "حذف همه" : "CLEAR ALL"}
+            </button>
+          </div>
+        )}
 
-          return (
-            <PropertyCard 
-              key={property.id}
-              property={property}
-              locale={locale}
-              content={content}
-              propertyUrl={propertyUrl}
-              viewMode={viewMode}
-            />
-          )
-        })}
-      </div>
+        {/* Results Grid */}
+        <div className={cn(
+          "grid gap-8",
+          viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 max-w-5xl mx-auto"
+        )}>
+          {displayProperties.map((property) => {
+            const propertyUrl = buildSeoUrl({
+              transactionType: property.listing_type === 'rent' ? 'for-rent' : 'for-sale',
+              propertyType: property.property_type || 'property',
+              city: 'dubai',
+              area: property.area?.slug || 'area',
+              project: property.tower?.slug || 'project',
+              unit: property.slug
+            }, locale);
 
-      {filteredProperties.length === 0 && (
-        <div className="text-center py-16">
-          <Home className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-          <p className="text-muted-foreground text-lg">
-            {locale === 'fa' ? "ملکی یافت نشد" : "No properties found"}
-          </p>
-          <p className="text-muted-foreground text-sm mt-2">
-            {locale === 'fa' ? "فیلترها را تغییر دهید" : "Try adjusting your filters"}
-          </p>
+            return (
+              <PropertyCard 
+                key={property.id}
+                property={property}
+                locale={locale}
+                content={content}
+                propertyUrl={propertyUrl}
+                viewMode={viewMode}
+              />
+            )
+          })}
         </div>
-      )}
+
+        {/* Loading Indicator / Observer Target */}
+        <div ref={observerRef} className="py-12 flex justify-center">
+          {isLoadingMore && (
+            <div className="flex items-center gap-3 text-primary animate-pulse">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span className="text-sm font-black uppercase tracking-widest">{fa ? "در حال بارگذاری..." : "Loading More..."}</span>
+            </div>
+          )}
+          {!hasMore && displayProperties.length > 0 && (
+            <div className="text-slate-300 text-[10px] font-black uppercase tracking-[0.3em] border-t border-slate-100 pt-8 w-full text-center">
+              {fa ? "پایان لیست" : "END OF LIST"}
+            </div>
+          )}
+        </div>
+
+        {/* Empty State */}
+        {displayProperties.length === 0 && !isLoadingMore && (
+          <div className="flex flex-col items-center justify-center py-32 text-center bg-white border border-slate-200 rounded-3xl">
+            <Search className="w-12 h-12 text-slate-100 mb-6" />
+            <h3 className="text-2xl font-black text-slate-900 mb-2">{fa ? "نتیجه‌ای یافت نشد" : "No Properties Found"}</h3>
+            <p className="text-slate-500 max-w-xs mb-8 text-sm font-bold">
+              {fa ? "فیلترها را تغییر دهید یا منطقه دیگری را جستجو کنید." : "Try adjusting your filters to find what you're looking for."}
+            </p>
+            <Button onClick={clearFilters} variant="outline" className="rounded-xl px-10 h-12 font-black border-slate-200">
+              {fa ? "نمایش همه" : "Show All"}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

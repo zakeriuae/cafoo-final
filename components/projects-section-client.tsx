@@ -122,7 +122,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
           </div>
 
           <div className="flex flex-col items-end gap-6">
-            <Link href={`/${locale}/projects`}>
+            <Link href={`/${locale}/towers`}>
               <Button variant="outline" className="rounded-full px-6 h-11 border-border/60 hover:bg-primary hover:text-white hover:border-primary transition-all gap-2 group font-bold">
                 {content.projects.viewAll}
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -174,7 +174,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden">
                   <Image
-                    src={project.image}
+                    src={project.slug.includes('opus') ? "/images/towers/the-opus.png" : (project.slug.includes('crescent') ? "/images/towers/boulevard-crescent.png" : project.image)}
                     alt={project.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
