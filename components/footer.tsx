@@ -170,11 +170,11 @@ export function Footer() {
               {content.footer.copyright}
             </p>
             <div className={cn("flex items-center gap-6 text-xs text-slate-500", isRtl && "flex-row-reverse")}>
-              <Link href="#" className="hover:text-white transition-colors">
+              <Link href={`/${locale}/privacy-policy`} className="hover:text-white transition-colors">
                 {content.footer.links.privacy}
               </Link>
               <span className="w-1 h-1 rounded-full bg-slate-800" />
-              <Link href="#" className="hover:text-white transition-colors">
+              <Link href={`/${locale}/terms-of-service`} className="hover:text-white transition-colors">
                 {content.footer.links.terms}
               </Link>
               <span className="w-1 h-1 rounded-full bg-slate-800" />
