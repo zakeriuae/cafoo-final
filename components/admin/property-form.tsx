@@ -28,6 +28,8 @@ interface PropertyFormProps {
   towers: Tower[]
   developers: Developer[]
   agents: Agent[]
+  isAdmin: boolean
+  currentAgentId?: string | null
 }
 
 const propertyTypes = [
@@ -50,7 +52,7 @@ const furnishingOptions = [
   { value: 'unfurnished', label: 'Unfurnished' },
 ]
 
-export function PropertyForm({ property, areas, towers, developers, agents }: PropertyFormProps) {
+export function PropertyForm({ property, areas, towers, developers, agents, isAdmin, currentAgentId }: PropertyFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [featured, setFeatured] = useState(property?.featured || false)
@@ -723,22 +725,26 @@ export function PropertyForm({ property, areas, towers, developers, agents }: Pr
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="agent_id">Agent</Label>
-                  <Select name="agent_id" defaultValue={property?.agent_id || 'none'}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select agent" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No Agent</SelectItem>
-                      {agents.map((agent) => (
-                        <SelectItem key={agent.id} value={agent.id}>
-                          {agent.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {isAdmin ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="agent_id">Agent</Label>
+                    <Select name="agent_id" defaultValue={property?.agent_id || 'none'}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select agent" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Agent</SelectItem>
+                        {agents.map((agent) => (
+                          <SelectItem key={agent.id} value={agent.id}>
+                            {agent.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ) : (
+                  <input type="hidden" name="agent_id" value={property?.agent_id || currentAgentId || ''} />
+                )}
               </CardContent>
             </Card>
 

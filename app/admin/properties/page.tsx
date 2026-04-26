@@ -105,6 +105,11 @@ const columns: Column<Property>[] = [
 ]
 
 export default async function PropertiesPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  const isAdmin = profile?.role === 'admin'
+
   const properties = await getProperties()
 
   return (
@@ -115,7 +120,7 @@ export default async function PropertiesPage() {
       columns={columns}
       createHref="/admin/properties/new"
       editHref={(id) => `/admin/properties/${id}/edit`}
-      deleteAction={deleteProperty}
+      deleteAction={isAdmin ? deleteProperty : undefined}
       searchPlaceholder="Search properties..."
     />
   )

@@ -210,22 +210,21 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-slate-50" />
-                    <DropdownMenuItem className="rounded-xl focus:bg-slate-50 cursor-pointer gap-2 py-2.5">
-                      <UserIcon className="h-4 w-4 text-slate-400" />
-                      <span className="text-xs font-bold text-slate-600">Profile</span>
-                    </DropdownMenuItem>
-                    {profile?.role === 'admin' && (
+                    {profile?.role === 'admin' ? (
                       <Link href="/admin">
                         <DropdownMenuItem className="rounded-xl focus:bg-primary/5 text-primary cursor-pointer gap-2 py-2.5">
                           <LayoutDashboard className="h-4 w-4" />
                           <span className="text-xs font-bold">Admin Panel</span>
                         </DropdownMenuItem>
                       </Link>
+                    ) : (
+                      <Link href={`/${locale}/dashboard`}>
+                        <DropdownMenuItem className="rounded-xl focus:bg-slate-50 cursor-pointer gap-2 py-2.5">
+                          <LayoutDashboard className="h-4 w-4 text-slate-400" />
+                          <span className="text-xs font-bold text-slate-600">Dashboard</span>
+                        </DropdownMenuItem>
+                      </Link>
                     )}
-                    <DropdownMenuItem className="rounded-xl focus:bg-slate-50 cursor-pointer gap-2 py-2.5">
-                      <LayoutDashboard className="h-4 w-4 text-slate-400" />
-                      <span className="text-xs font-bold text-slate-600">Dashboard</span>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-slate-50" />
                     <DropdownMenuItem 
                       onClick={handleLogout}

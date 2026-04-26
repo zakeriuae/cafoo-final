@@ -32,7 +32,13 @@ const navigation = [
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-export function AdminSidebar() {
+const adminOnlyNav = ['Developers', 'Agents', 'Testimonials', 'FAQs', 'Amenities', 'Settings']
+
+interface AdminSidebarProps {
+  role?: 'admin' | 'agent' | string
+}
+
+export function AdminSidebar({ role = 'admin' }: AdminSidebarProps) {
   const pathname = usePathname()
 
   return (
@@ -43,13 +49,13 @@ export function AdminSidebar() {
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-lg">C</span>
           </div>
-          <span className="font-semibold text-lg">Cafoo Admin</span>
+          <span className="font-semibold text-lg">{role === 'agent' ? 'Agent Panel' : 'Admin Panel'}</span>
         </Link>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navigation.map((item) => {
+        {navigation.filter(item => role === 'admin' || !adminOnlyNav.includes(item.name)).map((item) => {
           const isActive = pathname === item.href || 
             (item.href !== '/admin' && pathname.startsWith(item.href))
           

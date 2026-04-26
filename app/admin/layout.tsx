@@ -30,7 +30,7 @@ export default async function AdminLayout({
     .eq('id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'admin') {
+  if (!profile || !['admin', 'agent'].includes(profile.role)) {
     redirect('/admin/login?error=unauthorized')
   }
 
@@ -38,7 +38,7 @@ export default async function AdminLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <div className="flex h-screen bg-muted/30">
-          <AdminSidebar />
+          <AdminSidebar role={profile.role} />
           <div className="flex flex-col flex-1 overflow-hidden">
             <AdminHeader user={user} />
             <main className="flex-1 overflow-y-auto p-6">
