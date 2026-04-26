@@ -9,6 +9,18 @@ import { cn } from "@/lib/utils"
 import { useI18n, useContent } from "@/lib/i18n"
 import { LocaleSwitcher } from "@/components/locale-switcher"
 import { usePathname } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { LogOut, User as UserIcon, LayoutDashboard, Settings } from "lucide-react"
+import { User } from "@supabase/supabase-js"
 
 interface NavigationProps {
   variant?: "transparent" | "light"
@@ -21,6 +33,27 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
   const [activeSection, setActiveSection] = useState("")
   const { locale, isRtl } = useI18n()
   const content = useContent()
+  const [user, setUser] = useState<User | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase.auth])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    window.location.reload()
+  }
 
   // Automatically determine variant if not manually provided
   // Home page is transparent, everything else is light
@@ -133,11 +166,52 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                 <Phone className={cn("w-4 h-4", isRtl ? "ml-2" : "mr-2")} />
                 {content.nav.callUs}
               </Button>
-              <Link href={`/${locale}/auth/login`}>
-                <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 border-0 px-8 rounded-xl font-bold">
-                  {content.nav.login || "Login"}
-                </Button>
-              </Link>
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="relative group focus:outline-none">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-accent rounded-full blur opacity-30 group-hover:opacity-100 transition duration-300"></div>
+                      <Avatar className="h-10 w-10 border-2 border-white relative shadow-lg">
+                        <AvatarImage src={user.user_metadata.avatar_url || user.user_metadata.picture} alt={user.user_metadata.full_name} />
+                        <AvatarFallback className="bg-primary text-white font-bold">
+                          {user.user_metadata.full_name?.substring(0, 2).toUpperCase() || "CU"}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align={isRtl ? "start" : "end"} className="w-56 mt-2 rounded-2xl shadow-2xl border-slate-100 p-2">
+                    <DropdownMenuLabel className="font-bold text-slate-900 px-3 py-2">
+                      <div className="flex flex-col">
+                        <span className="text-sm">{user.user_metadata.full_name}</span>
+                        <span className="text-[10px] text-slate-500 font-medium">{user.email}</span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator className="bg-slate-50" />
+                    <DropdownMenuItem className="rounded-xl focus:bg-slate-50 cursor-pointer gap-2 py-2.5">
+                      <UserIcon className="h-4 w-4 text-slate-400" />
+                      <span className="text-xs font-bold text-slate-600">Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="rounded-xl focus:bg-slate-50 cursor-pointer gap-2 py-2.5">
+                      <LayoutDashboard className="h-4 w-4 text-slate-400" />
+                      <span className="text-xs font-bold text-slate-600">Dashboard</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="bg-slate-50" />
+                    <DropdownMenuItem 
+                      onClick={handleLogout}
+                      className="rounded-xl focus:bg-red-50 text-red-600 cursor-pointer gap-2 py-2.5 focus:text-red-700"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span className="text-xs font-black uppercase tracking-wider">Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link href={`/${locale}/auth/login`}>
+                  <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 border-0 px-8 rounded-xl font-bold">
+                    {content.nav.login || "Login"}
+                  </Button>
+                </Link>
+              )}
             </div>
 
             <button
