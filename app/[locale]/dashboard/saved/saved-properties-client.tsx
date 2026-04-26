@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useI18n } from "@/lib/i18n"
 import { createClient } from "@/lib/supabase/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -46,6 +47,7 @@ interface SavedPropertiesClientProps {
 
 export function SavedPropertiesClient({ savedProperties: initialProperties }: SavedPropertiesClientProps) {
   const router = useRouter()
+  const { locale } = useI18n()
   const [properties, setProperties] = useState(initialProperties)
   const [removing, setRemoving] = useState<string | null>(null)
 
@@ -167,7 +169,7 @@ export function SavedPropertiesClient({ savedProperties: initialProperties }: Sa
                       )}
                     </p>
                     <Button size="sm" variant="outline" asChild>
-                      <Link href={`/properties/${property.slug}`}>
+                      <Link href={`/${locale}/properties/${property.slug}`}>
                         View
                         <ExternalLink className="ml-1 h-3 w-3" />
                       </Link>
@@ -187,7 +189,7 @@ export function SavedPropertiesClient({ savedProperties: initialProperties }: Sa
               Start browsing and save properties you like to see them here.
             </CardDescription>
             <Button asChild>
-              <Link href="/properties">Browse Properties</Link>
+              <Link href={`/${locale}/properties`}>Browse Properties</Link>
             </Button>
           </CardContent>
         </Card>

@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Heart, MessageSquare, Share2, TrendingUp, ArrowRight } from "lucide-react"
 import { AedSymbol } from "@/components/ui/aed-symbol"
+import { getI18n } from "@/lib/i18n/server"
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const { locale } = await getI18n()
 
   // Get counts
   const [savedCount, inquiriesCount, referralsCount] = await Promise.all([
@@ -55,7 +57,7 @@ export default async function DashboardPage() {
       title: "Saved Properties",
       value: savedCount.count || 0,
       icon: Heart,
-      href: "/dashboard/saved",
+      href: `/${locale}/dashboard/saved`,
       color: "text-red-500",
       bgColor: "bg-red-500/10",
     },
@@ -63,7 +65,7 @@ export default async function DashboardPage() {
       title: "My Inquiries",
       value: inquiriesCount.count || 0,
       icon: MessageSquare,
-      href: "/dashboard/inquiries",
+      href: `/${locale}/dashboard/inquiries`,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
@@ -71,7 +73,7 @@ export default async function DashboardPage() {
       title: "Referrals",
       value: referralsCount.count || 0,
       icon: Share2,
-      href: "/dashboard/referrals",
+      href: `/${locale}/dashboard/referrals`,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
@@ -124,7 +126,7 @@ export default async function DashboardPage() {
               <CardDescription>Properties you&apos;ve saved recently</CardDescription>
             </div>
             <Button variant="outline" asChild>
-              <Link href="/dashboard/saved">View all</Link>
+              <Link href={`/${locale}/dashboard/saved`}>View all</Link>
             </Button>
           </div>
         </CardHeader>
@@ -134,7 +136,7 @@ export default async function DashboardPage() {
               {recentSaved.map((item) => (
                 <Link
                   key={item.id}
-                  href={`/properties/${(item.property as any)?.slug}`}
+                  href={`/${locale}/properties/${(item.property as any)?.slug}`}
                   className="group block"
                 >
                   <div className="aspect-video rounded-lg overflow-hidden bg-muted mb-2">
@@ -166,7 +168,7 @@ export default async function DashboardPage() {
                 You haven&apos;t saved any properties yet
               </p>
               <Button asChild>
-                <Link href="/properties">Browse Properties</Link>
+                <Link href={`/${locale}/properties`}>Browse Properties</Link>
               </Button>
             </div>
           )}
@@ -186,7 +188,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <Button asChild>
-            <Link href="/dashboard/referrals">Get your code</Link>
+            <Link href={`/${locale}/dashboard/referrals`}>Get your code</Link>
           </Button>
         </CardContent>
       </Card>

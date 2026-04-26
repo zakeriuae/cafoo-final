@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/lib/i18n"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -39,19 +40,22 @@ interface DashboardSidebarProps {
   } | null
 }
 
-const navigation = [
-  { name: "Overview", href: "/dashboard", icon: Home },
-  { name: "Saved Properties", href: "/dashboard/saved", icon: Heart },
-  { name: "My Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
-  { name: "Referrals", href: "/dashboard/referrals", icon: Share2 },
-  { name: "Profile", href: "/dashboard/profile", icon: User },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
-]
+
 
 export function DashboardSidebar({ user, profile }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const { locale } = useI18n()
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+
+  const navigation = [
+    { name: "Overview", href: `/${locale}/dashboard`, icon: Home },
+    { name: "Saved Properties", href: `/${locale}/dashboard/saved`, icon: Heart },
+    { name: "My Inquiries", href: `/${locale}/dashboard/inquiries`, icon: MessageSquare },
+    { name: "Referrals", href: `/${locale}/dashboard/referrals`, icon: Share2 },
+    { name: "Profile", href: `/${locale}/dashboard/profile`, icon: User },
+    { name: "Settings", href: `/${locale}/dashboard/settings`, icon: Settings },
+  ]
 
   const handleLogout = async () => {
     const supabase = createClient()
@@ -94,7 +98,7 @@ export function DashboardSidebar({ user, profile }: DashboardSidebarProps) {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-4 border-b">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href={`/${locale}`} className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">C</span>
               </div>
@@ -124,13 +128,13 @@ export function DashboardSidebar({ user, profile }: DashboardSidebarProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/profile">
+                  <Link href={`/${locale}/dashboard/profile`}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/settings">
+                  <Link href={`/${locale}/dashboard/settings`}>
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </Link>
@@ -148,7 +152,7 @@ export function DashboardSidebar({ user, profile }: DashboardSidebarProps) {
           <nav className="flex-1 p-4 space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href || 
-                (item.href !== "/dashboard" && pathname.startsWith(item.href))
+                (item.href !== `/${locale}/dashboard` && pathname.startsWith(item.href))
               return (
                 <Link
                   key={item.name}
@@ -171,7 +175,7 @@ export function DashboardSidebar({ user, profile }: DashboardSidebarProps) {
           {/* Back to home */}
           <div className="p-4 border-t">
             <Button variant="outline" asChild className="w-full">
-              <Link href="/">
+              <Link href={`/${locale}`}>
                 <Home className="mr-2 h-4 w-4" />
                 Back to Home
               </Link>
