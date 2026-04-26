@@ -312,7 +312,7 @@ export function HeroSection() {
             {fa ? <>خانه رویایی<br /><span className="text-primary">شما در دبی</span></>
                 : <>Find Your<br /><span className="text-primary">Dream Home</span></>}
           </h1>
-          <p className="text-lg text-white/65 font-medium max-w-lg mx-auto leading-relaxed">
+          <p className="text-lg text-white/65 font-medium max-w-2xl mx-auto leading-relaxed">
             {fa ? "جستجوی هوشمند در هزاران ملک آماده و پیش‌فروش"
                 : "Smart search across thousands of ready & off-plan properties"}
           </p>

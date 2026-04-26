@@ -34,21 +34,45 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
   const { locale, isRtl } = useI18n()
   const content = useContent()
   const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<any>(null)
   const supabase = createClient()
 
   useEffect(() => {
-    const getUser = async () => {
+    const getData = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+      
+      if (user) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        setProfile(profileData)
+      } else {
+        setProfile(null)
+      }
     }
-    getUser()
+    getData()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const currentUser = session?.user ?? null
+      setUser(currentUser)
+      
+      if (currentUser) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single()
+        setProfile(profileData)
+      } else {
+        setProfile(null)
+      }
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase.auth])
+  }, [supabase])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -190,6 +214,14 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                       <UserIcon className="h-4 w-4 text-slate-400" />
                       <span className="text-xs font-bold text-slate-600">Profile</span>
                     </DropdownMenuItem>
+                    {profile?.role === 'admin' && (
+                      <Link href="/admin">
+                        <DropdownMenuItem className="rounded-xl focus:bg-primary/5 text-primary cursor-pointer gap-2 py-2.5">
+                          <LayoutDashboard className="h-4 w-4" />
+                          <span className="text-xs font-bold">Admin Panel</span>
+                        </DropdownMenuItem>
+                      </Link>
+                    )}
                     <DropdownMenuItem className="rounded-xl focus:bg-slate-50 cursor-pointer gap-2 py-2.5">
                       <LayoutDashboard className="h-4 w-4 text-slate-400" />
                       <span className="text-xs font-bold text-slate-600">Dashboard</span>
