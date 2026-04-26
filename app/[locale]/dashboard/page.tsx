@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Heart, MessageSquare, Share2, TrendingUp, ArrowRight } from "lucide-react"
 import { AedSymbol } from "@/components/ui/aed-symbol"
-import { getI18n } from "@/lib/i18n/server"
+interface Props {
+  params: Promise<{ locale: string }>
+}
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ params }: Props) {
+  const { locale } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  const { locale } = await getI18n()
 
   // Get counts
   const [savedCount, inquiriesCount, referralsCount] = await Promise.all([
