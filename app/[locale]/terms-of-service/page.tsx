@@ -127,7 +127,7 @@ export default async function TermsOfServicePage({
       <Navigation variant="light" />
       
       {/* Hero Header */}
-      <div className="pt-32 pb-20 bg-slate-900 relative overflow-hidden">
+      <div className="pt-32 pb-32 bg-slate-900 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary rounded-full blur-[100px] -translate-x-1/2 translate-y-1/2" />
@@ -150,7 +150,7 @@ export default async function TermsOfServicePage({
       </div>
 
       {/* Content Section */}
-      <div className="container mx-auto px-4 -mt-10 pb-24">
+      <div className="container mx-auto px-4 -mt-24 pb-24 relative z-20">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
             <div className="p-8 md:p-12">
