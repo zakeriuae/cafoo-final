@@ -15,7 +15,10 @@ async function getStats() {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  
+  if (!user) return { properties: 0, towers: 0, areas: 0, agents: 0, leads: 0, newLeads: 0 }
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   const isAdmin = profile?.role === 'admin'
   
   let currentAgentId = null
@@ -72,7 +75,10 @@ async function getRecentLeads() {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
+  
+  if (!user) return []
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   const isAdmin = profile?.role === 'admin'
   
   let currentAgentId = null

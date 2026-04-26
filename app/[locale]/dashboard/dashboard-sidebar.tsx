@@ -66,9 +66,9 @@ export function DashboardSidebar({ user, profile }: DashboardSidebarProps) {
 
   const initials = profile?.full_name
     ?.split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
-    .toUpperCase() || user.email?.[0].toUpperCase() || "U"
+    .toUpperCase() || (user?.email ? user.email[0].toUpperCase() : "U")
 
   return (
     <>
