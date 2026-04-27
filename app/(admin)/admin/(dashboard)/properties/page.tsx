@@ -30,7 +30,8 @@ async function getProperties() {
     query = query.eq('agent_id', currentAgentId)
   }
 
-  const { data } = await query
+  const { data, error } = await query
+  if (error) throw error
   return data || []
 }
 
@@ -130,32 +131,45 @@ const columns: Column<Property>[] = [
 ]
 
 export default async function PropertiesPage() {
-  const supabase = await createClient()
-  const { data: authData } = await supabase.auth.getUser()
-  const user = authData?.user
-  
-  let isAdmin = false
-  if (user) {
-    if (user.email === 'zakeriuae@gmail.com') {
-      isAdmin = true
-    } else {
-      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-      isAdmin = profile?.role === 'admin'
+  try {
+    const supabase = await createClient()
+    const { data: authData } = await supabase.auth.getUser()
+    const user = authData?.user
+    
+    let isAdmin = false
+    if (user) {
+      if (user.email === 'zakeriuae@gmail.com') {
+        isAdmin = true
+      } else {
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        isAdmin = profile?.role === 'admin'
+      }
     }
+
+    const properties = await getProperties()
+
+    return (
+      <DataTable
+        title="Properties"
+        description="Manage property listings"
+        data={properties}
+        columns={columns}
+        createHref="/admin/properties/new"
+        editHref={(id) => `/admin/properties/${id}/edit`}
+        deleteAction={isAdmin ? deleteProperty : undefined}
+        searchPlaceholder="Search properties..."
+      />
+    )
+  } catch (error: any) {
+    return (
+      <div className="p-8 bg-red-50 border border-red-200 rounded-lg">
+        <h1 className="text-red-700 font-bold text-xl mb-4">Debug Error:</h1>
+        <pre className="bg-white p-4 rounded border overflow-auto text-sm">
+          {error.message}
+          {"\n\nStack Trace:\n"}
+          {error.stack}
+        </pre>
+      </div>
+    )
   }
-
-  const properties = await getProperties()
-
-  return (
-    <DataTable
-      title="Properties"
-      description="Manage property listings"
-      data={properties}
-      columns={columns}
-      createHref="/admin/properties/new"
-      editHref={(id) => `/admin/properties/${id}/edit`}
-      deleteAction={isAdmin ? deleteProperty : undefined}
-      searchPlaceholder="Search properties..."
-    />
-  )
 }
