@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -11,14 +11,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Spinner } from '@/components/ui/spinner'
 import { AlertCircle, Lock, Mail } from 'lucide-react'
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(
     searchParams.get('error') === 'unauthorized' 
-      ? 'You do not have admin access.' 
+      ? 'You do not have permission to access the admin panel.' 
       : null
   )
   const [isLoading, setIsLoading] = useState(false)
@@ -42,8 +42,8 @@ export default function AdminLoginPage() {
     }
 
     // Check if user is admin or agent
-    const { data } = await supabase.auth.getUser()
-    const user = data?.user
+    const { data: authData } = await supabase.auth.getUser()
+    const user = authData?.user
     if (!user) {
       setError('Authentication failed')
       setIsLoading(false)
@@ -134,5 +134,17 @@ export default function AdminLoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+        <Spinner />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
