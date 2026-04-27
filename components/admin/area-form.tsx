@@ -21,6 +21,7 @@ import { createArea, updateArea } from '@/app/(admin)/admin/(dashboard)/areas/ac
 import type { Area, Agent } from '@/lib/database.types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ImageUploader } from '@/components/admin/image-uploader'
 
 interface AreaFormProps {
   area?: Area
@@ -130,15 +131,15 @@ export function AreaForm({ area, agents, isAdmin, currentAgentId }: AreaFormProp
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="cover_image_url">Cover Image URL</Label>
-                  <Input
-                    id="cover_image_url"
-                    name="cover_image_url"
-                    defaultValue={area?.cover_image_url || ''}
-                    placeholder="https://..."
-                  />
-                </div>
+                <ImageUploader
+                  bucket="media"
+                  folder={`areas/${area?.slug || 'new'}`}
+                  initialImages={[
+                    ...(area?.cover_image_url ? [area.cover_image_url] : []),
+                    ...((area?.gallery || []).filter((g) => g !== area?.cover_image_url))
+                  ]}
+                  label="Photos (first image = cover)"
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">

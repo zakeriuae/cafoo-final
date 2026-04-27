@@ -22,6 +22,10 @@ export async function deleteProperty(id: string) {
 export async function createProperty(formData: FormData) {
   const supabase = await createClient()
 
+  const galleryRaw = formData.get('gallery') as string
+  let gallery: string[] = []
+  try { gallery = galleryRaw ? JSON.parse(galleryRaw) : [] } catch {}
+
   const data = {
     title: formData.get('title') as string,
     title_fa: formData.get('title_fa') as string || null,
@@ -58,6 +62,7 @@ export async function createProperty(formData: FormData) {
     latitude: formData.get('latitude') ? parseFloat(formData.get('latitude') as string) : null,
     longitude: formData.get('longitude') ? parseFloat(formData.get('longitude') as string) : null,
     cover_image_url: formData.get('cover_image_url') as string || null,
+    gallery,
     video_url: formData.get('video_url') as string || null,
     floor_plan_url: formData.get('floor_plan_url') as string || null,
     virtual_tour_url: formData.get('virtual_tour_url') as string || null,
@@ -93,6 +98,10 @@ export async function createProperty(formData: FormData) {
 export async function updateProperty(id: string, formData: FormData) {
   const supabase = await createClient()
 
+  const galleryRaw2 = formData.get('gallery') as string
+  let gallery2: string[] = []
+  try { gallery2 = galleryRaw2 ? JSON.parse(galleryRaw2) : [] } catch {}
+
   const data = {
     title: formData.get('title') as string,
     title_fa: formData.get('title_fa') as string || null,
@@ -129,6 +138,7 @@ export async function updateProperty(id: string, formData: FormData) {
     latitude: formData.get('latitude') ? parseFloat(formData.get('latitude') as string) : null,
     longitude: formData.get('longitude') ? parseFloat(formData.get('longitude') as string) : null,
     cover_image_url: formData.get('cover_image_url') as string || null,
+    gallery: gallery2,
     video_url: formData.get('video_url') as string || null,
     floor_plan_url: formData.get('floor_plan_url') as string || null,
     virtual_tour_url: formData.get('virtual_tour_url') as string || null,

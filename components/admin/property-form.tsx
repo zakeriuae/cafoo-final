@@ -21,6 +21,7 @@ import { createProperty, updateProperty } from '@/app/(admin)/admin/(dashboard)/
 import type { Property, Area, Tower, Developer, Agent } from '@/lib/database.types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ImageUploader } from '@/components/admin/image-uploader'
 
 interface PropertyFormProps {
   property?: Property
@@ -218,15 +219,15 @@ export function PropertyForm({ property, areas, towers, developers, agents, isAd
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="cover_image_url">Cover Image URL</Label>
-                  <Input
-                    id="cover_image_url"
-                    name="cover_image_url"
-                    defaultValue={property?.cover_image_url || ''}
-                    placeholder="https://..."
-                  />
-                </div>
+                <ImageUploader
+                  bucket="media"
+                  folder={`properties/${property?.slug || 'new'}`}
+                  initialImages={[
+                    ...(property?.cover_image_url ? [property.cover_image_url] : []),
+                    ...((property?.gallery || []).filter((g) => g !== property?.cover_image_url))
+                  ]}
+                  label="Photos (first image = cover)"
+                />
               </CardContent>
             </Card>
 

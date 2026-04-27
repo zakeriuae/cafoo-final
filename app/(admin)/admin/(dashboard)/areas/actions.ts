@@ -22,6 +22,10 @@ export async function deleteArea(id: string) {
 export async function createArea(formData: FormData) {
   const supabase = await createClient()
 
+  const galleryRaw = formData.get('gallery') as string
+  let gallery: string[] = []
+  try { gallery = galleryRaw ? JSON.parse(galleryRaw) : [] } catch {}
+
   const data = {
     name: formData.get('name') as string,
     name_fa: formData.get('name_fa') as string || null,
@@ -31,6 +35,7 @@ export async function createArea(formData: FormData) {
     full_description: formData.get('full_description') as string || null,
     full_description_fa: formData.get('full_description_fa') as string || null,
     cover_image_url: formData.get('cover_image_url') as string || null,
+    gallery,
     assigned_agent_id: formData.get('assigned_agent_id') as string || null,
     average_price: formData.get('average_price') ? parseFloat(formData.get('average_price') as string) : null,
     price_growth_percent: formData.get('price_growth_percent') ? parseFloat(formData.get('price_growth_percent') as string) : null,
@@ -58,6 +63,10 @@ export async function createArea(formData: FormData) {
 export async function updateArea(id: string, formData: FormData) {
   const supabase = await createClient()
 
+  const galleryRaw2 = formData.get('gallery') as string
+  let gallery2: string[] = []
+  try { gallery2 = galleryRaw2 ? JSON.parse(galleryRaw2) : [] } catch {}
+
   const data = {
     name: formData.get('name') as string,
     name_fa: formData.get('name_fa') as string || null,
@@ -67,6 +76,7 @@ export async function updateArea(id: string, formData: FormData) {
     full_description: formData.get('full_description') as string || null,
     full_description_fa: formData.get('full_description_fa') as string || null,
     cover_image_url: formData.get('cover_image_url') as string || null,
+    gallery: gallery2,
     assigned_agent_id: formData.get('assigned_agent_id') as string || null,
     average_price: formData.get('average_price') ? parseFloat(formData.get('average_price') as string) : null,
     price_growth_percent: formData.get('price_growth_percent') ? parseFloat(formData.get('price_growth_percent') as string) : null,

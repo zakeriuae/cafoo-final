@@ -21,6 +21,7 @@ import { createTower, updateTower } from '@/app/(admin)/admin/(dashboard)/towers
 import type { Tower, Area, Developer, Agent } from '@/lib/database.types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ImageUploader } from '@/components/admin/image-uploader'
 
 interface TowerFormProps {
   tower?: Tower
@@ -120,10 +121,15 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                   <Input id="slug" name="slug" defaultValue={tower?.slug} required />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="cover_image_url">Cover Image URL</Label>
-                  <Input id="cover_image_url" name="cover_image_url" defaultValue={tower?.cover_image_url || ''} placeholder="https://..." />
-                </div>
+                <ImageUploader
+                  bucket="media"
+                  folder={`towers/${tower?.slug || 'new'}`}
+                  initialImages={[
+                    ...(tower?.cover_image_url ? [tower.cover_image_url] : []),
+                    ...((tower?.gallery || []).filter((g) => g !== tower?.cover_image_url))
+                  ]}
+                  label="Photos (first image = cover)"
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
