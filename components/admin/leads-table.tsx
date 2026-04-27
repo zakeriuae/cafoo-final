@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { updateLead, deleteLead } from '@/app/admin/leads/actions'
+import { updateLead, deleteLead } from '@/app/(admin)/admin/leads/actions'
 import type { Lead, Agent } from '@/lib/database.types'
 import { Search, Phone, Mail, MessageSquare, Trash2, Edit2 } from 'lucide-react'
 

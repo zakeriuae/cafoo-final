@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/badge'
 async function getTowers() {
   const supabase = await createClient()
 
-  const { data } = await supabase.auth.getUser()
-  const user = data?.user
+  const { data: authData } = await supabase.auth.getUser()
+  const user = authData?.user
   if (!user) return []
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   const isAdmin = profile?.role === 'admin'
@@ -106,8 +106,8 @@ const columns: Column<Tower>[] = [
 
 export default async function TowersPage() {
   const supabase = await createClient()
-  const { data } = await supabase.auth.getUser()
-  const user = data?.user
+  const { data: authData } = await supabase.auth.getUser()
+  const user = authData?.user
   let isAdmin = false
   if (user) {
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()

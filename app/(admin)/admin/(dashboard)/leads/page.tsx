@@ -4,8 +4,8 @@ import { LeadsTable } from '@/components/admin/leads-table'
 async function getLeads() {
   const supabase = await createClient()
 
-  const { data } = await supabase.auth.getUser()
-  const user = data?.user
+  const { data: authData } = await supabase.auth.getUser()
+  const user = authData?.user
   if (!user) return []
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   const isAdmin = profile?.role === 'admin'

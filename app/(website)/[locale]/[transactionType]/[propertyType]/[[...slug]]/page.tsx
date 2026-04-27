@@ -3,9 +3,9 @@ import { notFound, redirect } from "next/navigation";
 import { parseSeoRoute, buildSeoUrl } from "@/lib/seo-router";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
-import { PropertiesListClient } from "@/app/[locale]/properties/properties-list-client";
-import { PropertyDetailClient } from "@/app/[locale]/properties/[slug]/property-detail-client";
-import { TowerDetailClient } from "@/app/[locale]/towers/tower-detail-client";
+import { PropertiesListClient } from "@/app/(website)/[locale]/properties/properties-list-client";
+import { PropertyDetailClient } from "@/app/(website)/[locale]/properties/[slug]/property-detail-client";
+import { TowerDetailClient } from "@/app/(website)/[locale]/towers/tower-detail-client";
 
 interface Props {
   params: Promise<{

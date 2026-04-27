@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { createProperty, updateProperty } from '@/app/admin/properties/actions'
+import { createProperty, updateProperty } from '@/app/(admin)/admin/properties/actions'
 import type { Property, Area, Tower, Developer, Agent } from '@/lib/database.types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'

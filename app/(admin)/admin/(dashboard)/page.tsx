@@ -14,8 +14,8 @@ import {
 async function getStats() {
   const supabase = await createClient()
   
-  const { data } = await supabase.auth.getUser()
-  const user = data?.user
+  const { data: authData } = await supabase.auth.getUser()
+  const user = authData?.user
   
   if (!user) return { properties: 0, towers: 0, areas: 0, agents: 0, leads: 0, newLeads: 0 }
 
@@ -75,8 +75,8 @@ async function getStats() {
 async function getRecentLeads() {
   const supabase = await createClient()
   
-  const { data } = await supabase.auth.getUser()
-  const user = data?.user
+  const { data: authData } = await supabase.auth.getUser()
+  const user = authData?.user
   
   if (!user) return []
 
