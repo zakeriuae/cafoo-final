@@ -26,7 +26,8 @@ export default async function EditTowerPage({ params }: Props) {
     notFound()
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data } = await supabase.auth.getUser()
+  const user = data?.user
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user?.id).single()
   const isAdmin = profile?.role === 'admin'
   

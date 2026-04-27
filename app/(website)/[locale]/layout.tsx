@@ -7,7 +7,7 @@ import { locales, type Locale, isRtl, localeNames } from '@/lib/i18n';
 import { getContent } from '@/lib/i18n';
 import { I18nProvider } from '@/lib/i18n';
 import { SmoothScroll } from '@/components/smooth-scroll';
-import '../globals.css';
+import '../../globals.css';
 
 const geist = Geist({
   subsets: ['latin'],
@@ -28,17 +28,17 @@ const playfair = Playfair_Display({
 const vazirmatn = localFont({
   src: [
     {
-      path: '../../public/fonts/Vazirmatn-Regular.woff2',
+      path: '../../../public/fonts/Vazirmatn-Regular.woff2',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../../public/fonts/Vazirmatn-Medium.woff2',
+      path: '../../../public/fonts/Vazirmatn-Medium.woff2',
       weight: '500',
       style: 'normal',
     },
     {
-      path: '../../public/fonts/Vazirmatn-Bold.woff2',
+      path: '../../../public/fonts/Vazirmatn-Bold.woff2',
       weight: '700',
       style: 'normal',
     },

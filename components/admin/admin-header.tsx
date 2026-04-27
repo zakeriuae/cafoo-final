@@ -31,7 +31,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
     router.push('/admin/login')
   }
 
-  const initials = user.email?.slice(0, 2).toUpperCase() || 'AD'
+  const initials = user.email ? user.email.slice(0, 2).toUpperCase() : 'AD'
 
   return (
     <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6">

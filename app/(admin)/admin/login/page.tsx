@@ -41,8 +41,9 @@ export default function AdminLoginPage() {
       return
     }
 
-    // Check if user is admin
-    const { data: { user } } = await supabase.auth.getUser()
+    // Check if user is admin or agent
+    const { data } = await supabase.auth.getUser()
+    const user = data?.user
     if (!user) {
       setError('Authentication failed')
       setIsLoading(false)
@@ -55,9 +56,9 @@ export default function AdminLoginPage() {
       .eq('id', user.id)
       .single()
 
-    if (!profile || profile.role !== 'admin') {
+    if (!profile || !['admin', 'agent'].includes(profile.role)) {
       await supabase.auth.signOut()
-      setError('You do not have admin access.')
+      setError('You do not have permission to access the admin panel.')
       setIsLoading(false)
       return
     }

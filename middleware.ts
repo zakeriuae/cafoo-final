@@ -10,15 +10,7 @@ export function middleware(request: NextRequest) {
     (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
   )
 
-  if (pathnameHasLocale) {
-    const requestHeaders = new Headers(request.headers)
-    requestHeaders.set('x-pathname', pathname)
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
-  }
+  if (pathnameHasLocale) return
 
   // Skip Next.js internal paths, public files, and unlocalized routes
   if (
@@ -28,24 +20,12 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/auth') || // supabase auth callback etc
     pathname.includes('.') // like /favicon.ico, /Logo.svg, etc.
   ) {
-    // Inject x-pathname before returning
-    const requestHeaders = new Headers(request.headers)
-    requestHeaders.set('x-pathname', pathname)
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
+    return
   }
 
-  // Inject x-pathname header for server components
-  const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-pathname', pathname)
-
   // Redirect to default locale if missing
-  const nextUrl = request.nextUrl.clone()
-  nextUrl.pathname = `/${defaultLocale}${pathname}`
-  return NextResponse.redirect(nextUrl)
+  request.nextUrl.pathname = `/${defaultLocale}${pathname}`
+  return NextResponse.redirect(request.nextUrl)
 }
 
 export const config = {
