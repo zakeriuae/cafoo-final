@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 import { AdminHeader } from '@/components/admin/admin-header'
@@ -17,6 +18,21 @@ export default async function AdminLayout({
 }) {
   const supabase = await createClient()
   
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') || ''
+
+  // If we are on the login page, just render children without sidebar/header
+  if (pathname === '/admin/login') {
+    return (
+      <html lang="en">
+        <body className="font-sans antialiased">
+          {children}
+          <Toaster />
+        </body>
+      </html>
+    )
+  }
+
   const { data: { user } } = await supabase.auth.getUser()
   
   if (!user) {
