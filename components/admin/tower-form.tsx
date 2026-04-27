@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
-import { createTower, updateTower } from '@/app/(admin)/admin/towers/actions'
+import { createTower, updateTower } from '@/app/(admin)/admin/(dashboard)/towers/actions'
 import type { Tower, Area, Developer, Agent } from '@/lib/database.types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'

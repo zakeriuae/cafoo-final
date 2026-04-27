@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { locales, defaultLocale } from '@/lib/i18n/config'
 import { updateSession } from '@/lib/supabase/middleware'
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   // 1. Update Supabase session (refreshes auth token)
   const supabaseResponse = await updateSession(request)
 
