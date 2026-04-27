@@ -26,13 +26,14 @@ const navigation = [
   { name: 'Developers', href: '/admin/developers', icon: Landmark },
   { name: 'Agents', href: '/admin/agents', icon: Users },
   { name: 'Leads (CRM)', href: '/admin/leads', icon: TrendingUp },
+  { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Testimonials', href: '/admin/testimonials', icon: Star },
   { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
   { name: 'Amenities', href: '/admin/amenities', icon: FileText },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
-const adminOnlyNav = ['Developers', 'Agents', 'Testimonials', 'FAQs', 'Amenities', 'Settings']
+const adminOnlyNav = ['Developers', 'Agents', 'Users', 'Testimonials', 'FAQs', 'Amenities', 'Settings']
 
 interface AdminSidebarProps {
   role?: 'admin' | 'agent' | string
