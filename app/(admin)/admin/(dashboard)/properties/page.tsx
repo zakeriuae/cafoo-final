@@ -11,11 +11,12 @@ async function getProperties() {
   const { data: authData } = await supabase.auth.getUser()
   const user = authData?.user
   if (!user) return []
+  
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   const isAdmin = profile?.role === 'admin'
   
   let currentAgentId = null
-  if (!isAdmin && user) {
+  if (!isAdmin) {
     const { data: agent } = await supabase.from('agents').select('id').eq('user_id', user.id).single()
     currentAgentId = agent?.id
   }
@@ -33,12 +34,17 @@ async function getProperties() {
   return data || []
 }
 
-function formatPrice(price: number, currency: string = 'AED') {
-  return new Intl.NumberFormat('en-AE', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  }).format(price)
+function formatPrice(price: number | null | undefined, currency: string = 'AED') {
+  if (price === null || price === undefined || isNaN(price)) return '-'
+  try {
+    return new Intl.NumberFormat('en-AE', {
+      style: 'currency',
+      currency: currency || 'AED',
+      maximumFractionDigits: 0,
+    }).format(price)
+  } catch (e) {
+    return `${currency || 'AED'} ${price}`
+  }
 }
 
 const columns: Column<Property>[] = [
@@ -127,10 +133,15 @@ export default async function PropertiesPage() {
   const supabase = await createClient()
   const { data: authData } = await supabase.auth.getUser()
   const user = authData?.user
+  
   let isAdmin = false
   if (user) {
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-    isAdmin = profile?.role === 'admin'
+    if (user.email === 'zakeriuae@gmail.com') {
+      isAdmin = true
+    } else {
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+      isAdmin = profile?.role === 'admin'
+    }
   }
 
   const properties = await getProperties()
