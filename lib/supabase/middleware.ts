@@ -42,9 +42,13 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protect admin routes - require authentication
-  if (request.nextUrl.pathname.startsWith('/admin') && !user) {
+  if (
+    request.nextUrl.pathname.startsWith('/admin') && 
+    !request.nextUrl.pathname.startsWith('/admin/login') && 
+    !user
+  ) {
     const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
+    url.pathname = '/admin/login'
     url.searchParams.set('next', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
@@ -52,7 +56,7 @@ export async function updateSession(request: NextRequest) {
   // Protect user dashboard routes
   if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
+    url.pathname = '/en/login' // Assuming website login is here
     url.searchParams.set('next', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
