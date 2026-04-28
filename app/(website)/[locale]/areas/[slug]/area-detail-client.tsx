@@ -1,4 +1,5 @@
 "use client"
+// Build Trigger: v1.0.1
 
 import Image from "next/image"
 import { SmartImage } from "@/components/ui/smart-image"
