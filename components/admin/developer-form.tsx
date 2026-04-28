@@ -20,6 +20,7 @@ import { createDeveloper, updateDeveloper } from '@/app/(admin)/admin/(dashboard
 import type { Developer } from '@/lib/database.types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { ImageUploader } from '@/components/admin/image-uploader'
 
 interface DeveloperFormProps {
   developer?: Developer
@@ -125,15 +126,14 @@ export function DeveloperForm({ developer }: DeveloperFormProps) {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="logo_url">Logo URL</Label>
-                  <Input
-                    id="logo_url"
-                    name="logo_url"
-                    defaultValue={developer?.logo_url || ''}
-                    placeholder="https://..."
-                  />
-                </div>
+                <ImageUploader
+                  bucket="media"
+                  folder={`developers/${developer?.slug || 'new'}`}
+                  initialImages={developer?.logo_url ? [developer.logo_url] : []}
+                  maxFiles={1}
+                  label="Developer Logo"
+                  coverImageName="logo_url"
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">

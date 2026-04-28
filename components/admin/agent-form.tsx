@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createAgent, updateAgent } from "@/app/(admin)/admin/(dashboard)/agents/actions"
 import { Loader2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { ImageUploader } from "@/components/admin/image-uploader"
 import type { Agent } from "@/lib/database.types"
 
 interface AgentFormProps {
@@ -226,23 +227,23 @@ export function AgentForm({ agent }: AgentFormProps) {
             <CardTitle>Images & Social</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="avatar_url">Avatar URL</Label>
-              <Input
-                id="avatar_url"
-                name="avatar_url"
-                type="url"
-                defaultValue={agent?.avatar_url || ""}
+            <div className="space-y-6">
+              <ImageUploader
+                bucket="media"
+                folder={`agents/${agent?.slug || 'new'}/avatar`}
+                initialImages={agent?.avatar_url ? [agent.avatar_url] : []}
+                maxFiles={1}
+                label="Agent Avatar"
+                coverImageName="avatar_url"
               />
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="cover_image_url">Cover Image URL</Label>
-              <Input
-                id="cover_image_url"
-                name="cover_image_url"
-                type="url"
-                defaultValue={agent?.cover_image_url || ""}
+              <ImageUploader
+                bucket="media"
+                folder={`agents/${agent?.slug || 'new'}/cover`}
+                initialImages={agent?.cover_image_url ? [agent.cover_image_url] : []}
+                maxFiles={1}
+                label="Cover Image"
+                coverImageName="cover_image_url"
               />
             </div>
 

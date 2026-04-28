@@ -16,6 +16,7 @@ interface ImageUploaderProps {
   coverImageName?: string  // hidden input name for cover (default: 'cover_image_url')
   galleryName?: string     // hidden input name for gallery (default: 'gallery')
   label?: string
+  maxFiles?: number        // Limit number of images (e.g. 1 for avatar)
 }
 
 export function ImageUploader({
@@ -25,6 +26,7 @@ export function ImageUploader({
   coverImageName = 'cover_image_url',
   galleryName = 'gallery',
   label = 'Images',
+  maxFiles = 0, // 0 means unlimited
 }: ImageUploaderProps) {
   const [images, setImages] = useState<string[]>(initialImages)
   const [uploading, setUploading] = useState(false)
@@ -38,7 +40,17 @@ export function ImageUploader({
     setUploading(true)
     const newUrls: string[] = []
 
-    for (const file of files) {
+    // If maxFiles is 1, we replace the existing image instead of adding to it
+    const isSingle = maxFiles === 1
+    const currentCount = isSingle ? 0 : images.length
+    const allowedNew = maxFiles > 0 ? maxFiles - currentCount : files.length
+    const filesToUpload = files.slice(0, allowedNew)
+
+    if (filesToUpload.length < files.length && maxFiles > 0) {
+      toast.warning(`Only ${allowedNew} more image(s) allowed`)
+    }
+
+    for (const file of filesToUpload) {
       // Validate file type and size
       if (!file.type.startsWith('image/')) {
         toast.error(`${file.name} is not an image`)
@@ -71,10 +83,10 @@ export function ImageUploader({
       newUrls.push(publicUrl)
     }
 
-    setImages((prev) => [...prev, ...newUrls])
+    setImages((prev) => isSingle ? newUrls : [...prev, ...newUrls])
     if (newUrls.length > 0) toast.success(`${newUrls.length} image(s) uploaded`)
     setUploading(false)
-  }, [bucket, folder])
+  }, [bucket, folder, images.length, maxFiles])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -129,6 +141,7 @@ export function ImageUploader({
 
   const coverImage = images[0] || ''
   const galleryJson = JSON.stringify(images)
+  const isMaxReached = maxFiles > 0 && images.length >= maxFiles
 
   return (
     <div className="space-y-4">
@@ -139,68 +152,73 @@ export function ImageUploader({
       <input type="hidden" name={galleryName} value={galleryJson} />
 
       {/* Drop Zone */}
-      <div
-        onClick={() => fileInputRef.current?.click()}
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={handleDrop}
-        className={cn(
-          'border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200',
-          dragOver
-            ? 'border-primary bg-primary/5 scale-[1.01]'
-            : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/30'
-        )}
-      >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          className="hidden"
-          onChange={handleFileChange}
-        />
-        <div className="flex flex-col items-center gap-3">
-          {uploading ? (
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
-          ) : (
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Upload className="w-6 h-6 text-primary" />
+      {!isMaxReached && (
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          className={cn(
+            'border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200',
+            dragOver
+              ? 'border-primary bg-primary/5 scale-[1.01]'
+              : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/30'
+          )}
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple={maxFiles !== 1}
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <div className="flex flex-col items-center gap-3">
+            {uploading ? (
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Upload className="w-6 h-6 text-primary" />
+              </div>
+            )}
+            <div>
+              <p className="font-medium text-sm">
+                {uploading ? 'Uploading...' : 'Click or drag images here'}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                PNG, JPG, WEBP up to 10MB each
+                {maxFiles === 1 ? ' — single image only' : maxFiles > 0 ? ` — up to ${maxFiles} images` : ' — unlimited images'}
+              </p>
             </div>
-          )}
-          <div>
-            <p className="font-medium text-sm">
-              {uploading ? 'Uploading...' : 'Click or drag images here'}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              PNG, JPG, WEBP up to 10MB each — unlimited images
-            </p>
+            {!uploading && (
+              <Button type="button" size="sm" variant="outline" className="mt-1">
+                <Upload className="w-4 h-4 mr-2" />
+                Browse Files
+              </Button>
+            )}
           </div>
-          {!uploading && (
-            <Button type="button" size="sm" variant="outline" className="mt-1">
-              <Upload className="w-4 h-4 mr-2" />
-              Browse Files
-            </Button>
-          )}
         </div>
-      </div>
+      )}
 
       {/* Image Grid */}
       {images.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">
-            {images.length} image{images.length !== 1 ? 's' : ''} · First image is cover · Drag to reorder
-          </p>
+          {maxFiles !== 1 && (
+            <p className="text-sm text-muted-foreground">
+              {images.length} image{images.length !== 1 ? 's' : ''} {maxFiles > 0 && `(max ${maxFiles})`} · First image is cover · Drag to reorder
+            </p>
+          )}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {images.map((url, index) => (
               <div
                 key={url}
-                draggable
+                draggable={maxFiles !== 1}
                 onDragStart={() => handleDragStart(index)}
                 onDragEnter={() => handleDragEnter(index)}
                 onDragEnd={handleDragEnd}
                 className={cn(
                   'relative group aspect-square rounded-lg overflow-hidden border-2 transition-all',
-                  index === 0 ? 'border-primary' : 'border-transparent',
+                  index === 0 && maxFiles !== 1 ? 'border-primary' : 'border-transparent',
                   dragOverIndex === index && dragIndex !== index
                     ? 'border-blue-400 scale-105'
                     : ''
@@ -214,18 +232,20 @@ export function ImageUploader({
                   unoptimized
                 />
                 {/* Cover Badge */}
-                {index === 0 && (
+                {index === 0 && maxFiles !== 1 && (
                   <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
                     <Star className="w-3 h-3" />
                     Cover
                   </div>
                 )}
                 {/* Drag Handle */}
-                <div className="absolute top-1 right-7 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="w-5 h-5 bg-black/60 rounded flex items-center justify-center cursor-grab">
-                    <GripVertical className="w-3 h-3 text-white" />
+                {maxFiles !== 1 && (
+                  <div className="absolute top-1 right-7 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-5 h-5 bg-black/60 rounded flex items-center justify-center cursor-grab">
+                      <GripVertical className="w-3 h-3 text-white" />
+                    </div>
                   </div>
-                </div>
+                )}
                 {/* Remove Button */}
                 <button
                   type="button"
@@ -235,7 +255,7 @@ export function ImageUploader({
                   <X className="w-3 h-3 text-white" />
                 </button>
                 {/* Set as Cover */}
-                {index !== 0 && (
+                {index !== 0 && maxFiles !== 1 && (
                   <button
                     type="button"
                     onClick={() => setCoverImage(index)}
@@ -248,14 +268,16 @@ export function ImageUploader({
               </div>
             ))}
             {/* Upload More Tile */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/30 transition-all flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-primary"
-            >
-              <ImageIcon className="w-6 h-6" />
-              <span className="text-xs">Add more</span>
-            </button>
+            {!isMaxReached && (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="aspect-square rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/30 transition-all flex flex-col items-center justify-center gap-2 text-muted-foreground hover:text-primary"
+              >
+                <ImageIcon className="w-6 h-6" />
+                <span className="text-xs">Add more</span>
+              </button>
+            )}
           </div>
         </div>
       )}
