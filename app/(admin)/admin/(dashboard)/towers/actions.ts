@@ -16,6 +16,7 @@ export async function deleteTower(id: string) {
   }
 
   revalidatePath('/admin/towers')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -72,6 +73,7 @@ export async function createTower(formData: FormData) {
   }
 
   revalidatePath('/admin/towers')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -131,5 +133,6 @@ export async function updateTower(id: string, formData: FormData) {
   }
 
   revalidatePath('/admin/towers')
+  revalidatePath('/')
   return { success: true }
 }

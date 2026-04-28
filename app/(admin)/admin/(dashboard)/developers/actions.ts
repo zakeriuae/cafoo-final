@@ -16,6 +16,7 @@ export async function deleteDeveloper(id: string) {
   }
 
   revalidatePath('/admin/developers')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -57,6 +58,7 @@ export async function createDeveloper(formData: FormData) {
   }
 
   revalidatePath('/admin/developers')
+  revalidatePath('/')
   return { success: true, data }
 }
 
@@ -97,5 +99,6 @@ export async function updateDeveloper(id: string, formData: FormData) {
   }
 
   revalidatePath('/admin/developers')
+  revalidatePath('/')
   return { success: true }
 }

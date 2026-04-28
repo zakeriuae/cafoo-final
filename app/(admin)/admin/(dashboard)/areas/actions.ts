@@ -16,6 +16,7 @@ export async function deleteArea(id: string) {
   }
 
   revalidatePath('/admin/areas')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -57,6 +58,7 @@ export async function createArea(formData: FormData) {
   }
 
   revalidatePath('/admin/areas')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -101,5 +103,6 @@ export async function updateArea(id: string, formData: FormData) {
   }
 
   revalidatePath('/admin/areas')
+  revalidatePath('/')
   return { success: true }
 }

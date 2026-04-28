@@ -16,6 +16,7 @@ export async function deleteAgent(id: string) {
   }
 
   revalidatePath('/admin/agents')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -61,6 +62,7 @@ export async function createAgent(formData: FormData) {
   }
 
   revalidatePath('/admin/agents')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -109,5 +111,6 @@ export async function updateAgent(id: string, formData: FormData) {
   }
 
   revalidatePath('/admin/agents')
+  revalidatePath('/')
   return { success: true }
 }
