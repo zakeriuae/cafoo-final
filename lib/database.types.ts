@@ -106,6 +106,12 @@ export interface Area {
   total_properties: number
   average_price: number | null
   price_growth_percent: number | null
+  rental_yield: number | null
+  connectivity: { location: string; time: string }[] | null
+  connectivity_fa: { location: string; time: string }[] | null
+  amenities: string[] | null
+  amenities_fa: string[] | null
+  video_url: string | null
   status: ContentStatus
   featured: boolean
   sort_order: number

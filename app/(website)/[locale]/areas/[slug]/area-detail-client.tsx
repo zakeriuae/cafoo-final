@@ -66,6 +66,12 @@ interface Area {
   total_properties: number
   average_price: number | null
   price_growth_percent: number | null
+  rental_yield: number | null
+  connectivity: { location: string; time: string }[] | null
+  connectivity_fa: { location: string; time: string }[] | null
+  amenities: string[] | null
+  amenities_fa: string[] | null
+  video_url: string | null
   location_highlights: string[] | null
   location_highlights_fa: string[] | null
   assigned_agent: {
@@ -335,7 +341,7 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600"><TrendingUp className="h-5 w-5" /></div>
                     <div>
-                      <p className="text-lg font-bold text-slate-900 leading-none">High</p>
+                      <p className="text-lg font-bold text-slate-900 leading-none">{area.rental_yield ? `${area.rental_yield}%` : 'High'}</p>
                       <p className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-wider">{locale === 'fa' ? 'پتانسیل سود' : 'ROI Potential'}</p>
                     </div>
                   </div>
@@ -375,6 +381,65 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                         <span className="text-xs font-bold text-slate-700">{highlight}</span>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Community Amenities */}
+              {(locale === 'fa' ? area.amenities_fa : area.amenities) && (locale === 'fa' ? area.amenities_fa : area.amenities)!.length > 0 && (
+                <div className="p-6 md:p-8 bg-slate-50/30">
+                  <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'امکانات رفاهی جامعه' : 'Community Amenities'}</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {(locale === 'fa' ? area.amenities_fa : area.amenities)!.map((amenity) => (
+                      <div key={amenity} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm text-center">
+                        <div className="h-10 w-10 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+                          <Layout className="h-5 w-5" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">{amenity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Connectivity & Proximity */}
+              {(locale === 'fa' ? area.connectivity_fa : area.connectivity) && (locale === 'fa' ? area.connectivity_fa : area.connectivity)!.length > 0 && (
+                <div className="p-6 md:p-8 border-t border-slate-100">
+                  <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'دسترسی و فواصل' : 'Connectivity & Proximity'}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {(locale === 'fa' ? area.connectivity_fa : area.connectivity)!.map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100/50">
+                        <div className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center text-slate-400"><MapPin className="h-4 w-4" /></div>
+                          <span className="text-xs font-bold text-slate-700">{item.location}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-primary">
+                          <Clock className="h-3 w-3" />
+                          <span className="text-[10px] font-black">{item.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Community Video */}
+              {area.video_url && (
+                <div className="p-6 md:p-8 bg-slate-900 overflow-hidden relative group">
+                  <div className="absolute inset-0 bg-primary/10 opacity-50 group-hover:opacity-30 transition-opacity" />
+                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="text-center md:text-left">
+                      <h3 className="text-xl font-bold text-white mb-2">{locale === 'fa' ? 'ویدیو معرفی منطقه' : 'Area Presentation Video'}</h3>
+                      <p className="text-white/60 text-xs font-medium">{locale === 'fa' ? 'تماشای سبک زندگی و امکانات منطقه در یک نگاه' : 'Watch the lifestyle and amenities at a glance'}</p>
+                    </div>
+                    <a href={area.video_url} target="_blank" rel="noopener noreferrer">
+                      <Button className="rounded-full bg-white text-slate-900 hover:bg-primary hover:text-white px-8 h-12 gap-2 font-bold group/btn transition-all">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center group-hover/btn:bg-white/20 transition-all">
+                          <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[10px] border-l-current border-b-[6px] border-b-transparent ml-1" />
+                        </div>
+                        {locale === 'fa' ? 'تماشای ویدیو' : 'Watch Video'}
+                      </Button>
+                    </a>
                   </div>
                 </div>
               )}
