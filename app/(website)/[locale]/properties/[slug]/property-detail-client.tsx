@@ -349,10 +349,9 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                   <span className="font-bold text-sm uppercase tracking-widest">{locale === 'fa' ? 'عکس ها' : 'Photos'}</span>
                 </div>
               </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
       <GalleryLightbox 
         images={allImages}
