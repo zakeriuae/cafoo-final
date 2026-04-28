@@ -1,3 +1,5 @@
+"use client"
+
 import { SmartImage } from "@/components/ui/smart-image"
 import { GalleryLightbox } from "@/components/ui/gallery-lightbox"
 import { useAuthAction } from "@/hooks/use-auth-action"

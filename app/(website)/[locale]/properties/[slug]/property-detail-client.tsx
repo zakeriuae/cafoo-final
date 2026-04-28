@@ -1,3 +1,5 @@
+"use client"
+
 import { SmartImage } from "@/components/ui/smart-image"
 import { GalleryLightbox } from "@/components/ui/gallery-lightbox"
 import { useAuthAction } from "@/hooks/use-auth-action"
@@ -347,10 +349,8 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                   <span className="font-bold text-sm uppercase tracking-widest">{locale === 'fa' ? 'عکس ها' : 'Photos'}</span>
                 </div>
               </div>
-            </div>
           </div>
         </div>
-      </div>
 
       <GalleryLightbox 
         images={allImages}

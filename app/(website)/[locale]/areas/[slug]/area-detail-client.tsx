@@ -273,7 +273,6 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
         onClose={() => setIsLightboxOpen(false)}
         alt={areaName}
       />
-      </div>
 
       {/* 3. Content Section */}
       <div className="container mx-auto py-10">
