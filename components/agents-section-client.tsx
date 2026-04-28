@@ -13,6 +13,7 @@ import { useRef, useState, useEffect } from "react"
 import Link from "next/link"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { useAuthAction } from "@/hooks/use-auth-action"
 
 interface Agent {
   id: string
@@ -34,6 +35,7 @@ interface AgentsSectionClientProps {
 }
 
 export default function AgentsSectionClient({ agents }: AgentsSectionClientProps) {
+  const { performAction } = useAuthAction()
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const { isRtl, locale } = useI18n()
@@ -155,14 +157,24 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                     <div className="flex items-center justify-between mt-auto">
                       <div className="flex gap-2">
                         {agent.phone && (
-                          <a href={`tel:${agent.phone}`} className="w-10 h-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-secondary hover:text-white text-foreground transition-all border border-border/40">
+                          <button 
+                            onClick={() => performAction(() => {
+                              window.location.href = `tel:${agent.phone}`
+                            })}
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-secondary hover:text-white text-foreground transition-all border border-border/40"
+                          >
                             <Phone className="h-4 w-4" />
-                          </a>
+                          </button>
                         )}
                         {agent.whatsapp && (
-                          <a href={`https://wa.me/${agent.whatsapp.replace(/\+/g, '')}`} target="_blank" rel="noopener noreferrer" className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white transition-all border border-green-500/20">
+                          <button 
+                            onClick={() => performAction(() => {
+                              window.open(`https://wa.me/${agent.whatsapp.replace(/\+/g, '')}`, '_blank')
+                            })}
+                            className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white transition-all border border-green-500/20"
+                          >
                             <MessageCircle className="h-4 w-4" />
-                          </a>
+                          </button>
                         )}
                       </div>
                       <Link href={`/${locale}/agents/${agent.slug}`} className="flex items-center gap-1.5 text-secondary font-bold text-sm hover:gap-2.5 transition-all">

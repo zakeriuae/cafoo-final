@@ -1,5 +1,6 @@
 import { SmartImage } from "@/components/ui/smart-image"
 import { GalleryLightbox } from "@/components/ui/gallery-lightbox"
+import { useAuthAction } from "@/hooks/use-auth-action"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -131,6 +132,7 @@ interface PropertyDetailClientProps {
 }
 
 export function PropertyDetailClient({ property, similarProperties, locale }: PropertyDetailClientProps) {
+  const { performAction } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
@@ -687,19 +689,30 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
-                      <Button className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm" asChild>
-                        <a href={`tel:${property.assigned_agent.phone}`}>
-                          <Phone className="h-4 w-4" />
-                          {locale === 'fa' ? 'تماس' : 'Call'}
-                        </a>
+                      <Button 
+                        className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                        onClick={() => performAction(() => {
+                          window.location.href = `tel:${property.assigned_agent?.phone || '+971503491050'}`
+                        })}
+                      >
+                        <Phone className="h-4 w-4" />
+                        {locale === 'fa' ? 'تماس' : 'Call'}
                       </Button>
-                      <Button className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-green-100/20" asChild>
-                        <a href={`https://wa.me/${property.assigned_agent.whatsapp?.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                          <MessageCircle className="h-4 w-4" />
-                          WA
-                        </a>
+                      <Button 
+                        className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-green-100/20"
+                        onClick={() => performAction(() => {
+                          window.open(`https://wa.me/${(property.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank')
+                        })}
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        WA
                       </Button>
-                      <Button className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn">
+                      <Button 
+                        className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn"
+                        onClick={() => performAction(() => {
+                          console.log('Inquiry submitted')
+                        })}
+                      >
                         <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                         {locale === 'fa' ? 'درخواست' : 'Inquire'}
                       </Button>
@@ -835,13 +848,28 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
       {/* 7. Mobile Contact Bar - Bayut Style */}
       <div className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 p-4 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="grid grid-cols-3 gap-2">
-          <Button className="h-12 bg-slate-900 rounded-xl" asChild>
-            <a href={`tel:${property.assigned_agent?.phone}`}><Phone className="h-5 w-5" /></a>
+          <Button 
+            className="h-12 bg-slate-900 rounded-xl"
+            onClick={() => performAction(() => {
+              window.location.href = `tel:${property.assigned_agent?.phone}`
+            })}
+          >
+            <Phone className="h-5 w-5" />
           </Button>
-          <Button className="h-12 bg-[#25D366] rounded-xl" asChild>
-            <a href={`https://wa.me/${property.assigned_agent?.whatsapp?.replace(/\D/g, '')}`}><MessageCircle className="h-5 w-5" /></a>
+          <Button 
+            className="h-12 bg-[#25D366] rounded-xl"
+            onClick={() => performAction(() => {
+              window.open(`https://wa.me/${property.assigned_agent?.whatsapp?.replace(/\D/g, '')}`, '_blank')
+            })}
+          >
+            <MessageCircle className="h-5 w-5" />
           </Button>
-          <Button className="h-12 bg-primary rounded-xl font-black uppercase text-xs">
+          <Button 
+            className="h-12 bg-primary rounded-xl font-black uppercase text-xs"
+            onClick={() => performAction(() => {
+              console.log('Mobile inquiry/email')
+            })}
+          >
             {locale === 'fa' ? 'پیام' : 'Email'}
           </Button>
         </div>

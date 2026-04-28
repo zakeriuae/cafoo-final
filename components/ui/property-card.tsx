@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -5,6 +7,7 @@ import { MapPin, Bed, Bath, Maximize, Heart, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
 import { SmartImage } from "@/components/ui/smart-image"
+import { useAuthAction } from "@/hooks/use-auth-action"
 
 interface PropertyCardProps {
   property: any; // We will use any for now, or define a strict interface
@@ -29,6 +32,7 @@ export function PropertyCard({
   viewMode = "grid",
   hideLabels = false
 }: PropertyCardProps) {
+  const { performAction } = useAuthAction()
   // Extract common fields depending on dummy data vs db data
   const title = property.title_fa && locale === 'fa' ? property.title_fa : (property.title[locale] || property.title);
   const areaName = property.area 
@@ -115,7 +119,11 @@ export function PropertyCard({
 
           <div className="absolute top-4 end-4">
             <button 
-              onClick={onToggleFavorite}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                performAction(() => onToggleFavorite(e))
+              }}
               className="h-10 w-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all group/btn border border-white/30"
             >
               <Heart className={cn(

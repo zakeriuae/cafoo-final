@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { SmartImage } from "@/components/ui/smart-image"
+import { useAuthAction } from "@/hooks/use-auth-action"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -112,6 +113,7 @@ interface AgentDetailClientProps {
 }
 
 export function AgentDetailClient({ agent, properties, towers, locale }: AgentDetailClientProps) {
+  const { performAction } = useAuthAction()
   const content = useContent()
   const isRtl = locale === 'fa'
   
@@ -222,19 +224,27 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                 {/* Right Column: Contact Buttons */}
                 <div className="flex flex-col gap-3 min-w-[240px] justify-center">
                   {agent.phone && (
-                    <Button size="lg" className="h-14 px-8 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
-                      <a href={`tel:${agent.phone}`}>
-                        <Phone className="h-5 w-5 mr-3" />
-                        {locale === 'fa' ? 'تماس' : 'Call'}
-                      </a>
+                    <Button 
+                      size="lg" 
+                      className="h-14 px-8 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full"
+                      onClick={() => performAction(() => {
+                        window.location.href = `tel:${agent.phone}`
+                      })}
+                    >
+                      <Phone className="h-5 w-5 mr-3" />
+                      {locale === 'fa' ? 'تماس' : 'Call'}
                     </Button>
                   )}
                   {(agent.whatsapp || agent.phone) && (
-                    <Button size="lg" className="h-14 px-8 rounded-2xl font-bold text-base bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full" asChild>
-                      <a href={`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                        <MessageCircle className="h-5 w-5 mr-3" />
-                        WhatsApp
-                      </a>
+                    <Button 
+                      size="lg" 
+                      className="h-14 px-8 rounded-2xl font-bold text-base bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full"
+                      onClick={() => performAction(() => {
+                        window.open(`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`, '_blank')
+                      })}
+                    >
+                      <MessageCircle className="h-5 w-5 mr-3" />
+                      WhatsApp
                     </Button>
                   )}
 

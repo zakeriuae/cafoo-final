@@ -1,5 +1,6 @@
 import { SmartImage } from "@/components/ui/smart-image"
 import { GalleryLightbox } from "@/components/ui/gallery-lightbox"
+import { useAuthAction } from "@/hooks/use-auth-action"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -108,6 +109,7 @@ interface TowerDetailClientProps {
 }
 
 export function TowerDetailClient({ tower, properties, locale }: TowerDetailClientProps) {
+  const { performAction } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
@@ -537,17 +539,30 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
-                    <Button className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-sm" asChild>
-                      <a href={`tel:${tower.assigned_agent?.phone || '+971503491050'}`}>
-                        <Phone className="h-4 w-4" />
-                      </a>
+                    <Button 
+                      className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-sm"
+                      onClick={() => performAction(() => {
+                        window.location.href = `tel:${tower.assigned_agent?.phone || '+971503491050'}`
+                      })}
+                    >
+                      <Phone className="h-4 w-4" />
                     </Button>
-                    <Button className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-green-100/20" asChild>
-                      <a href={`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                        <MessageCircle className="h-4 w-4" />
-                      </a>
+                    <Button 
+                      className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-green-100/20"
+                      onClick={() => performAction(() => {
+                        window.open(`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank')
+                      })}
+                    >
+                      <MessageCircle className="h-4 w-4" />
                     </Button>
-                    <Button className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center shadow-lg shadow-primary/20 transition-all active:scale-95">
+                    <Button 
+                      className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center shadow-lg shadow-primary/20 transition-all active:scale-95"
+                      onClick={() => performAction(() => {
+                        // For now just show a toast or open a modal
+                        // This will be replaced with real lead capture later
+                        console.log('Inquiry submitted')
+                      })}
+                    >
                       {locale === 'fa' ? 'درخواست' : 'Inquire'}
                     </Button>
                   </div>

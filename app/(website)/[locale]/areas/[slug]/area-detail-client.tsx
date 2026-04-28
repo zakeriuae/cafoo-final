@@ -1,5 +1,8 @@
+"use client"
+
 import { SmartImage } from "@/components/ui/smart-image"
 import { GalleryLightbox } from "@/components/ui/gallery-lightbox"
+import { useAuthAction } from "@/hooks/use-auth-action"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -117,6 +120,7 @@ interface AreaDetailClientProps {
 }
 
 export function AreaDetailClient({ area, properties, towers, locale }: AreaDetailClientProps) {
+  const { performAction } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
@@ -592,19 +596,30 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
-                    <Button className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm" asChild>
-                      <a href={`tel:+971503491050`}>
-                        <Phone className="h-4 w-4" />
-                        {locale === 'fa' ? 'تماس' : 'Call'}
-                      </a>
+                    <Button 
+                      className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                      onClick={() => performAction(() => {
+                        window.location.href = `tel:+971503491050`
+                      })}
+                    >
+                      <Phone className="h-4 w-4" />
+                      {locale === 'fa' ? 'تماس' : 'Call'}
                     </Button>
-                    <Button className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-green-100/20" asChild>
-                      <a href={`https://wa.me/971503491050`} target="_blank" rel="noopener noreferrer">
-                        <MessageCircle className="h-4 w-4" />
-                        WA
-                      </a>
+                    <Button 
+                      className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-green-100/20"
+                      onClick={() => performAction(() => {
+                        window.open(`https://wa.me/971503491050`, '_blank')
+                      })}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      WA
                     </Button>
-                    <Button className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn">
+                    <Button 
+                      className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn"
+                      onClick={() => performAction(() => {
+                        console.log('Inquiry submitted')
+                      })}
+                    >
                       <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                       {locale === 'fa' ? 'درخواست' : 'Inquire'}
                     </Button>
