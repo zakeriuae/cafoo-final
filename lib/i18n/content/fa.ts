@@ -196,7 +196,7 @@ export const fa: LocaleContent = {
       placeholder: 'ایمیل خود را وارد کنید',
       button: 'عضویت',
     },
-    copyright: '© ۲۰۲۴ کافو املاک. تمامی حقوق محفوظ است.',
+    copyright: '© ۲۰۲۶ کافو املاک. تمامی حقوق محفوظ است.',
     links: {
       privacy: 'حریم خصوصی',
       terms: 'شرایط خدمات',

@@ -195,7 +195,7 @@ export const en: LocaleContent = {
       placeholder: 'Enter your email',
       button: 'Subscribe',
     },
-    copyright: '© 2024 Cafoo Real Estate. All rights reserved.',
+    copyright: '© 2026 Cafoo Real Estate. All rights reserved.',
     links: {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
