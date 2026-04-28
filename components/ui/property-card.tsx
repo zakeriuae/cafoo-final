@@ -122,7 +122,9 @@ export function PropertyCard({
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                performAction(() => onToggleFavorite(e))
+                if (onToggleFavorite) {
+                  performAction(() => onToggleFavorite(e))
+                }
               }}
               className="h-10 w-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all group/btn border border-white/30"
             >
