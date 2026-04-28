@@ -1,8 +1,5 @@
-"use client"
-// Build Trigger: v1.0.1
-
-import Image from "next/image"
 import { SmartImage } from "@/components/ui/smart-image"
+import { GalleryLightbox } from "@/components/ui/gallery-lightbox"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -123,6 +120,13 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index)
+    setIsLightboxOpen(true)
+  }
   const [isFavorite, setIsFavorite] = useState(false)
 
   const areaName = locale === 'fa' && area.name_fa ? area.name_fa : area.name
@@ -185,17 +189,18 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
       <div className="bg-white">
         <div className="container mx-auto py-4 md:py-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[400px] md:h-[500px] lg:h-[600px]">
-            {/* Main Image */}
-            <div className="lg:col-span-8 relative group overflow-hidden md:rounded-2xl shadow-sm">
-              <SmartImage
-                src={allImages[activeImage]}
-                size="preview"
-                lightbox
-                alt={areaName}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                priority
-              />
+              <div 
+                className="lg:col-span-8 relative group overflow-hidden md:rounded-2xl shadow-sm cursor-zoom-in"
+                onClick={() => openLightbox(activeImage)}
+              >
+                <SmartImage
+                  src={allImages[activeImage]}
+                  size="preview"
+                  alt={areaName}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  priority
+                />
               <div className="absolute inset-0 bg-black/5" />
               
               <div className="absolute top-4 start-4 flex gap-2">
@@ -224,8 +229,10 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
             </div>
 
             {/* Side Grid */}
-            <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-4 h-full">
-              <div className="relative overflow-hidden rounded-2xl group shadow-sm">
+              <div 
+                className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
+                onClick={() => openLightbox((activeImage + 1) % allImages.length)}
+              >
                 <SmartImage
                   src={allImages[(activeImage + 1) % allImages.length] || allImages[0]}
                   size="card"
@@ -233,9 +240,12 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <button onClick={() => setActiveImage((activeImage + 1) % allImages.length)} className="absolute inset-0 hover:bg-black/10 transition-colors" />
+                <div className="absolute inset-0 hover:bg-black/10 transition-colors" />
               </div>
-              <div className="relative overflow-hidden rounded-2xl group shadow-sm">
+              <div 
+                className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
+                onClick={() => openLightbox((activeImage + 2) % allImages.length)}
+              >
                 <SmartImage
                   src={allImages[(activeImage + 2) % allImages.length] || allImages[0]}
                   size="card"
@@ -251,6 +261,14 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
             </div>
           </div>
         </div>
+
+      <GalleryLightbox 
+        images={allImages}
+        initialIndex={lightboxIndex}
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        alt={areaName}
+      />
       </div>
 
       {/* 3. Content Section */}

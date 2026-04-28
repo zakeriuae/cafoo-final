@@ -1,7 +1,5 @@
-"use client"
-
-import Image from "next/image"
 import { SmartImage } from "@/components/ui/smart-image"
+import { GalleryLightbox } from "@/components/ui/gallery-lightbox"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -113,6 +111,13 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index)
+    setIsLightboxOpen(true)
+  }
   const [isFavorite, setIsFavorite] = useState(false)
 
   const towerName = locale === 'fa' && tower.name_fa ? tower.name_fa : tower.name
@@ -174,12 +179,13 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
       <div className="bg-white">
         <div className="container mx-auto py-4 md:py-6 px-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[400px] md:h-[500px] lg:h-[600px]">
-            {/* Main Image (Large) */}
-            <div className="lg:col-span-8 relative group overflow-hidden md:rounded-2xl shadow-sm">
+            <div 
+              className="lg:col-span-8 relative group overflow-hidden md:rounded-2xl shadow-sm cursor-zoom-in"
+              onClick={() => openLightbox(activeImage)}
+            >
               <SmartImage
                 src={allImages[activeImage]}
                 size="preview"
-                lightbox
                 alt={towerName}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -213,8 +219,10 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
             </div>
 
             {/* Side Grid Images */}
-            <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-4 h-full">
-              <div className="relative overflow-hidden rounded-2xl group shadow-sm">
+              <div 
+                className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
+                onClick={() => openLightbox((activeImage + 1) % allImages.length)}
+              >
                 <SmartImage
                   src={allImages[(activeImage + 1) % allImages.length] || allImages[0]}
                   size="card"
@@ -222,9 +230,12 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <button onClick={() => setActiveImage((activeImage + 1) % allImages.length)} className="absolute inset-0 hover:bg-black/10 transition-colors" />
+                <div className="absolute inset-0 hover:bg-black/10 transition-colors" />
               </div>
-              <div className="relative overflow-hidden rounded-2xl group shadow-sm">
+              <div 
+                className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
+                onClick={() => openLightbox((activeImage + 2) % allImages.length)}
+              >
                 <SmartImage
                   src={allImages[(activeImage + 2) % allImages.length] || allImages[0]}
                   size="card"
@@ -241,6 +252,14 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
           </div>
         </div>
       </div>
+
+      <GalleryLightbox 
+        images={allImages}
+        initialIndex={lightboxIndex}
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        alt={towerName}
+      />
 
       {/* 3. Main Content Container */}
       <div className="container mx-auto py-10 px-4">
