@@ -253,7 +253,6 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
             </div>
           </div>
         </div>
-      </div>
 
       <GalleryLightbox 
         images={allImages}
