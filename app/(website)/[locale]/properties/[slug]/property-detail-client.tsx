@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { SmartImage } from "@/components/ui/smart-image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -266,13 +267,14 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[400px] md:h-[500px] lg:h-[600px]">
             {/* Main Image (Large) */}
             <div className="lg:col-span-8 relative group overflow-hidden md:rounded-2xl shadow-sm">
-              <Image
-                src={(allImages[activeImage] || "/images/placeholder.jpg").includes('supabase.co') ? `${allImages[activeImage] || "/images/placeholder.jpg"}?v=${Date.now()}` : (allImages[activeImage] || "/images/placeholder.jpg")}
+              <SmartImage
+                src={allImages[activeImage] || "/images/placeholder.jpg"}
+                size="preview"
+                lightbox
                 alt={propTitle}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority
-                unoptimized
               />
               <div className="absolute inset-0 bg-black/5" />
 
@@ -310,22 +312,22 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
             {/* Side Grid Images */}
             <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-4 h-full">
               <div className="relative overflow-hidden rounded-2xl group shadow-sm">
-                <Image
-                  src={(allImages[(activeImage + 1) % allImages.length] || allImages[0]).includes('supabase.co') ? `${allImages[(activeImage + 1) % allImages.length] || allImages[0]}?v=${Date.now()}` : (allImages[(activeImage + 1) % allImages.length] || allImages[0])}
+                <SmartImage
+                  src={allImages[(activeImage + 1) % allImages.length] || allImages[0]}
+                  size="card"
                   alt=""
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  unoptimized
                 />
                 <button onClick={() => setActiveImage((activeImage + 1) % allImages.length)} className="absolute inset-0 hover:bg-black/10 transition-colors" />
               </div>
               <div className="relative overflow-hidden rounded-2xl group shadow-sm">
-                <Image
-                  src={(allImages[(activeImage + 2) % allImages.length] || allImages[0]).includes('supabase.co') ? `${allImages[(activeImage + 2) % allImages.length] || allImages[0]}?v=${Date.now()}` : (allImages[(activeImage + 2) % allImages.length] || allImages[0])}
+                <SmartImage
+                  src={allImages[(activeImage + 2) % allImages.length] || allImages[0]}
+                  size="card"
                   alt=""
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  unoptimized
                 />
                 <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white backdrop-blur-[2px] cursor-pointer hover:bg-black/50 transition-all">
                   <span className="text-3xl font-black">{allImages.length}+</span>

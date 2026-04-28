@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { createClient } from "@/lib/supabase/client"
 import { AedSymbol } from "@/components/ui/aed-symbol"
+import { SmartImage } from "@/components/ui/smart-image"
 
 interface Tower {
   id: string
@@ -250,12 +251,12 @@ export function TowersListClient({ initialTowers, areas }: TowersListClientProps
                 <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5">
                   {/* Image */}
                   <div className="relative h-72 overflow-hidden">
-                    <Image
-                      src={towerImage.includes('supabase.co') ? `${towerImage}?v=${Date.now()}` : towerImage}
+                    <SmartImage
+                      src={towerImage}
+                      size="card"
                       alt={towerName}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                      unoptimized
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
                     

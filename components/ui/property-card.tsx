@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { MapPin, Bed, Bath, Maximize, Heart, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
+import { SmartImage } from "@/components/ui/smart-image"
 
 interface PropertyCardProps {
   property: any; // We will use any for now, or define a strict interface
@@ -88,12 +89,12 @@ export function PropertyCard({
           "relative overflow-hidden",
           viewMode === "list" ? "h-64 md:h-auto md:w-[40%] flex-shrink-0" : "h-72"
         )}>
-          <Image
-            src={imageUrl.includes('supabase.co') ? `${imageUrl}?v=${Date.now()}` : imageUrl}
+          <SmartImage
+            src={imageUrl}
+            size="card"
             alt={title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-1000"
-            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
           

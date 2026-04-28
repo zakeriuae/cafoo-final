@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { SmartImage } from "@/components/ui/smart-image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -134,8 +135,9 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
       {/* Hero Section */}
       <div className="relative h-40 md:h-48 bg-gradient-to-r from-primary to-primary/80">
         {agent.cover_image_url && (
-          <Image
+          <SmartImage
             src={agent.cover_image_url}
+            size="preview"
             alt=""
             fill
             className="object-cover opacity-30"
@@ -162,8 +164,10 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                 {/* Avatar */}
                 <div className="flex-shrink-0 mx-auto md:mx-0">
                   <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden shadow-xl">
-                    <Image
-                      src={agent.avatar_url || "/images/placeholder-agent.jpg"}
+                    <SmartImage
+                      src={agent.avatar_url}
+                      size="card"
+                      fallback="/images/placeholder-agent.jpg"
                       alt={agentName}
                       fill
                       className="object-cover"
@@ -395,8 +399,9 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                       <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-2xl hover:shadow-black/5 h-full flex flex-col">
                         {/* Image */}
                         <div className="relative h-64 overflow-hidden">
-                          <Image
-                            src={tower.cover_image_url || "/images/placeholder.jpg"}
+                          <SmartImage
+                            src={tower.cover_image_url}
+                            size="card"
                             alt={towerName}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-1000"
@@ -483,8 +488,9 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
 
                                 if (logoUrl) {
                                   return (
-                                    <Image
+                                    <SmartImage
                                       src={logoUrl}
+                                      size="thumb"
                                       alt={devName}
                                       fill
                                       className="object-contain object-left"

@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { SmartImage } from "@/components/ui/smart-image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -185,8 +186,10 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[400px] md:h-[500px] lg:h-[600px]">
             {/* Main Image */}
             <div className="lg:col-span-8 relative group overflow-hidden md:rounded-2xl shadow-sm">
-              <Image
+              <SmartImage
                 src={allImages[activeImage]}
+                size="preview"
+                lightbox
                 alt={areaName}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -222,8 +225,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
             {/* Side Grid */}
             <div className="hidden lg:grid lg:col-span-4 grid-rows-2 gap-4 h-full">
               <div className="relative overflow-hidden rounded-2xl group shadow-sm">
-                <Image
+                <SmartImage
                   src={allImages[(activeImage + 1) % allImages.length] || allImages[0]}
+                  size="card"
                   alt=""
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -231,8 +235,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                 <button onClick={() => setActiveImage((activeImage + 1) % allImages.length)} className="absolute inset-0 hover:bg-black/10 transition-colors" />
               </div>
               <div className="relative overflow-hidden rounded-2xl group shadow-sm">
-                <Image
+                <SmartImage
                   src={allImages[(activeImage + 2) % allImages.length] || allImages[0]}
+                  size="card"
                   alt=""
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -376,8 +381,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                         <div className="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row h-full md:h-56">
                           {/* Image Section */}
                           <div className="relative w-full md:w-[40%] h-64 md:h-full shrink-0 overflow-hidden">
-                            <Image
-                              src={tower.cover_image_url || "/placeholder.jpg"}
+                            <SmartImage
+                              src={tower.cover_image_url}
+                              size="card"
                               alt={towerName}
                               fill
                               className="object-cover transition-transform duration-1000 group-hover:scale-105"
@@ -445,8 +451,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                               <div className="flex items-center gap-2">
                                 {devLogo ? (
                                   <div className="relative h-20 w-44 -my-5">
-                                    <Image
+                                    <SmartImage
                                       src={devLogo}
+                                      size="thumb"
                                       alt={devName || "Developer"}
                                       fill
                                       className="object-contain object-left grayscale group-hover:grayscale-0 transition-all duration-500"

@@ -10,6 +10,7 @@ import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
 import { buildSeoUrl } from "@/lib/seo-router"
+import { SmartImage } from "@/components/ui/smart-image"
 
 interface Project {
   id: string | number
@@ -173,12 +174,12 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
               <div className="relative bg-white rounded-[2rem] overflow-hidden border border-border/40 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-black/5">
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden">
-                  <Image
-                    src={project.image.includes('supabase.co') ? `${project.image}?v=${Date.now()}` : project.image}
+                  <SmartImage
+                    src={project.image}
+                    size="card"
                     alt={project.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                    unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
                   

@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { SmartImage } from "@/components/ui/smart-image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -92,8 +93,10 @@ export function AgentsListClient({ agents }: AgentsListClientProps) {
               {/* Image Container - Square with Overlay */}
               <Link href={`/${locale}/agents/${agent.slug}`} className="block">
                 <div className="relative aspect-square overflow-hidden">
-                  <Image
-                    src={agent.avatar_url || "/images/placeholder-agent.jpg"}
+                  <SmartImage
+                    src={agent.avatar_url}
+                    size="card"
+                    fallback="/images/placeholder-agent.jpg"
                     alt={agentName}
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-110"

@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { SmartImage } from "@/components/ui/smart-image"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
@@ -142,8 +143,9 @@ export function AreasListClient({ initialAreas }: AreasListClientProps) {
               href={`/${locale}/areas/${area.slug}`}
               className="group relative h-[450px] rounded-[2.5rem] overflow-hidden bg-slate-100 hover:shadow-2xl transition-all duration-700"
             >
-              <Image 
-                src={area.cover_image_url || "/images/placeholder.jpg"} 
+              <SmartImage 
+                src={area.cover_image_url} 
+                size="card"
                 alt={area.name}
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-110"
