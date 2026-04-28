@@ -118,7 +118,7 @@ export function GalleryLightbox({
         {/* The Image */}
         <div className={cn(
           "relative transition-all duration-500 ease-out flex items-center justify-center",
-          isFullscreen ? "w-full h-full" : "max-w-[90vw] max-h-[80vh] w-full h-full"
+          isFullscreen ? "w-full h-full p-0" : "max-w-full max-h-[92vh] w-full h-full p-4 md:p-8"
         )}
         onClick={onClose}
         >
@@ -127,7 +127,7 @@ export function GalleryLightbox({
             key={currentIndex}
             src={currentOriginal}
             alt={`${alt} ${currentIndex + 1}`}
-            className="max-w-full max-h-full object-contain rounded-sm shadow-2xl animate-in zoom-in-95 duration-300"
+            className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in-95 duration-500"
             onClick={(e) => e.stopPropagation()}
           />
         </div>
