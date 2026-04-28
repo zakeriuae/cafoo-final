@@ -144,6 +144,10 @@ export interface Tower {
   currency: string
   payment_plan: string | null
   payment_plan_fa: string | null
+  payment_plan_details: { phase: string; percent: string }[] | null
+  payment_plan_details_fa: { phase: string; percent: string }[] | null
+  connectivity: { location: string; time: string }[] | null
+  connectivity_fa: { location: string; time: string }[] | null
   delivery_date: string | null
   delivery_date_fa: string | null
   total_units: number | null

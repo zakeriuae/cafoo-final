@@ -61,8 +61,14 @@ interface Tower {
   gallery: string[] | null
   starting_price: number | null
   payment_plan: string | null
+  payment_plan_fa: string | null
+  payment_plan_details: { phase: string; percent: string }[] | null
+  payment_plan_details_fa: { phase: string; percent: string }[] | null
+  connectivity: { location: string; time: string }[] | null
+  connectivity_fa: { location: string; time: string }[] | null
   handover_date: string | null
   video_url: string | null
+  brochure_url: string | null
   latitude: number | null
   longitude: number | null
   amenities: string[] | null
@@ -409,18 +415,65 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
               </div>
             </div>
 
-            {/* 4. Floor Plans & Interactive Media */}
-            {tower.video_url && (
-              <div className="p-6 md:p-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'رسانه‌های تعاملی' : 'Interactive Media'}</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <a href={tower.video_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group">
-                    <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <Waves className="h-6 w-6 text-primary" />
+            {/* Detailed Payment Plan */}
+            {(locale === 'fa' ? tower.payment_plan_details_fa : tower.payment_plan_details) && (locale === 'fa' ? tower.payment_plan_details_fa : tower.payment_plan_details)!.length > 0 && (
+              <div className="p-6 md:p-8 bg-slate-50/30">
+                <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'برنامه پرداخت دقیق' : 'Detailed Payment Plan'}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {(locale === 'fa' ? tower.payment_plan_details_fa : tower.payment_plan_details)!.map((item, idx) => (
+                    <div key={idx} className="flex flex-col p-4 rounded-2xl bg-white border border-slate-100 shadow-sm">
+                      <span className="text-2xl font-black text-primary mb-1">{item.percent}%</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{item.phase}</span>
                     </div>
-                    <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'ویدیو پروژه' : 'Project Video'}</span>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Watch Now</span>
-                  </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Connectivity & Proximity */}
+            {(locale === 'fa' ? tower.connectivity_fa : tower.connectivity) && (locale === 'fa' ? tower.connectivity_fa : tower.connectivity)!.length > 0 && (
+              <div className="p-6 md:p-8 border-t border-slate-100">
+                <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'دسترسی به مکان‌های کلیدی' : 'Key Destinations & Proximity'}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {(locale === 'fa' ? tower.connectivity_fa : tower.connectivity)!.map((item, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100/50">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-lg bg-white flex items-center justify-center text-slate-400"><MapPin className="h-4 w-4" /></div>
+                        <span className="text-xs font-bold text-slate-700">{item.location}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-primary">
+                        <Clock className="h-3 w-3" />
+                        <span className="text-[10px] font-black">{item.time}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 4. Floor Plans & Interactive Media */}
+            {(tower.video_url || tower.brochure_url) && (
+              <div className="p-6 md:p-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'رسانه‌های تعاملی و مستندات' : 'Interactive Media & Documents'}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {tower.video_url && (
+                    <a href={tower.video_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group">
+                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <Waves className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'ویدیو پروژه' : 'Project Video'}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Watch Now</span>
+                    </a>
+                  )}
+                  {tower.brochure_url && (
+                    <a href={tower.brochure_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group">
+                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <Download className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'کاتالوگ پروژه' : 'Download Brochure'}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">PDF - Download</span>
+                    </a>
+                  )}
                 </div>
               </div>
             )}
