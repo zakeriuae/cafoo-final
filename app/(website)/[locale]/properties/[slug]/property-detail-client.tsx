@@ -321,35 +321,37 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
             </div>
 
             {/* Side Grid Images */}
-                <div 
-                  className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
-                  onClick={() => openLightbox((activeImage + 1) % allImages.length)}
-                >
-                  <SmartImage
-                    src={allImages[(activeImage + 1) % allImages.length] || allImages[0]}
-                    size="card"
-                    alt=""
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 hover:bg-black/10 transition-colors" />
-                </div>
-                <div 
-                  className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
-                  onClick={() => openLightbox((activeImage + 2) % allImages.length)}
-                >
-                  <SmartImage
-                    src={allImages[(activeImage + 2) % allImages.length] || allImages[0]}
-                    size="card"
-                    alt=""
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+            <div className="lg:col-span-4 hidden lg:grid grid-rows-2 gap-4">
+              <div 
+                className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
+                onClick={() => openLightbox((activeImage + 1) % allImages.length)}
+              >
+                <SmartImage
+                  src={allImages[(activeImage + 1) % allImages.length] || allImages[0]}
+                  size="card"
+                  alt=""
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 hover:bg-black/10 transition-colors" />
+              </div>
+              <div 
+                className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
+                onClick={() => openLightbox((activeImage + 2) % allImages.length)}
+              >
+                <SmartImage
+                  src={allImages[(activeImage + 2) % allImages.length] || allImages[0]}
+                  size="card"
+                  alt=""
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
                 <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white backdrop-blur-[2px] cursor-pointer hover:bg-black/50 transition-all">
                   <span className="text-3xl font-black">{allImages.length}+</span>
                   <span className="font-bold text-sm uppercase tracking-widest">{locale === 'fa' ? 'عکس ها' : 'Photos'}</span>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>

@@ -234,6 +234,7 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
             </div>
 
             {/* Side Grid */}
+            <div className="lg:col-span-4 hidden lg:grid grid-rows-2 gap-4">
               <div 
                 className="relative overflow-hidden rounded-2xl group shadow-sm cursor-zoom-in"
                 onClick={() => openLightbox((activeImage + 1) % allImages.length)}
@@ -263,6 +264,7 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                   <span className="font-bold text-sm uppercase tracking-widest">{locale === 'fa' ? 'عکس ها' : 'Photos'}</span>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
