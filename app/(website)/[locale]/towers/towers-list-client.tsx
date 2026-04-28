@@ -240,8 +240,6 @@ export function TowersListClient({ initialTowers, areas }: TowersListClientProps
             
             // Manual image replacement for requested towers
             let towerImage = tower.cover_image_url || "/images/placeholder.jpg";
-            if (tower.slug.includes('opus')) towerImage = "/images/towers/the-opus.png";
-            if (tower.slug.includes('crescent')) towerImage = "/images/towers/boulevard-crescent.png";
             
             return (
               <Link 
@@ -253,10 +251,11 @@ export function TowersListClient({ initialTowers, areas }: TowersListClientProps
                   {/* Image */}
                   <div className="relative h-72 overflow-hidden">
                     <Image
-                      src={towerImage}
+                      src={towerImage.includes('supabase.co') ? `${towerImage}?v=${Date.now()}` : towerImage}
                       alt={towerName}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                      unoptimized
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
                     

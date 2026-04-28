@@ -89,10 +89,11 @@ export function PropertyCard({
           viewMode === "list" ? "h-64 md:h-auto md:w-[40%] flex-shrink-0" : "h-72"
         )}>
           <Image
-            src={imageUrl}
+            src={imageUrl.includes('supabase.co') ? `${imageUrl}?v=${Date.now()}` : imageUrl}
             alt={title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-1000"
+            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
           

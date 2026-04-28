@@ -102,7 +102,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
   return (
     <section ref={sectionRef} id="projects" className="py-24 bg-[#F0F7FF] relative overflow-hidden">
       <div className="container mx-auto relative z-10">
-        {/* Section Header */}
+        {/* Section Header - V4-DB-IMAGE */}
         <div 
           className={cn(
             "flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 transition-all duration-1000",
@@ -174,10 +174,11 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden">
                   <Image
-                    src={project.image}
+                    src={project.image.includes('supabase.co') ? `${project.image}?v=${Date.now()}` : project.image}
                     alt={project.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                    unoptimized
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
                   

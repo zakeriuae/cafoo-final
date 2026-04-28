@@ -23,6 +23,7 @@ export async function ProjectsSection() {
     .limit(6)
 
   if (error) console.error('Towers fetch error:', error.message)
+  console.log('DEBUG - Towers from DB:', towers?.map(t => ({ name: t.name, image: t.cover_image_url })))
 
   // Map database towers to the format expected by the client component
   const formattedProjects = towers?.map(t => ({
