@@ -174,7 +174,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                 {/* Image */}
                 <div className="relative h-72 overflow-hidden">
                   <Image
-                    src={project.slug.includes('opus') ? "/images/towers/the-opus.png" : (project.slug.includes('crescent') ? "/images/towers/boulevard-crescent.png" : project.image)}
+                    src={project.image}
                     alt={project.name}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-1000"
