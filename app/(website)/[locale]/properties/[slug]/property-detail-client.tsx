@@ -351,6 +351,8 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
               </div>
           </div>
         </div>
+      </div>
+    </div>
 
       <GalleryLightbox 
         images={allImages}
