@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter, usePathname } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
 import { useAuthModal } from './use-auth-modal'
+import { toast } from 'sonner'
 import { trackUserAction } from '@/app/(website)/[locale]/actions'
 import { LeadSource } from '@/lib/database.types'
 
@@ -59,16 +60,21 @@ export function useAuthAction() {
       if (trackingParams) {
         setPendingSource(trackingParams.source)
         // If authenticated, track the action if params provided
-        await trackUserAction({
+        const result = await trackUserAction({
           ...trackingParams,
           source_url: pathname
         })
+
+        if (!result.success) {
+          toast.error(result.error || 'Failed to record interaction')
+        }
       }
 
       // Execute the action
       await action()
     } catch (err) {
       console.error('Error performing action:', err)
+      toast.error('Something went wrong. Please try again.')
     } finally {
       setPendingSource(null)
     }

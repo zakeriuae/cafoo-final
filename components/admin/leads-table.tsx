@@ -207,7 +207,7 @@ export function LeadsTable({ leads, agents, title, isActionLog = false }: LeadsT
             {filteredLeads.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                  No leads found
+                  {isActionLog ? 'No actions recorded yet' : 'No leads found'}
                 </TableCell>
               </TableRow>
             ) : (

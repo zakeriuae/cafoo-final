@@ -22,43 +22,43 @@ export async function trackUserAction(params: TrackActionParams) {
     return { success: false, error: 'User not authenticated' }
   }
 
-  // Get user profile to get name/email/phone
+  // Get user profile
   const { data: profile } = await supabase
     .from('profiles')
     .select('full_name, email, phone')
     .eq('id', user.id)
     .single()
 
+  // Prepare data, ensuring null for optional UUIDs
   const userData = {
     user_id: user.id,
-    name: profile?.full_name || user.user_metadata?.full_name,
+    name: profile?.full_name || user.user_metadata?.full_name || 'Anonymous',
     email: profile?.email || user.email,
-    phone: profile?.phone,
+    phone: profile?.phone || null,
     source: params.source,
-    property_id: params.property_id,
-    tower_id: params.tower_id,
-    area_id: params.area_id,
-    agent_id: params.agent_id,
-    source_url: params.source_url,
+    property_id: params.property_id || null,
+    tower_id: params.tower_id || null,
+    area_id: params.area_id || null,
+    agent_id: params.agent_id || null,
+    source_url: params.source_url || null,
     notes: params.notes || `User performed action: ${params.source}`
   }
 
   // 1. Always record the event in user_actions
-  // We don't use the 24h throttle here because we want a complete log
   const { error: actionError } = await supabase
     .from('user_actions')
     .insert(userData)
 
   if (actionError) {
-    console.error('Error tracking action:', actionError)
-    // We continue even if action log fails, as the Lead is more important for business
+    console.error('CRITICAL: Error tracking action in user_actions:', actionError)
+    // We return the error here so we can see it in the UI/Console
+    return { success: false, error: `Action log failed: ${actionError.message}` }
   }
 
-  // 2. Automaticaly create a Lead if the source is significant
+  // 2. Automatically create a Lead if the source is significant
   const significantSources: LeadSource[] = ['call', 'whatsapp', 'register_viewing']
   
   if (significantSources.includes(params.source)) {
-    // Lead logic: one per user per agent per month
     const startOfMonth = new Date()
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
