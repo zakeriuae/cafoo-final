@@ -3,7 +3,15 @@ import type { NextRequest } from 'next/server'
 import { locales, defaultLocale } from '@/lib/i18n/config'
 import { updateSession } from '@/lib/supabase/middleware'
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const host = request.headers.get('host')
+
+  // 0. Redirect non-www to www on production
+  if (host === 'cafoo.ae') {
+    return NextResponse.redirect(`https://www.cafoo.ae${pathname}`, 301)
+  }
+
   // 1. Update Supabase session (refreshes auth token)
   const supabaseResponse = await updateSession(request)
 

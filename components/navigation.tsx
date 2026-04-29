@@ -76,7 +76,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
-    window.location.reload()
+    window.location.href = "/auth/logout"
   }
 
   // Automatically determine variant if not manually provided

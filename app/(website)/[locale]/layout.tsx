@@ -65,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const content = getContent(locale);
-  const baseUrl = 'https://cafoo.ae';
+  const baseUrl = 'https://www.cafoo.ae';
 
   return {
     title: content.seo.title,
@@ -151,8 +151,8 @@ export default async function LocaleLayout({ children, params }: Props) {
               '@type': 'RealEstateAgent',
               name: locale === 'fa' ? 'کافو مشاوران املاک' : 'Cafoo Real Estate Advisors',
               description: getContent(locale).seo.description,
-              url: `https://cafoo.ae/${locale}`,
-              logo: 'https://cafoo.ae/logo.jpg',
+              url: `https://www.cafoo.ae/${locale}`,
+              logo: 'https://www.cafoo.ae/logo.jpg',
               address: {
                 '@type': 'PostalAddress',
                 addressLocality: 'Dubai',
