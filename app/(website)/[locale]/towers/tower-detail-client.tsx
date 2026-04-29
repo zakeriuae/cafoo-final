@@ -501,27 +501,23 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
             )}
 
             {/* FAQ Section */}
-            <div className="py-10 px-2 md:px-0">
-              <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'سوالات متداول' : 'Frequently Asked Questions'}</h3>
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1">
-                  <AccordionTrigger className="text-sm font-bold text-slate-700 hover:text-primary hover:no-underline">{locale === 'fa' ? 'زمان دقیق تحویل پروژه چه تاریخی است؟' : 'When is the exact handover date?'}</AccordionTrigger>
-                  <AccordionContent className="text-slate-500 leading-relaxed text-sm">
-                    {locale === 'fa' 
-                      ? `پروژه ${towerName} طبق برنامه‌ریزی در تاریخ ${tower.handover_date || 'سه ماهه پایانی سال جاری'} به خریداران محترم تحویل داده خواهد شد.` 
-                      : `The ${towerName} project is scheduled for handover in ${tower.handover_date || 'Q4 of this year'}.`}
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-2">
-                  <AccordionTrigger className="text-sm font-bold text-slate-700 hover:text-primary hover:no-underline">{locale === 'fa' ? 'شرایط و برنامه پرداخت به چه صورت است؟' : 'What is the payment plan structure?'}</AccordionTrigger>
-                  <AccordionContent className="text-slate-500 leading-relaxed text-sm">
-                    {locale === 'fa'
-                      ? `شرایط پرداخت به صورت منعطف و متناسب با بودجه شما طراحی شده است. برنامه پیش‌فرض ${tower.payment_plan || '۶۰/۴۰'} می‌باشد.`
-                      : `The payment plan is flexible. The standard plan is ${tower.payment_plan || '60/40'} during construction and on handover.`}
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
+            {((locale === 'fa' ? tower.faq_fa : tower.faq) || []).length > 0 && (
+              <div className="py-10 px-2 md:px-0">
+                <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'سوالات متداول' : 'Frequently Asked Questions'}</h3>
+                <Accordion type="single" collapsible className="w-full">
+                  {((locale === 'fa' ? tower.faq_fa : tower.faq) || []).map((item, idx) => (
+                    <AccordionItem key={idx} value={`faq-${idx}`}>
+                      <AccordionTrigger className="text-sm font-bold text-slate-700 hover:text-primary hover:no-underline text-left">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-slate-500 leading-relaxed text-sm">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            )}
 
             {/* 6. Location & Map Section (Wrapped in Card) */}
             <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/40 border border-slate-100 divide-y divide-slate-100/80 overflow-hidden">

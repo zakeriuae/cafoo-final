@@ -59,6 +59,13 @@ export async function createTower(formData: FormData) {
     seo_title_fa: formData.get('seo_title_fa') as string || null,
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
+    amenities: formData.get('amenities') ? JSON.parse(formData.get('amenities') as string) : [],
+    payment_plan_details: formData.get('payment_plan_details') ? JSON.parse(formData.get('payment_plan_details') as string) : [],
+    payment_plan_details_fa: formData.get('payment_plan_details_fa') ? JSON.parse(formData.get('payment_plan_details_fa') as string) : [],
+    connectivity: formData.get('connectivity') ? JSON.parse(formData.get('connectivity') as string) : [],
+    connectivity_fa: formData.get('connectivity_fa') ? JSON.parse(formData.get('connectivity_fa') as string) : [],
+    faq: formData.get('faq') ? JSON.parse(formData.get('faq') as string) : [],
+    faq_fa: formData.get('faq_fa') ? JSON.parse(formData.get('faq_fa') as string) : [],
   }
 
   // Handle empty UUID fields
@@ -116,6 +123,13 @@ export async function updateTower(id: string, formData: FormData) {
     seo_title_fa: formData.get('seo_title_fa') as string || null,
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
+    amenities: formData.get('amenities') ? JSON.parse(formData.get('amenities') as string) : [],
+    payment_plan_details: formData.get('payment_plan_details') ? JSON.parse(formData.get('payment_plan_details') as string) : [],
+    payment_plan_details_fa: formData.get('payment_plan_details_fa') ? JSON.parse(formData.get('payment_plan_details_fa') as string) : [],
+    connectivity: formData.get('connectivity') ? JSON.parse(formData.get('connectivity') as string) : [],
+    connectivity_fa: formData.get('connectivity_fa') ? JSON.parse(formData.get('connectivity_fa') as string) : [],
+    faq: formData.get('faq') ? JSON.parse(formData.get('faq') as string) : [],
+    faq_fa: formData.get('faq_fa') ? JSON.parse(formData.get('faq_fa') as string) : [],
   }
 
   // Handle empty UUID fields

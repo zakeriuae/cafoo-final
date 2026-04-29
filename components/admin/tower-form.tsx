@@ -22,6 +22,8 @@ import type { Tower, Area, Developer, Agent } from '@/lib/database.types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ImageUploader } from '@/components/admin/image-uploader'
+import { JsonArrayInput } from '@/components/admin/json-array-input'
+import { StringArrayInput } from '@/components/admin/string-array-input'
 
 interface TowerFormProps {
   tower?: Tower
@@ -203,6 +205,27 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <JsonArrayInput
+                    name="payment_plan_details"
+                    label="Payment Plan Details (EN)"
+                    initialValue={tower?.payment_plan_details || []}
+                    fields={[
+                      { name: 'phase', label: 'Phase (e.g. On Booking)' },
+                      { name: 'percent', label: 'Percent (e.g. 20)', type: 'number' }
+                    ]}
+                  />
+                  <JsonArrayInput
+                    name="payment_plan_details_fa"
+                    label="Payment Plan Details (FA)"
+                    initialValue={tower?.payment_plan_details_fa || []}
+                    fields={[
+                      { name: 'phase', label: 'Phase (e.g. زمان رزرو)' },
+                      { name: 'percent', label: 'Percent (e.g. 20)', type: 'number' }
+                    ]}
+                  />
+                </div>
+
                 <div className="flex items-center space-x-2">
                   <Checkbox id="is_off_plan" checked={isOffPlan} onCheckedChange={(c) => setIsOffPlan(c === true)} />
                   <Label htmlFor="is_off_plan">Off Plan Project</Label>
@@ -235,6 +258,27 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                     <Input id="longitude" name="longitude" type="number" step="any" defaultValue={tower?.longitude || ''} />
                   </div>
                 </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <JsonArrayInput
+                    name="connectivity"
+                    label="Connectivity (EN)"
+                    initialValue={tower?.connectivity || []}
+                    fields={[
+                      { name: 'location', label: 'Location (e.g. Dubai Mall)' },
+                      { name: 'time', label: 'Time (e.g. 10 mins)' }
+                    ]}
+                  />
+                  <JsonArrayInput
+                    name="connectivity_fa"
+                    label="Connectivity (FA)"
+                    initialValue={tower?.connectivity_fa || []}
+                    fields={[
+                      { name: 'location', label: 'Location (e.g. دبی مال)' },
+                      { name: 'time', label: 'Time (e.g. ۱۰ دقیقه)' }
+                    ]}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -254,6 +298,40 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                 <div className="space-y-2">
                   <Label htmlFor="floor_plan_url">Floor Plan URL</Label>
                   <Input id="floor_plan_url" name="floor_plan_url" defaultValue={tower?.floor_plan_url || ''} />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Features & FAQ</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <StringArrayInput
+                  name="amenities"
+                  label="Amenities"
+                  initialValue={tower?.amenities || []}
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <JsonArrayInput
+                    name="faq"
+                    label="FAQ (EN)"
+                    initialValue={tower?.faq || []}
+                    fields={[
+                      { name: 'question', label: 'Question' },
+                      { name: 'answer', label: 'Answer' }
+                    ]}
+                  />
+                  <JsonArrayInput
+                    name="faq_fa"
+                    label="FAQ (FA)"
+                    initialValue={tower?.faq_fa || []}
+                    fields={[
+                      { name: 'question', label: 'Question (FA)' },
+                      { name: 'answer', label: 'Answer (FA)' }
+                    ]}
+                  />
                 </div>
               </CardContent>
             </Card>

@@ -148,6 +148,8 @@ export interface Tower {
   payment_plan_details_fa: { phase: string; percent: string }[] | null
   connectivity: { location: string; time: string }[] | null
   connectivity_fa: { location: string; time: string }[] | null
+  faq: { question: string; answer: string }[] | null
+  faq_fa: { question: string; answer: string }[] | null
   delivery_date: string | null
   delivery_date_fa: string | null
   total_units: number | null
