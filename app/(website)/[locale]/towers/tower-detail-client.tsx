@@ -72,6 +72,12 @@ interface Tower {
   brochure_url: string | null
   floor_plan_url: string | null
   additional_media: { title: string; url: string }[] | null
+  highlights: string | null
+  highlights_fa: string | null
+  architectural_details: string | null
+  architectural_details_fa: string | null
+  investment_potential: string | null
+  investment_potential_fa: string | null
   latitude: number | null
   longitude: number | null
   tower_amenities?: { amenities: any }[]
@@ -377,12 +383,35 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
             {/* 2. Comprehensive Description */}
             <div className="p-6 md:p-8 bg-slate-50/10">
               <div className={cn("text-slate-600 leading-relaxed text-sm whitespace-pre-line", isRtl && "text-right")}>
-                <p className="text-base font-black text-slate-900 mb-4 uppercase tracking-tight">
-                  {locale === 'fa' ? 'زندگی لوکس در قلب دبی' : 'LUXURY LIVING IN THE HEART OF DUBAI'}
-                </p>
+                {(tower.highlights || tower.highlights_fa) && (
+                  <p className="text-base font-black text-slate-900 mb-4 uppercase tracking-tight">
+                    {locale === 'fa' && tower.highlights_fa ? tower.highlights_fa : tower.highlights}
+                  </p>
+                )}
                 <div className="space-y-6">
                   <p className="text-base leading-loose">{towerDesc || `Experience luxury living at ${towerName}. This premium development offers world-class amenities and unparalleled views in the heart of ${areaName}.`}</p>
                   
+                  {(tower.architectural_details || tower.architectural_details_fa || tower.investment_potential || tower.investment_potential_fa) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6 border-y border-slate-100">
+                      {(tower.architectural_details || tower.architectural_details_fa) && (
+                        <div>
+                          <h4 className="text-slate-900 font-bold mb-3">{locale === 'fa' ? 'جزئیات معماری و ساخت' : 'Architectural Excellence'}</h4>
+                          <p className="text-xs leading-relaxed text-slate-500">
+                            {locale === 'fa' && tower.architectural_details_fa ? tower.architectural_details_fa : tower.architectural_details}
+                          </p>
+                        </div>
+                      )}
+                      {(tower.investment_potential || tower.investment_potential_fa) && (
+                        <div>
+                          <h4 className="text-slate-900 font-bold mb-3">{locale === 'fa' ? 'پتانسیل سرمایه‌گذاری' : 'Investment Analysis'}</h4>
+                          <p className="text-xs leading-relaxed text-slate-500">
+                            {locale === 'fa' && tower.investment_potential_fa ? tower.investment_potential_fa : tower.investment_potential}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 italic text-primary font-medium text-center">
                     {locale === 'fa'
                       ? 'برای دریافت کاتالوگ کامل پروژه و هماهنگی جهت بازدید حضوری، با ما در تماس باشید.'

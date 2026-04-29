@@ -26,6 +26,7 @@ import { AmenitySelector } from '@/components/admin/amenity-selector'
 import { LocationPicker } from '@/components/admin/location-picker'
 import { FileUploader } from '@/components/admin/file-uploader'
 import { MediaListInput } from '@/components/admin/media-list-input'
+import { PaymentPlanInput } from '@/components/admin/payment-plan-input'
 
 interface PropertyFormProps {
   property?: Property
@@ -586,6 +587,76 @@ export function PropertyForm({ property, areas, towers, developers, agents, isAd
                     initialValue={(property as any)?.additional_media || []}
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Extended Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="highlights">Property Highlights (EN)</Label>
+                    <Input id="highlights" name="highlights" defaultValue={(property as any)?.highlights || ''} placeholder="SEA VIEW | RESORT STYLE..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="highlights_fa">Property Highlights (FA)</Label>
+                    <Input id="highlights_fa" name="highlights_fa" defaultValue={(property as any)?.highlights_fa || ''} dir="rtl" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="architectural_details">Architectural Details (EN)</Label>
+                    <Textarea id="architectural_details" name="architectural_details" defaultValue={(property as any)?.architectural_details || ''} rows={3} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="architectural_details_fa">Architectural Details (FA)</Label>
+                    <Textarea id="architectural_details_fa" name="architectural_details_fa" defaultValue={(property as any)?.architectural_details_fa || ''} rows={3} dir="rtl" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="investment_potential">Investment Potential (EN)</Label>
+                    <Textarea id="investment_potential" name="investment_potential" defaultValue={(property as any)?.investment_potential || ''} rows={3} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="investment_potential_fa">Investment Potential (FA)</Label>
+                    <Textarea id="investment_potential_fa" name="investment_potential_fa" defaultValue={(property as any)?.investment_potential_fa || ''} rows={3} dir="rtl" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Regulatory & Compliance</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="permit_number">Permit Number (Trakheesi)</Label>
+                    <Input id="permit_number" name="permit_number" defaultValue={(property as any)?.permit_number || ''} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="rera_orn">RERA ORN</Label>
+                    <Input id="rera_orn" name="rera_orn" defaultValue={(property as any)?.rera_orn || ''} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Plan Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PaymentPlanInput
+                  name="payment_plan_details"
+                  initialValue={(property as any)?.payment_plan_details || []}
+                />
               </CardContent>
             </Card>
 

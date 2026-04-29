@@ -80,6 +80,15 @@ export async function createProperty(formData: FormData) {
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
     additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
+    highlights: formData.get('highlights') as string || null,
+    highlights_fa: formData.get('highlights_fa') as string || null,
+    architectural_details: formData.get('architectural_details') as string || null,
+    architectural_details_fa: formData.get('architectural_details_fa') as string || null,
+    investment_potential: formData.get('investment_potential') as string || null,
+    investment_potential_fa: formData.get('investment_potential_fa') as string || null,
+    permit_number: formData.get('permit_number') as string || null,
+    rera_orn: formData.get('rera_orn') as string || null,
+    payment_plan_details: formData.get('payment_plan_details') ? JSON.parse(formData.get('payment_plan_details') as string) : [],
   }
 
   // Handle empty UUID fields
@@ -171,6 +180,15 @@ export async function updateProperty(id: string, formData: FormData) {
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
     additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
+    highlights: formData.get('highlights') as string || null,
+    highlights_fa: formData.get('highlights_fa') as string || null,
+    architectural_details: formData.get('architectural_details') as string || null,
+    architectural_details_fa: formData.get('architectural_details_fa') as string || null,
+    investment_potential: formData.get('investment_potential') as string || null,
+    investment_potential_fa: formData.get('investment_potential_fa') as string || null,
+    permit_number: formData.get('permit_number') as string || null,
+    rera_orn: formData.get('rera_orn') as string || null,
+    payment_plan_details: formData.get('payment_plan_details') ? JSON.parse(formData.get('payment_plan_details') as string) : [],
   }
 
   // Handle empty UUID fields

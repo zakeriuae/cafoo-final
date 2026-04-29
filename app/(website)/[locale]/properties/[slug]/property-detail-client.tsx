@@ -109,6 +109,15 @@ interface Property {
   brochure_url: string | null
   tour_360_url: string | null
   additional_media: { title: string; url: string }[] | null
+  highlights: string | null
+  highlights_fa: string | null
+  architectural_details: string | null
+  architectural_details_fa: string | null
+  investment_potential: string | null
+  investment_potential_fa: string | null
+  permit_number: string | null
+  rera_orn: string | null
+  payment_plan_details: { phase: string; percent: string }[] | null
   service_charge: string | null
   payment_plan: any | null
   latitude: number | null
@@ -439,9 +448,11 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
             {/* 2. Comprehensive Description - Merged Property & Project */}
             <div className="p-6 md:p-8 bg-slate-50/10">
               <div className={cn("text-slate-600 leading-relaxed text-sm whitespace-pre-line", isRtl && "text-right")}>
-                <p className="text-base font-black text-slate-900 mb-4 uppercase tracking-tight">
-                  {locale === 'fa' ? 'ویو دریا و استخر | سبک زندگی تفرجگاهی | گزینه‌های متعدد موجود' : 'SEA & POOL VIEW | RESORT STYLE LIVING | MULTIPLE OPTIONS AVAILABLE'}
-                </p>
+                {(property.highlights || property.highlights_fa) && (
+                  <p className="text-base font-black text-slate-900 mb-4 uppercase tracking-tight">
+                    {locale === 'fa' && property.highlights_fa ? property.highlights_fa : property.highlights}
+                  </p>
+                )}
                 <div className="space-y-6">
                   <p className="text-base leading-loose">{propDesc}</p>
                   
@@ -449,18 +460,22 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                     <div>
                       <h4 className="text-slate-900 font-bold mb-3">{locale === 'fa' ? 'جزئیات معماری و متریال' : 'Architectural & Material Excellence'}</h4>
                       <p className="text-xs leading-relaxed text-slate-500">
-                        {locale === 'fa' 
-                          ? 'این واحد با استفاده از بهترین متریال‌های اروپایی، کف‌پوش‌های مرمر ایتالیایی و سیستم‌های هوشمند خانگی برندهای برتر دنیا تجهیز شده است. پنجره‌های تمام قد از کف تا سقف، نور طبیعی بی‌نظیری را به فضای داخلی هدایت کرده و دید پانوراما به افق دبی را تضمین می‌کنند.'
-                          : 'This unit is fitted with premium European materials, including Italian marble flooring and state-of-the-art smart home systems. Floor-to-ceiling windows flood the interior with natural light while ensuring a breathtaking panoramic view of the Dubai skyline.'
+                        {locale === 'fa' && property.architectural_details_fa 
+                          ? property.architectural_details_fa 
+                          : property.architectural_details || (locale === 'fa' 
+                            ? 'این واحد با استفاده از بهترین متریال‌های اروپایی و سیستم‌های هوشمند خانگی تجهیز شده است.' 
+                            : 'This unit is fitted with premium materials and state-of-the-art smart home systems.')
                         }
                       </p>
                     </div>
                     <div>
                       <h4 className="text-slate-900 font-bold mb-3">{locale === 'fa' ? 'پتانسیل سرمایه‌گذاری' : 'Investment Potential'}</h4>
                       <p className="text-xs leading-relaxed text-slate-500">
-                        {locale === 'fa'
-                          ? 'با توجه به موقعیت استراتژیک در منطقه و کیفیت ساخت بی‌نظیر، این ملک پتانسیل بالایی برای بازگشت سرمایه (ROI) چه از طریق اجاره کوتاه‌مدت و چه بلندمدت دارد. تقاضای بالا در این منطقه، رشد سرمایه شما را در بازار پویای دبی تضمین می‌کند.'
-                          : 'Given its strategic location and exceptional build quality, this property offers high ROI potential through both short-term and long-term rentals. High demand in this district guarantees capital appreciation in Dubai\'s dynamic real estate market.'
+                        {locale === 'fa' && property.investment_potential_fa
+                          ? property.investment_potential_fa
+                          : property.investment_potential || (locale === 'fa'
+                            ? 'با توجه به موقعیت استراتژیک، این ملک پتانسیل بالایی برای بازگشت سرمایه دارد.'
+                            : 'Given its strategic location, this property offers high ROI potential.')
                         }
                       </p>
                     </div>
@@ -557,29 +572,19 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
             )}
 
             {/* 5. Payment Plan (If Off-plan) */}
-            {property.is_off_plan && (
+            {property.is_off_plan && property.payment_plan_details && property.payment_plan_details.length > 0 && (
               <div className="p-6 md:p-8 bg-primary/5">
                 <div className="flex items-center gap-3 mb-6">
                   <Calendar className="h-5 w-5 text-primary" />
                   <h3 className="text-lg font-bold text-slate-900">{locale === 'fa' ? 'برنامه پرداخت و اقساط' : 'Payment Plan'}</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-white p-4 rounded-2xl border border-primary/10">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{locale === 'fa' ? 'پیش‌پرداخت' : 'Down Payment'}</p>
-                    <p className="text-lg font-black text-primary">20%</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-2xl border border-primary/10">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{locale === 'fa' ? 'در حین ساخت' : 'During Const.'}</p>
-                    <p className="text-lg font-black text-slate-900">40%</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-2xl border border-primary/10">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{locale === 'fa' ? 'زمان تحویل' : 'On Handover'}</p>
-                    <p className="text-lg font-black text-slate-900">40%</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-2xl border border-primary/10">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{locale === 'fa' ? 'تحویل کلید' : 'Handover'}</p>
-                    <p className="text-lg font-black text-slate-900">Q4 2026</p>
-                  </div>
+                  {property.payment_plan_details.map((plan, idx) => (
+                    <div key={idx} className="bg-white p-4 rounded-2xl border border-primary/10">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{plan.phase}</p>
+                      <p className="text-lg font-black text-primary">{plan.percent}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -666,9 +671,9 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
               </div>
               <div className="flex flex-col md:flex-row gap-8 items-center">
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 w-full">
-                   <div className="flex justify-between items-center py-2 border-b border-white/10"><span className="text-white/40 text-[10px] font-bold uppercase">Permit Number</span><span className="text-white font-bold text-xs uppercase">{property.ad_code?.split('-')[0] || '71835444815'}</span></div>
-                   <div className="flex justify-between items-center py-2 border-b border-white/10"><span className="text-white/40 text-[10px] font-bold uppercase">Agency</span><span className="text-white font-bold text-xs">OB LUX PROPERTIES</span></div>
-                   <div className="flex justify-between items-center py-2 border-b border-white/10"><span className="text-white/40 text-[10px] font-bold uppercase">RERA ORN</span><span className="text-white font-bold text-xs">57397</span></div>
+                   <div className="flex justify-between items-center py-2 border-b border-white/10"><span className="text-white/40 text-[10px] font-bold uppercase">Permit Number</span><span className="text-white font-bold text-xs uppercase">{property.permit_number || property.ad_code?.split('-')[0] || '71835444815'}</span></div>
+                   <div className="flex justify-between items-center py-2 border-b border-white/10"><span className="text-white/40 text-[10px] font-bold uppercase">Agency</span><span className="text-white font-bold text-xs">CAFOO REAL ESTATE</span></div>
+                   <div className="flex justify-between items-center py-2 border-b border-white/10"><span className="text-white/40 text-[10px] font-bold uppercase">RERA ORN</span><span className="text-white font-bold text-xs">{property.rera_orn || '57397'}</span></div>
                    <div className="flex justify-between items-center py-2 border-b border-white/10"><span className="text-white/40 text-[10px] font-bold uppercase">Area</span><span className="text-white font-bold text-xs uppercase">{areaName}</span></div>
                 </div>
                 <div className="flex flex-col items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm">
