@@ -125,11 +125,12 @@ export function PropertyCard({
                 if (onToggleFavorite) {
                   performAction(
                     () => onToggleFavorite(e),
-                    {
-                      source: 'like',
-                      property_id: property.id,
-                      notes: `Liked from property card: ${title}`
-                    }
+                      {
+                        source: 'like',
+                        property_id: property.id,
+                        agent_id: property.agent_id || property.assigned_agent_id || property.assigned_agent?.id,
+                        notes: `Liked from property card: ${title}`
+                      }
                   )
                 }
               }}

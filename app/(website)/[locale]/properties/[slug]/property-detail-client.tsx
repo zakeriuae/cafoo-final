@@ -349,14 +349,18 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                     "bg-white/90 backdrop-blur-sm rounded-lg border-0 shadow-lg gap-2 h-10 px-4 font-bold transition-all hover:bg-white",
                     isFavorite ? "text-red-500" : "text-slate-900"
                   )}
-                  onClick={() => performAction(
-                    () => setIsFavorite(!isFavorite),
-                    { 
-                      source: 'like', 
-                      property_id: property.id,
-                      notes: `User liked property: ${propTitle}`
-                    }
-                  )}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    performAction(
+                      () => setIsFavorite(!isFavorite),
+                      { 
+                        source: 'like', 
+                        property_id: property.id,
+                        agent_id: property.assigned_agent?.id,
+                        notes: `User liked property: ${propTitle}`
+                      }
+                    )
+                  }}
                   disabled={!!pendingSource}
                 >
                   {pendingSource === 'like' ? (

@@ -32,7 +32,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { updateLead, deleteLead, convertActionToLead } from '@/app/(admin)/admin/(dashboard)/leads/actions'
 import type { Lead, Agent } from '@/lib/database.types'
-import { Search, Phone, Mail, MessageSquare, Trash2, Edit2, Eye, UserPlus, UserCheck } from 'lucide-react'
+import { Search, Phone, Mail, MessageSquare, Trash2, Edit2, Eye, UserPlus, UserCheck, Heart, Clock } from 'lucide-react'
 
 interface LeadsTableProps {
   title?: string
@@ -195,8 +195,8 @@ export function LeadsTable({ leads, agents, title, isActionLog = false }: LeadsT
           <TableHeader>
             <TableRow>
               <TableHead>Contact</TableHead>
-              <TableHead>Source</TableHead>
-              <TableHead>Property/Tower</TableHead>
+              <TableHead>{isActionLog ? 'Action' : 'Source'}</TableHead>
+              <TableHead>{isActionLog ? 'Asset/Source' : 'Property/Tower'}</TableHead>
               <TableHead>Agent</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Created</TableHead>
@@ -231,14 +231,26 @@ export function LeadsTable({ leads, agents, title, isActionLog = false }: LeadsT
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">
-                      {sourceLabels[lead.source] || lead.source}
-                    </Badge>
-                    {lead.referral_code && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Ref: {lead.referral_code}
-                      </p>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {isActionLog && (
+                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+                          {lead.source === 'call' ? <Phone className="w-4 h-4" /> :
+                           lead.source === 'whatsapp' ? <MessageSquare className="w-4 h-4" /> :
+                           lead.source === 'like' ? <Heart className="w-4 h-4 text-red-500 fill-current" /> :
+                           <Clock className="w-4 h-4" />}
+                        </div>
+                      )}
+                      <div>
+                        <Badge variant="outline">
+                          {sourceLabels[lead.source] || lead.source}
+                        </Badge>
+                        {lead.referral_code && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Ref: {lead.referral_code}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell>
                     {lead.property ? (

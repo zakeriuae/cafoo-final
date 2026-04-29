@@ -160,8 +160,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
 
       <div className="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-8">
         {/* Agent Profile Card */}
-        <div className="relative -mt-24 mb-8">
-          <Card className="overflow-hidden">
+        <div className="relative -mt-24 mb-8 z-20">
+          <Card className="overflow-hidden shadow-2xl">
             <CardContent className="p-6 md:py-6 md:px-10">
               <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
                 {/* Avatar */}
@@ -224,46 +224,46 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
 
                 {/* Right Column: Contact Buttons */}
                 <div className="flex flex-col gap-3 min-w-[240px] justify-center">
-                  {agent.phone && (
-                    <Button 
-                      size="lg" 
-                      className="h-14 px-8 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full"
-                      onClick={() => performAction(
-                        () => {
-                          window.location.href = `tel:${agent.phone}`
-                        },
-                        {
-                          source: 'call',
-                          agent_id: agent.id,
-                          notes: `User clicked call button for agent ${agentName}`
-                        }
-                      )}
-                      disabled={!!pendingSource}
-                    >
-                      {pendingSource === 'call' ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <Phone className="h-5 w-5 mr-3" />}
-                      {locale === 'fa' ? 'تماس' : 'Call'}
-                    </Button>
-                  )}
-                  {agent.phone && (
-                    <Button 
-                      size="lg" 
-                      className="h-14 px-8 rounded-2xl font-bold text-base bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full"
-                      onClick={() => performAction(
-                        () => {
-                          window.open(`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`, '_blank')
-                        },
-                        {
-                          source: 'whatsapp',
-                          agent_id: agent.id,
-                          notes: `User clicked WhatsApp button for agent ${agentName}`
-                        }
-                      )}
-                      disabled={!!pendingSource}
-                    >
-                      {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <MessageCircle className="h-5 w-5 mr-3" />}
-                      WhatsApp
-                    </Button>
-                  )}
+                    {agent.phone && (
+                      <Button 
+                        size="lg" 
+                        className="h-14 px-8 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full"
+                        onClick={() => performAction(
+                          () => {
+                            window.location.href = `tel:${agent.phone}`
+                          },
+                          {
+                            source: 'call',
+                            agent_id: agent.id,
+                            notes: `User clicked call button for agent ${agentName}`
+                          }
+                        )}
+                        disabled={!!pendingSource}
+                      >
+                        {pendingSource === 'call' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5 mr-3" />}
+                        {locale === 'fa' ? 'تماس' : 'Call'}
+                      </Button>
+                    )}
+                    {agent.phone && (
+                      <Button 
+                        size="lg" 
+                        className="h-14 px-8 rounded-2xl font-bold text-base bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full"
+                        onClick={() => performAction(
+                          () => {
+                            window.open(`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`, '_blank')
+                          },
+                          {
+                            source: 'whatsapp',
+                            agent_id: agent.id,
+                            notes: `User clicked WhatsApp button for agent ${agentName}`
+                          }
+                        )}
+                        disabled={!!pendingSource}
+                      >
+                        {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5 mr-3" />}
+                        WhatsApp
+                      </Button>
+                    )}
 
                   {/* Social Links */}
                   <div className="flex justify-center md:justify-end gap-4 mt-3">

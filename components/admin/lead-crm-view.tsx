@@ -18,15 +18,15 @@ import {
   FileText, 
   Send,
   MoreVertical,
-  CheckCircle2,
-  Circle,
-  ArrowLeft
+  ArrowLeft,
+  Heart
 } from 'lucide-react'
 import Link from 'next/link'
-import type { Lead } from '@/lib/database.types'
+import { cn } from '@/lib/utils'
 
 interface LeadCRMViewProps {
-  lead: any // Using any for now to include relations
+  lead: any
+  actions?: any[]
 }
 
 const statusColors: Record<string, string> = {
@@ -38,14 +38,17 @@ const statusColors: Record<string, string> = {
   lost: 'bg-gray-100 text-gray-800',
 }
 
-const steps = ['New', 'Contacted', 'Qualified', 'Negotiating', 'Won/Lost']
+const statusOrder = ['new', 'contacted', 'qualified', 'negotiating', 'won']
 
-export function LeadCRMView({ lead }: LeadCRMViewProps) {
+export function LeadCRMView({ lead, actions = [] }: LeadCRMViewProps) {
   const [activeTab, setActiveTab] = useState('activity')
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase()
   }
+
+  const currentStatusIndex = statusOrder.indexOf(lead.status)
+  const progression = Math.round(((currentStatusIndex + 1) / statusOrder.length) * 100)
 
   return (
     <div className="space-y-6">
@@ -57,14 +60,11 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
               <ArrowLeft className="w-4 h-4" />
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold">Lead CRM</h1>
+          <h1 className="text-2xl font-bold">Lead Detail</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
+          <Button variant="outline" size="sm">
             <MoreVertical className="w-4 h-4" />
-          </Button>
-          <Button className="bg-primary text-white">
-            Convert to Customer
           </Button>
         </div>
       </div>
@@ -74,7 +74,6 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
         <CardContent className="p-8">
           <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
             <Avatar className="w-24 h-24 border-4 border-white/10 shadow-2xl">
-              <AvatarImage src="" />
               <AvatarFallback className="bg-primary text-3xl font-bold">
                 {getInitials(lead.name || 'Anonymous')}
               </AvatarFallback>
@@ -83,7 +82,7 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
             <div className="flex-1 space-y-4">
               <div className="flex flex-wrap items-center gap-3">
                 <h2 className="text-3xl font-bold">{lead.name || 'Anonymous Lead'}</h2>
-                <Badge className={statusColors[lead.status] + " border-none px-3 py-1 text-xs uppercase font-bold tracking-wider"}>
+                <Badge className={cn("border-none px-3 py-1 text-xs uppercase font-bold tracking-wider", statusColors[lead.status])}>
                   {lead.status}
                 </Badge>
               </div>
@@ -91,11 +90,11 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
               <div className="flex flex-wrap gap-6 text-slate-300 text-sm">
                 <div className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-primary" />
-                  {lead.phone || 'N/A'}
+                  {lead.phone || 'No phone'}
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-primary" />
-                  {lead.email || 'N/A'}
+                  {lead.email || 'No email'}
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-primary" />
@@ -106,20 +105,24 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
               {/* Progress Tracker */}
               <div className="pt-4 max-w-2xl">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Lead Progression</span>
-                  <span className="text-xs font-bold text-primary">60% Complete</span>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Pipeline Progression</span>
+                  <span className="text-xs font-bold text-primary">{progression}% Complete</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {steps.map((step, i) => {
-                    const isCompleted = i < 3 // Mock logic
-                    const isCurrent = i === 3
+                  {statusOrder.map((step, i) => {
+                    const isCompleted = i <= currentStatusIndex
+                    const isCurrent = i === currentStatusIndex
                     return (
                       <div key={step} className="flex-1 group relative">
-                        <div className={`h-2 rounded-full transition-all duration-500 ${
-                          isCompleted ? 'bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]' : 
-                          isCurrent ? 'bg-primary/40 animate-pulse' : 'bg-white/10'
-                        }`} />
-                        <span className="absolute -bottom-6 left-0 text-[10px] font-bold text-slate-500 group-hover:text-slate-300 transition-colors uppercase whitespace-nowrap">
+                        <div className={cn(
+                          "h-2 rounded-full transition-all duration-500",
+                          isCompleted ? "bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" : "bg-white/10",
+                          isCurrent && "animate-pulse"
+                        )} />
+                        <span className={cn(
+                          "absolute -bottom-6 left-0 text-[10px] font-bold uppercase whitespace-nowrap transition-colors",
+                          isCompleted ? "text-slate-200" : "text-slate-500"
+                        )}>
                           {step}
                         </span>
                       </div>
@@ -130,11 +133,13 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
             </div>
 
             <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 text-center min-w-[200px]">
-              <div className="text-primary animate-bounce mb-2">
-                <Phone className="w-8 h-8 mx-auto" />
+              <div className="text-primary mb-2">
+                <Clock className="w-8 h-8 mx-auto" />
               </div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Status</p>
-              <h3 className="text-lg font-bold">Waiting for Call</h3>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Last Update</p>
+              <h3 className="text-lg font-bold">
+                {new Date(lead.updated_at).toLocaleDateString()}
+              </h3>
             </div>
           </div>
         </CardContent>
@@ -147,41 +152,35 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
             <CardHeader className="bg-slate-50/50 border-b border-slate-100">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Home className="w-4 h-4 text-primary" />
-                Property Interest
+                Linked Asset
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               {lead.property ? (
-                <div className="group cursor-pointer">
-                  <div className="relative h-40 w-full rounded-xl overflow-hidden mb-4">
-                    <img 
-                      src={lead.property.cover_image_url || "/images/placeholder.jpg"} 
-                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" 
-                    />
-                    <div className="absolute top-2 right-2">
-                      <Badge className="bg-white/90 text-slate-900 border-none backdrop-blur-sm">
-                        {lead.property.listing_type}
-                      </Badge>
-                    </div>
+                <div className="group">
+                  <div className="relative h-40 w-full rounded-xl overflow-hidden mb-4 bg-slate-100">
+                    {lead.property.cover_image_url && (
+                      <img 
+                        src={lead.property.cover_image_url} 
+                        className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" 
+                      />
+                    )}
                   </div>
-                  <h4 className="font-bold text-slate-900 group-hover:text-primary transition-colors">
-                    {lead.property.title}
-                  </h4>
+                  <h4 className="font-bold text-slate-900">{lead.property.title}</h4>
                   <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
                     <MapPin className="w-3 h-3" />
                     {lead.property.area?.name || 'Dubai'}
                   </p>
                   <div className="mt-4 flex items-center justify-between">
                     <p className="text-primary font-bold text-lg">AED {lead.property.price?.toLocaleString()}</p>
-                    <Button variant="ghost" size="sm" className="text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary/5">
-                      View Asset
-                    </Button>
+                    <Link href={`/properties/${lead.property.id}`} className="text-xs font-bold uppercase tracking-widest text-primary hover:underline">
+                      View Public
+                    </Link>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-8">
-                  <Home className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                  <p className="text-sm text-slate-400">No specific property assigned</p>
+                  <p className="text-sm text-slate-400">No property linked</p>
                 </div>
               )}
             </CardContent>
@@ -197,19 +196,16 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
             <CardContent className="p-6">
               {lead.agent ? (
                 <div className="flex items-center gap-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src={lead.agent.avatar_url} />
+                  <Avatar className="w-10 h-10">
                     <AvatarFallback>{getInitials(lead.agent.name)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h4 className="font-bold text-slate-900">{lead.agent.name}</h4>
-                    <p className="text-xs text-slate-500 uppercase tracking-widest font-medium">Senior Consultant</p>
+                    <h4 className="font-bold text-slate-900 text-sm">{lead.agent.name}</h4>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Consultant</p>
                   </div>
                 </div>
               ) : (
-                <Button variant="outline" className="w-full border-dashed">
-                  Assign Agent
-                </Button>
+                <p className="text-sm text-slate-400 italic">Unassigned</p>
               )}
             </CardContent>
           </Card>
@@ -218,154 +214,65 @@ export function LeadCRMView({ lead }: LeadCRMViewProps) {
         {/* Right Column: Interaction Hub */}
         <div className="lg:col-span-2">
           <Tabs defaultValue="activity" className="w-full">
-            <TabsList className="w-full bg-slate-100 p-1 rounded-2xl h-14 mb-6">
+            <TabsList className="w-full bg-slate-100 p-1 rounded-2xl h-12 mb-6">
               <TabsTrigger value="activity" className="flex-1 rounded-xl h-full font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                Activity & Notes
+                Recent Interactions
               </TabsTrigger>
-              <TabsTrigger value="chat" className="flex-1 rounded-xl h-full font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                Chat History
-              </TabsTrigger>
-              <TabsTrigger value="docs" className="flex-1 rounded-xl h-full font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                Documents
-              </TabsTrigger>
-              <TabsTrigger value="bookings" className="flex-1 rounded-xl h-full font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                Bookings
+              <TabsTrigger value="notes" className="flex-1 rounded-xl h-full font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                Private Notes
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="activity" className="space-y-4 outline-none">
               <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="p-6 border-b border-slate-50">
-                    <textarea 
-                      placeholder="Add a private note for the team..."
-                      className="w-full min-h-[100px] border-none focus:ring-0 text-sm resize-none bg-transparent"
-                    />
-                    <div className="flex justify-between items-center mt-4">
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-primary">
-                          <FileText className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-primary">
-                          <Clock className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <Button size="sm" className="bg-primary text-white rounded-xl px-6 font-bold">
-                        Save Note
-                      </Button>
-                    </div>
-                  </div>
-                  
                   <div className="divide-y divide-slate-50">
-                    {[
-                      { type: 'note', text: 'Spoke with the client. Interested in high floor units.', user: 'Admin', time: '2 hours ago' },
-                      { type: 'status', text: 'Lead status changed to Qualified', user: 'System', time: '1 day ago' },
-                      { type: 'source', text: 'Inquiry received from WhatsApp', user: 'System', time: '2 days ago' }
-                    ].map((activity, i) => (
-                      <div key={i} className="p-6 hover:bg-slate-50/50 transition-colors">
-                        <div className="flex gap-4 items-start">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            activity.type === 'note' ? 'bg-blue-100 text-blue-600' :
-                            activity.type === 'status' ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-600'
-                          }`}>
-                            {activity.type === 'note' ? <FileText className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <span className="font-bold text-sm">{activity.user}</span>
-                              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{activity.time}</span>
+                    {actions.length > 0 ? (
+                      actions.map((action, i) => (
+                        <div key={i} className="p-4 hover:bg-slate-50/50 transition-colors">
+                          <div className="flex gap-4 items-center">
+                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+                              {action.source === 'call' ? <Phone className="w-4 h-4" /> :
+                               action.source === 'whatsapp' ? <MessageSquare className="w-4 h-4" /> :
+                               action.source === 'like' ? <Heart className="w-4 h-4 text-red-500 fill-current" /> :
+                               <Clock className="w-4 h-4" />}
                             </div>
-                            <p className="text-sm text-slate-600">{activity.text}</p>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex justify-between items-center mb-0.5">
+                                <span className="font-bold text-xs uppercase tracking-wider text-slate-400">
+                                  {action.source.replace('_', ' ')}
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                  {new Date(action.created_at).toLocaleString()}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-700 font-medium">{action.notes || 'User interacted with the platform'}</p>
+                            </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="p-12 text-center text-slate-400 italic">
+                        No recent actions found for this user.
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="chat" className="outline-none">
-              <Card className="border-slate-100 shadow-sm rounded-2xl h-[500px] flex flex-col overflow-hidden">
-                <div className="flex-1 p-6 overflow-y-auto space-y-4">
-                  <div className="flex justify-end">
-                    <div className="bg-primary text-white p-4 rounded-2xl rounded-tr-none max-w-[80%] shadow-lg shadow-primary/20">
-                      <p className="text-sm">Hello! I saw your inquiry about the Marina unit. Would you like to schedule a viewing?</p>
-                      <span className="text-[10px] text-white/60 mt-2 block text-right font-bold uppercase tracking-widest">10:45 AM</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-start">
-                    <div className="bg-slate-100 text-slate-900 p-4 rounded-2xl rounded-tl-none max-w-[80%]">
-                      <p className="text-sm">Yes, I am free this Saturday afternoon. Around 4 PM works for me.</p>
-                      <span className="text-[10px] text-slate-400 mt-2 block font-bold uppercase tracking-widest">11:02 AM</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 bg-slate-50 border-t border-slate-100">
-                  <div className="bg-white rounded-2xl p-2 flex items-center gap-2 border border-slate-200">
-                    <input 
-                      className="flex-1 border-none focus:ring-0 text-sm px-4 bg-transparent"
-                      placeholder="Type a message to the client..."
-                    />
-                    <Button size="icon" className="bg-primary text-white rounded-xl shadow-lg shadow-primary/30">
-                      <Send className="w-4 h-4" />
+            <TabsContent value="notes" className="space-y-4 outline-none">
+               <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden p-6">
+                 <textarea 
+                    placeholder="Add a private note..."
+                    className="w-full min-h-[100px] border rounded-xl p-4 text-sm resize-none bg-slate-50 focus:bg-white transition-colors"
+                  />
+                  <div className="flex justify-end mt-4">
+                    <Button size="sm" className="bg-primary text-white rounded-xl px-6 font-bold">
+                      Save Note
                     </Button>
                   </div>
-                </div>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="docs" className="outline-none">
-               <Card className="border-slate-100 shadow-sm rounded-2xl p-6">
-                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                   {[
-                     { name: 'Passport Copy.pdf', size: '2.4 MB' },
-                     { name: 'Reservation Form.pdf', size: '1.1 MB' },
-                     { name: 'Proof of Funds.png', size: '4.8 MB' }
-                   ].map((doc, i) => (
-                     <div key={i} className="group cursor-pointer p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:border-primary/20 transition-all text-center">
-                       <FileText className="w-10 h-10 text-primary/40 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                       <p className="text-xs font-bold text-slate-900 truncate mb-1">{doc.name}</p>
-                       <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{doc.size}</p>
-                     </div>
-                   ))}
-                   <div className="border-2 border-dashed border-slate-100 rounded-2xl p-4 flex flex-col items-center justify-center hover:bg-slate-50 transition-colors cursor-pointer">
-                      <Send className="w-6 h-6 text-slate-300 mb-2 rotate-45" />
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Upload Doc</p>
-                   </div>
-                 </div>
                </Card>
-            </TabsContent>
-
-            <TabsContent value="bookings" className="outline-none">
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 {[
-                   { date: 'May 12, 2026', time: '16:00', type: 'Property Viewing', status: 'Confirmed' },
-                   { date: 'May 15, 2026', time: '11:00', type: 'Virtual Tour', status: 'Pending' }
-                 ].map((booking, i) => (
-                   <Card key={i} className="border-slate-100 shadow-sm rounded-2xl overflow-hidden group">
-                     <div className="p-6 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="bg-primary/10 text-primary w-12 h-12 rounded-2xl flex flex-col items-center justify-center">
-                            <span className="text-[10px] font-bold uppercase leading-none">May</span>
-                            <span className="text-lg font-black">{booking.date.split(' ')[1].replace(',', '')}</span>
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-sm">{booking.type}</h4>
-                            <p className="text-xs text-slate-500">{booking.time}</p>
-                          </div>
-                        </div>
-                        <Badge className={booking.status === 'Confirmed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}>
-                          {booking.status}
-                        </Badge>
-                     </div>
-                   </Card>
-                 ))}
-                 <Button variant="outline" className="h-full min-h-[80px] border-dashed rounded-2xl flex flex-col gap-1">
-                    <Calendar className="w-5 h-5 text-slate-300" />
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Schedule New</span>
-                 </Button>
-               </div>
             </TabsContent>
           </Tabs>
         </div>

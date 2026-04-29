@@ -1,8 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { LeadsKanban } from '@/components/admin/leads-kanban'
-import { Button } from '@/components/ui/button'
-import { Plus, LayoutGrid, List } from 'lucide-react'
-import Link from 'next/link'
+import { AddLeadDialog } from '@/components/admin/add-lead-dialog'
 
 async function getLeads() {
   const supabase = await createClient()
@@ -39,6 +37,8 @@ async function getLeads() {
 }
 
 export default async function LeadsPage() {
+  const supabase = await createClient()
+  const { data: agents } = await supabase.from('agents').select('id, name').order('name')
   const leads = await getLeads()
 
   return (
@@ -49,22 +49,7 @@ export default async function LeadsPage() {
           <p className="text-muted-foreground">Modern pipeline management</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="bg-slate-100 p-1 rounded-xl flex gap-1 mr-4">
-            <Button variant="ghost" size="sm" className="bg-white shadow-sm rounded-lg h-8 px-3 font-bold text-[10px] uppercase">
-              <LayoutGrid className="w-3 h-3 mr-2" />
-              Kanban
-            </Button>
-            <Button variant="ghost" size="sm" asChild className="rounded-lg h-8 px-3 font-bold text-[10px] uppercase text-slate-500">
-              <Link href="/admin/actions">
-                <List className="w-3 h-3 mr-2" />
-                Table
-              </Link>
-            </Button>
-          </div>
-          <Button className="bg-primary text-white rounded-xl shadow-lg shadow-primary/20">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Lead
-          </Button>
+          <AddLeadDialog agents={agents || []} />
         </div>
       </div>
 

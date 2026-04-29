@@ -33,9 +33,22 @@ export default async function LeadDetailPage({ params }: Props) {
     notFound()
   }
 
+  // Fetch last 10 actions for this user if available
+  let actions = []
+  if (lead.user_id) {
+    const { data: userActions } = await supabase
+      .from('user_actions')
+      .select('*')
+      .eq('user_id', lead.user_id)
+      .order('created_at', { ascending: false })
+      .limit(10)
+    
+    actions = userActions || []
+  }
+
   return (
     <div className="container mx-auto py-6">
-      <LeadCRMView lead={lead} />
+      <LeadCRMView lead={lead} actions={actions} />
     </div>
   )
 }

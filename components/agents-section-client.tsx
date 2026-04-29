@@ -158,22 +158,38 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                       <div className="flex gap-2">
                         {agent.phone && (
                           <button 
-                            onClick={() => performAction(() => {
-                              window.location.href = `tel:${agent.phone}`
-                            })}
+                            onClick={() => performAction(
+                              () => {
+                                window.location.href = `tel:${agent.phone}`
+                              },
+                              {
+                                source: 'call',
+                                agent_id: agent.id,
+                                notes: `User clicked call button for agent ${agentName} from home page`
+                              }
+                            )}
+                            disabled={!!pendingSource}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-secondary hover:text-white text-foreground transition-all border border-border/40"
                           >
-                            <Phone className="h-4 w-4" />
+                            {pendingSource === 'call' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
                           </button>
                         )}
                         {agent.whatsapp && (
                           <button 
-                            onClick={() => performAction(() => {
-                              window.open(`https://wa.me/${agent.whatsapp.replace(/\+/g, '')}`, '_blank')
-                            })}
+                            onClick={() => performAction(
+                              () => {
+                                window.open(`https://wa.me/${agent.whatsapp.replace(/\+/g, '')}`, '_blank')
+                              },
+                              {
+                                source: 'whatsapp',
+                                agent_id: agent.id,
+                                notes: `User clicked WhatsApp button for agent ${agentName} from home page`
+                              }
+                            )}
+                            disabled={!!pendingSource}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white transition-all border border-green-500/20"
                           >
-                            <MessageCircle className="h-4 w-4" />
+                            {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                           </button>
                         )}
                       </div>
