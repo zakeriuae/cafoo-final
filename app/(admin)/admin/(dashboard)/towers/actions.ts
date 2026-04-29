@@ -67,6 +67,7 @@ export async function createTower(formData: FormData) {
     connectivity_fa: formData.get('connectivity_fa') ? JSON.parse(formData.get('connectivity_fa') as string) : [],
     faq: formData.get('faq') ? JSON.parse(formData.get('faq') as string) : [],
     faq_fa: formData.get('faq_fa') ? JSON.parse(formData.get('faq_fa') as string) : [],
+    additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
   }
 
   // Handle empty UUID fields
@@ -144,6 +145,7 @@ export async function updateTower(id: string, formData: FormData) {
     connectivity_fa: formData.get('connectivity_fa') ? JSON.parse(formData.get('connectivity_fa') as string) : [],
     faq: formData.get('faq') ? JSON.parse(formData.get('faq') as string) : [],
     faq_fa: formData.get('faq_fa') ? JSON.parse(formData.get('faq_fa') as string) : [],
+    additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
   }
 
   // Handle empty UUID fields

@@ -23,6 +23,9 @@ import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ImageUploader } from '@/components/admin/image-uploader'
 import { AmenitySelector } from '@/components/admin/amenity-selector'
+import { LocationPicker } from '@/components/admin/location-picker'
+import { FileUploader } from '@/components/admin/file-uploader'
+import { MediaListInput } from '@/components/admin/media-list-input'
 
 interface PropertyFormProps {
   property?: Property
@@ -527,59 +530,60 @@ export function PropertyForm({ property, areas, towers, developers, agents, isAd
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="latitude">Latitude</Label>
-                    <Input
-                      id="latitude"
-                      name="latitude"
-                      type="number"
-                      step="any"
-                      defaultValue={property?.latitude || ''}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="longitude">Longitude</Label>
-                    <Input
-                      id="longitude"
-                      name="longitude"
-                      type="number"
-                      step="any"
-                      defaultValue={property?.longitude || ''}
-                    />
-                  </div>
-                </div>
+                <LocationPicker 
+                  initialLat={property?.latitude || 25.2048} 
+                  initialLng={property?.longitude || 55.2708} 
+                />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Media</CardTitle>
+                <CardTitle>Media & Documents</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="video_url">Video URL</Label>
-                  <Input
-                    id="video_url"
-                    name="video_url"
-                    defaultValue={property?.video_url || ''}
-                    placeholder="https://youtube.com/..."
-                  />
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <Label>Documents</Label>
+                    <FileUploader
+                      bucket="media"
+                      folder={`properties/${property?.slug || 'new'}/documents`}
+                      initialUrl={property?.brochure_url || ''}
+                      name="brochure_url"
+                      label="Brochure (PDF)"
+                      accept=".pdf"
+                      placeholder="Upload Brochure"
+                    />
+                    <FileUploader
+                      bucket="media"
+                      folder={`properties/${property?.slug || 'new'}/documents`}
+                      initialUrl={property?.floor_plan_url || ''}
+                      name="floor_plan_url"
+                      label="Floor Plan (PDF/Image)"
+                      accept=".pdf,image/*"
+                      placeholder="Upload Floor Plan"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <Label>Video & Tours</Label>
+                    <div className="space-y-2">
+                      <Label htmlFor="video_url">Video URL (YouTube/Vimeo)</Label>
+                      <Input id="video_url" name="video_url" defaultValue={property?.video_url || ''} placeholder="https://..." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="virtual_tour_url">Virtual Tour URL</Label>
+                      <Input id="virtual_tour_url" name="virtual_tour_url" defaultValue={property?.virtual_tour_url || ''} placeholder="https://..." />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="floor_plan_url">Floor Plan URL</Label>
-                  <Input
-                    id="floor_plan_url"
-                    name="floor_plan_url"
-                    defaultValue={property?.floor_plan_url || ''}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="virtual_tour_url">Virtual Tour URL</Label>
-                  <Input
-                    id="virtual_tour_url"
-                    name="virtual_tour_url"
-                    defaultValue={property?.virtual_tour_url || ''}
+
+                <div className="border-t pt-6">
+                  <MediaListInput
+                    name="additional_media"
+                    label="Additional Media & Links"
+                    bucket="media"
+                    folder={`properties/${property?.slug || 'new'}/additional`}
+                    initialValue={(property as any)?.additional_media || []}
                   />
                 </div>
               </CardContent>

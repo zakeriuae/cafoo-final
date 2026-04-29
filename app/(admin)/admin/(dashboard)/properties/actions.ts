@@ -79,6 +79,7 @@ export async function createProperty(formData: FormData) {
     seo_title_fa: formData.get('seo_title_fa') as string || null,
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
+    additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
   }
 
   // Handle empty UUID fields
@@ -169,6 +170,7 @@ export async function updateProperty(id: string, formData: FormData) {
     seo_title_fa: formData.get('seo_title_fa') as string || null,
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
+    additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
   }
 
   // Handle empty UUID fields

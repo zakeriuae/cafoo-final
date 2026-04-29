@@ -26,6 +26,10 @@ import { JsonArrayInput } from '@/components/admin/json-array-input'
 import { StringArrayInput } from '@/components/admin/string-array-input'
 import { AmenitySelector } from '@/components/admin/amenity-selector'
 
+import { LocationPicker } from '@/components/admin/location-picker'
+import { FileUploader } from '@/components/admin/file-uploader'
+import { MediaListInput } from '@/components/admin/media-list-input'
+
 interface TowerFormProps {
   tower?: Tower
   areas: Area[]
@@ -252,16 +256,10 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                     <Input id="address_fa" name="address_fa" defaultValue={tower?.address_fa || ''} dir="rtl" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="latitude">Latitude</Label>
-                    <Input id="latitude" name="latitude" type="number" step="any" defaultValue={tower?.latitude || ''} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="longitude">Longitude</Label>
-                    <Input id="longitude" name="longitude" type="number" step="any" defaultValue={tower?.longitude || ''} />
-                  </div>
-                </div>
+                <LocationPicker 
+                  initialLat={tower?.latitude || 25.2048} 
+                  initialLng={tower?.longitude || 55.2708} 
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <JsonArrayInput
@@ -288,20 +286,48 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
 
             <Card>
               <CardHeader>
-                <CardTitle>Media</CardTitle>
+                <CardTitle>Media & Documents</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="video_url">Video URL</Label>
-                  <Input id="video_url" name="video_url" defaultValue={tower?.video_url || ''} />
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <Label>Main Documents</Label>
+                    <FileUploader
+                      bucket="media"
+                      folder={`towers/${tower?.slug || 'new'}/documents`}
+                      initialUrl={tower?.brochure_url || ''}
+                      name="brochure_url"
+                      label="Brochure (PDF)"
+                      accept=".pdf"
+                      placeholder="Upload Brochure"
+                    />
+                    <FileUploader
+                      bucket="media"
+                      folder={`towers/${tower?.slug || 'new'}/documents`}
+                      initialUrl={tower?.floor_plan_url || ''}
+                      name="floor_plan_url"
+                      label="Floor Plan (PDF/Image)"
+                      accept=".pdf,image/*"
+                      placeholder="Upload Floor Plan"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <Label>Video & Tours</Label>
+                    <div className="space-y-2">
+                      <Label htmlFor="video_url">Video URL (YouTube/Vimeo)</Label>
+                      <Input id="video_url" name="video_url" defaultValue={tower?.video_url || ''} placeholder="https://..." />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="brochure_url">Brochure URL</Label>
-                  <Input id="brochure_url" name="brochure_url" defaultValue={tower?.brochure_url || ''} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="floor_plan_url">Floor Plan URL</Label>
-                  <Input id="floor_plan_url" name="floor_plan_url" defaultValue={tower?.floor_plan_url || ''} />
+
+                <div className="border-t pt-6">
+                  <MediaListInput
+                    name="additional_media"
+                    label="Additional Media & Links"
+                    bucket="media"
+                    folder={`towers/${tower?.slug || 'new'}/additional`}
+                    initialValue={(tower as any)?.additional_media || []}
+                  />
                 </div>
               </CardContent>
             </Card>
