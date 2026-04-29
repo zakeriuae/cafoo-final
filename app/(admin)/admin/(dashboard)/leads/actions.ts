@@ -100,3 +100,44 @@ export async function createLead(formData: FormData) {
   revalidatePath('/admin/leads')
   return { success: true }
 }
+
+export async function convertActionToLead(actionId: string, agentId?: string) {
+  const supabase = await createClient()
+
+  // 1. Fetch action data
+  const { data: action, error: fetchError } = await supabase
+    .from('user_actions')
+    .select('*')
+    .eq('id', actionId)
+    .single()
+
+  if (fetchError || !action) {
+    return { success: false, error: 'Action not found' }
+  }
+
+  // 2. Insert into leads table
+  const { error: insertError } = await supabase
+    .from('leads')
+    .insert({
+      user_id: action.user_id,
+      name: action.name,
+      email: action.email,
+      phone: action.phone,
+      source: action.source,
+      source_url: action.source_url,
+      property_id: action.property_id,
+      tower_id: action.tower_id,
+      area_id: action.area_id,
+      agent_id: agentId || action.agent_id,
+      notes: `Converted from action. Original notes: ${action.notes}`,
+      status: 'new'
+    })
+
+  if (insertError) {
+    return { success: false, error: insertError.message }
+  }
+
+  revalidatePath('/admin/leads')
+  revalidatePath('/admin/actions')
+  return { success: true }
+}

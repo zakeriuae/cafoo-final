@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Plus, LayoutGrid, List } from 'lucide-react'
 import Link from 'next/link'
 
-async function getLeads() {
+async function getActions() {
   const supabase = await createClient()
 
   const { data: authData } = await supabase.auth.getUser()
@@ -20,7 +20,7 @@ async function getLeads() {
   }
 
   let query = supabase
-    .from('leads')
+    .from('user_actions')
     .select(`
       *,
       property:properties(id, title),
@@ -49,17 +49,17 @@ async function getAgents() {
 }
 
 export default async function ActionsPage() {
-  const [leads, agents] = await Promise.all([getLeads(), getAgents()])
+  const [actions, agents] = await Promise.all([getActions(), getAgents()])
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Actions</h1>
-          <p className="text-muted-foreground">Bulk management and tracking</p>
+          <p className="text-muted-foreground">Log of all user interactions</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="bg-slate-100 p-1 rounded-xl flex gap-1 mr-4">
+          <div className="bg-slate-100 p-1 rounded-xl flex gap-1">
             <Button variant="ghost" size="sm" asChild className="rounded-lg h-8 px-3 font-bold text-[10px] uppercase text-slate-500">
               <Link href="/admin/leads">
                 <LayoutGrid className="w-3 h-3 mr-2" />
@@ -71,14 +71,10 @@ export default async function ActionsPage() {
               Table
             </Button>
           </div>
-          <Button className="bg-primary text-white rounded-xl shadow-lg shadow-primary/20">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Lead
-          </Button>
         </div>
       </div>
 
-      <LeadsTable leads={leads} agents={agents} />
+      <LeadsTable leads={actions as any} agents={agents} isActionLog={true} />
     </div>
   )
 }

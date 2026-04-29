@@ -30,9 +30,9 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { updateLead, deleteLead } from '@/app/(admin)/admin/(dashboard)/leads/actions'
+import { updateLead, deleteLead, convertActionToLead } from '@/app/(admin)/admin/(dashboard)/leads/actions'
 import type { Lead, Agent } from '@/lib/database.types'
-import { Search, Phone, Mail, MessageSquare, Trash2, Edit2, Eye } from 'lucide-react'
+import { Search, Phone, Mail, MessageSquare, Trash2, Edit2, Eye, UserPlus, UserCheck } from 'lucide-react'
 
 interface LeadsTableProps {
   title?: string
@@ -43,6 +43,7 @@ interface LeadsTableProps {
     agent?: { id: string; name: string } | null
   })[]
   agents: { id: string; name: string }[]
+  isActionLog?: boolean
 }
 
 const statusColors: Record<string, string> = {
@@ -66,11 +67,13 @@ const sourceLabels: Record<string, string> = {
   share: 'Shared',
 }
 
-export function LeadsTable({ leads, agents, title }: LeadsTableProps) {
+export function LeadsTable({ leads, agents, title, isActionLog = false }: LeadsTableProps) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [editingLead, setEditingLead] = useState<typeof leads[0] | null>(null)
+  const [convertingActionId, setConvertingActionId] = useState<string | null>(null)
+  const [selectedAgentId, setSelectedAgentId] = useState<string>('')
   const [isUpdating, setIsUpdating] = useState(false)
 
   const filteredLeads = leads.filter((lead) => {
@@ -93,6 +96,23 @@ export function LeadsTable({ leads, agents, title }: LeadsTableProps) {
       router.refresh()
     } else {
       toast.error(result.error || 'Failed to update')
+    }
+  }
+
+  const handleConvertAction = async () => {
+    if (!convertingActionId) return
+    
+    setIsUpdating(true)
+    const result = await convertActionToLead(convertingActionId, selectedAgentId || undefined)
+    setIsUpdating(false)
+    
+    if (result.success) {
+      toast.success('Action converted to lead')
+      setConvertingActionId(null)
+      setSelectedAgentId('')
+      router.refresh()
+    } else {
+      toast.error(result.error || 'Failed to convert')
     }
   }
 
@@ -239,24 +259,28 @@ export function LeadsTable({ leads, agents, title }: LeadsTableProps) {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Select
-                      value={lead.status}
-                      onValueChange={(value) => handleUpdateStatus(lead.id, value)}
-                    >
-                      <SelectTrigger className="w-32 h-8">
-                        <Badge className={statusColors[lead.status]}>
-                          {lead.status}
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="new">New</SelectItem>
-                        <SelectItem value="contacted">Contacted</SelectItem>
-                        <SelectItem value="qualified">Qualified</SelectItem>
-                        <SelectItem value="negotiating">Negotiating</SelectItem>
-                        <SelectItem value="won">Won</SelectItem>
-                        <SelectItem value="lost">Lost</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {isActionLog ? (
+                      <Badge variant="secondary">Log Only</Badge>
+                    ) : (
+                      <Select
+                        value={lead.status}
+                        onValueChange={(value) => handleUpdateStatus(lead.id, value)}
+                      >
+                        <SelectTrigger className="w-32 h-8">
+                          <Badge className={statusColors[lead.status]}>
+                            {lead.status}
+                          </Badge>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="contacted">Contacted</SelectItem>
+                          <SelectItem value="qualified">Qualified</SelectItem>
+                          <SelectItem value="negotiating">Negotiating</SelectItem>
+                          <SelectItem value="won">Won</SelectItem>
+                          <SelectItem value="lost">Lost</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   </TableCell>
                   <TableCell>
                     <p className="text-sm">
@@ -268,6 +292,20 @@ export function LeadsTable({ leads, agents, title }: LeadsTableProps) {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
+                      {isActionLog && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-primary"
+                          onClick={() => {
+                            setConvertingActionId(lead.id)
+                            setSelectedAgentId(lead.agent_id || '')
+                          }}
+                          title="Convert to CRM Lead"
+                        >
+                          <UserPlus className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -389,6 +427,43 @@ export function LeadsTable({ leads, agents, title }: LeadsTableProps) {
               </div>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+      {/* Convert to Lead Dialog */}
+      <Dialog open={!!convertingActionId} onOpenChange={(open) => !open && setConvertingActionId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Convert Action to CRM Lead</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Assign to Agent</Label>
+              <Select value={selectedAgentId} onValueChange={setSelectedAgentId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select an agent" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Unassigned</SelectItem>
+                  {agents.map((agent) => (
+                    <SelectItem key={agent.id} value={agent.id}>
+                      {agent.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                This will create a new entry in the CRM pipeline (Leads) based on this interaction.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setConvertingActionId(null)}>
+                Cancel
+              </Button>
+              <Button onClick={handleConvertAction} disabled={isUpdating}>
+                {isUpdating ? 'Converting...' : 'Convert to Lead'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
