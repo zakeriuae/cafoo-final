@@ -7,7 +7,8 @@ import {
   MessageCircle, 
   Award,
   MapPin,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react"
 import { useRef, useState, useEffect } from "react"
 import Link from "next/link"
@@ -35,7 +36,7 @@ interface AgentsSectionClientProps {
 }
 
 export default function AgentsSectionClient({ agents }: AgentsSectionClientProps) {
-  const { performAction } = useAuthAction()
+  const { performAction, pendingSource } = useAuthAction()
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const { isRtl, locale } = useI18n()
@@ -171,7 +172,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                             disabled={!!pendingSource}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-secondary hover:text-white text-foreground transition-all border border-border/40"
                           >
-                            {pendingSource === 'call' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
+                            {pendingSource === 'call' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
                           </button>
                         )}
                         {agent.whatsapp && (
@@ -189,7 +190,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                             disabled={!!pendingSource}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white transition-all border border-green-500/20"
                           >
-                            {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
+                            {pendingSource === 'whatsapp' ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                           </button>
                         )}
                       </div>

@@ -24,9 +24,9 @@ import {
   Instagram,
   Linkedin,
   Send,
-  Facebook
+  Facebook,
+  Loader2
 } from "lucide-react"
-import * as Icons from "lucide-react"
 import { useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
@@ -240,7 +240,7 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                         )}
                         disabled={!!pendingSource}
                       >
-                        {pendingSource === 'call' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5 mr-3" />}
+                        {pendingSource === 'call' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5 mr-3" />}
                         {locale === 'fa' ? 'تماس' : 'Call'}
                       </Button>
                     )}
@@ -260,7 +260,7 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                         )}
                         disabled={!!pendingSource}
                       >
-                        {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5 mr-3" />}
+                        {pendingSource === 'whatsapp' ? <Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5 mr-3" />}
                         WhatsApp
                       </Button>
                     )}
