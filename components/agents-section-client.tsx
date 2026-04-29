@@ -167,8 +167,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                                 source: 'call',
                                 agent_id: agent.id,
                                 notes: `User clicked call button for agent ${agentName} from home page`
-                              },
-                              false
+                              }
                             )}
                             disabled={!!pendingSource}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-muted/50 hover:bg-secondary hover:text-white text-foreground transition-all border border-border/40"
@@ -186,8 +185,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                                 source: 'whatsapp',
                                 agent_id: agent.id,
                                 notes: `User clicked WhatsApp button for agent ${agentName} from home page`
-                              },
-                              false
+                              }
                             )}
                             disabled={!!pendingSource}
                             className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white transition-all border border-green-500/20"

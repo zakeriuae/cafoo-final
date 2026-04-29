@@ -17,6 +17,7 @@ export function useAuthAction() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [pendingSource, setPendingSource] = useState<LeadSource | null>(null)
+  const [pendingAction, setPendingAction] = useState<{ action: any, trackingParams: any } | null>(null)
   const authModal = useAuthModal()
 
   useEffect(() => {
@@ -34,6 +35,15 @@ export function useAuthAction() {
     return () => subscription.unsubscribe()
   }, [supabase])
 
+  // Resume pending action once user is authenticated
+  useEffect(() => {
+    if (user && pendingAction) {
+      const { action, trackingParams } = pendingAction
+      setPendingAction(null)
+      performAction(action, trackingParams, false)
+    }
+  }, [user, pendingAction])
+
   /**
    * Wraps an action with an authentication check.
    */
@@ -47,12 +57,13 @@ export function useAuthAction() {
       agent_id?: string
       notes?: string
     },
-    required: boolean = true // Default to true for backward compatibility
+    required: boolean = true
   ) => {
-    if (loading || pendingSource) return
+    if (loading || (pendingSource && !required)) return
 
-    // If login is required and user is not present, open modal and stop
+    // If login is required and user is not present, store the intent and open modal
     if (required && !user) {
+      setPendingAction({ action, trackingParams })
       authModal.onOpen(pathname)
       return
     }
@@ -60,7 +71,6 @@ export function useAuthAction() {
     try {
       if (trackingParams) {
         setPendingSource(trackingParams.source)
-        // Trigger tracking (will handle anonymous user if trackUserAction updated)
         trackUserAction({
           ...trackingParams,
           source_url: pathname
@@ -73,7 +83,6 @@ export function useAuthAction() {
       console.error('Error performing action:', err)
       toast.error('Something went wrong. Please try again.')
     } finally {
-      // Small delay to show loading state if it was very fast
       setTimeout(() => setPendingSource(null), 500)
     }
   }

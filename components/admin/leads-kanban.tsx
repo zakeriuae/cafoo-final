@@ -277,7 +277,7 @@ export function LeadsKanban({ leads, agents = [] }: LeadsKanbanProps) {
                                     )}
                                   </div>
                                   <div className="text-[10px] font-medium text-slate-400">
-                                    {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
+                                    {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true }).replace('about ', '')}
                                   </div>
                                 </div>
                               </CardContent>
