@@ -6,8 +6,16 @@ import { useAuthAction } from "@/hooks/use-auth-action"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { format } from "date-fns"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { MeetingModal, MeetingData } from "@/components/meeting-modal"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import {
   MapPin,
   Building2,
@@ -41,7 +49,8 @@ import {
   Baby,
   Wind,
   Layout,
-  Download
+  Download,
+  Loader2
 } from "lucide-react"
 import * as Icons from "lucide-react"
 import { useContent, useI18n } from "@/lib/i18n"
@@ -149,12 +158,13 @@ interface PropertyDetailClientProps {
 }
 
 export function PropertyDetailClient({ property, similarProperties, locale }: PropertyDetailClientProps) {
-  const { performAction } = useAuthAction()
+  const { performAction, isPending } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false)
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index)
@@ -347,8 +357,13 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                       notes: `User liked property: ${propTitle}`
                     }
                   )}
+                  disabled={isPending}
                 >
-                  <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
+                  {isPending ? (
+                    <Icons.Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
+                  )}
                   {locale === 'fa' ? 'ذخیره' : 'Save'}
                 </Button>
               </div>
@@ -739,8 +754,9 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                             notes: `User clicked call button for agent ${property.assigned_agent?.name}`
                           }
                         )}
+                        disabled={isPending}
                       >
-                        <Phone className="h-4 w-4" />
+                        {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
                         {locale === 'fa' ? 'تماس' : 'Call'}
                       </Button>
                       <Button 
@@ -756,17 +772,15 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                             notes: `User clicked WhatsApp button for agent ${property.assigned_agent?.name}`
                           }
                         )}
+                        disabled={isPending}
                       >
-                        <MessageCircle className="h-4 w-4" />
+                        {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                         WA
                       </Button>
                       <Button 
                         className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn"
                         onClick={() => performAction(
-                          () => {
-                            console.log('Inquiry submitted')
-                            // Logic for opening inquiry form or similar could go here
-                          },
+                          () => setIsMeetingModalOpen(true),
                           {
                             source: 'register_viewing',
                             property_id: property.id,
@@ -774,8 +788,13 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                             notes: `User clicked Inquire/Request Viewing for property: ${propTitle}`
                           }
                         )}
+                        disabled={isPending}
                       >
-                        <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                        {isPending ? (
+                          <Icons.Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                        )}
                         {locale === 'fa' ? 'درخواست' : 'Inquire'}
                       </Button>
                     </div>
@@ -936,6 +955,24 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
           </Button>
         </div>
       </div>
+      {/* Meeting Modal */}
+      <MeetingModal
+        isOpen={isMeetingModalOpen}
+        onClose={() => setIsMeetingModalOpen(false)}
+        title={propTitle}
+        onSubmit={async (data) => {
+          // Additional tracking for the meeting details
+          await performAction(
+            () => {}, // Action already handled by the modal's internal submission, or we can add more logic here
+            {
+              source: 'register_viewing',
+              property_id: property.id,
+              agent_id: property.assigned_agent?.id,
+              notes: `Meeting requested: ${data.type} on ${format(data.date, 'PPP')} at ${data.time}. Message: ${data.message}`
+            }
+          )
+        }}
+      />
     </div>
   )
 }

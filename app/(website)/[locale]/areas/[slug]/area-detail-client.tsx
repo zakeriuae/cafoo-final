@@ -7,6 +7,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { MeetingModal, MeetingData } from "@/components/meeting-modal"
+import { format } from "date-fns"
 import {
   Accordion,
   AccordionContent,
@@ -46,6 +48,7 @@ import {
   Baby,
   TrendingUp
 } from "lucide-react"
+import * as Icons from "lucide-react"
 import { useContent, useI18n } from "@/lib/i18n"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -127,12 +130,13 @@ interface AreaDetailClientProps {
 }
 
 export function AreaDetailClient({ area, properties, towers, locale }: AreaDetailClientProps) {
-  const { performAction } = useAuthAction()
+  const { performAction, isPending } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false)
 
   const openLightbox = (index: number) => {
     setLightboxIndex(index)
@@ -239,8 +243,13 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                       notes: `User liked area: ${areaName}`
                     }
                   )}
+                  disabled={isPending}
                 >
-                  <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
+                  {isPending ? (
+                    <Icons.Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
+                  )}
                   {locale === 'fa' ? 'ذخیره' : 'Save'}
                 </Button>
               </div>
@@ -682,8 +691,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                           notes: `User clicked call button for area ${areaName}`
                         }
                       )}
+                      disabled={isPending}
                     >
-                      <Phone className="h-4 w-4" />
+                      {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
                       {locale === 'fa' ? 'تماس' : 'Call'}
                     </Button>
                     <Button 
@@ -698,24 +708,28 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                           notes: `User clicked WhatsApp button for area ${areaName}`
                         }
                       )}
+                      disabled={isPending}
                     >
-                      <MessageCircle className="h-4 w-4" />
+                      {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                       WA
                     </Button>
                     <Button 
                       className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn"
                       onClick={() => performAction(
-                        () => {
-                          console.log('Inquiry submitted')
-                        },
+                        () => setIsMeetingModalOpen(true),
                         {
                           source: 'register_viewing',
                           area_id: area.id,
                           notes: `User clicked Inquire for area: ${areaName}`
                         }
                       )}
+                      disabled={isPending}
                     >
-                      <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      {isPending ? (
+                        <Icons.Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+                      )}
                       {locale === 'fa' ? 'درخواست' : 'Inquire'}
                     </Button>
                   </div>
@@ -747,11 +761,27 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
         {/* Mobile Contact Bar */}
       <div className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 p-4 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="grid grid-cols-3 gap-2">
-          <Button className="h-12 bg-slate-900 rounded-xl" onClick={() => performAction(() => { window.location.href = `tel:+971503491050` }, { source: 'call', area_id: area.id })}><Phone className="h-5 w-5" /></Button>
-          <Button className="h-12 bg-[#25D366] rounded-xl" onClick={() => performAction(() => { window.open(`https://wa.me/971503491050`, '_blank') }, { source: 'whatsapp', area_id: area.id })}><MessageCircle className="h-5 w-5" /></Button>
-          <Button className="h-12 bg-primary rounded-xl font-black uppercase text-xs" onClick={() => performAction(() => { console.log('Mobile Inquire') }, { source: 'register_viewing', area_id: area.id })}>{locale === 'fa' ? 'مشاوره' : 'Inquire'}</Button>
+          <Button className="h-12 bg-slate-900 rounded-xl" disabled={isPending} onClick={() => performAction(() => { window.location.href = `tel:+971503491050` }, { source: 'call', area_id: area.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5" />}</Button>
+          <Button className="h-12 bg-[#25D366] rounded-xl" disabled={isPending} onClick={() => performAction(() => { window.open(`https://wa.me/971503491050`, '_blank') }, { source: 'whatsapp', area_id: area.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}</Button>
+          <Button className="h-12 bg-primary rounded-xl font-black uppercase text-xs" disabled={isPending} onClick={() => performAction(() => { setIsMeetingModalOpen(true) }, { source: 'register_viewing', area_id: area.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : (locale === 'fa' ? 'مشاوره' : 'Inquire')}</Button>
         </div>
       </div>
+      {/* Meeting Modal */}
+      <MeetingModal
+        isOpen={isMeetingModalOpen}
+        onClose={() => setIsMeetingModalOpen(false)}
+        title={areaName}
+        onSubmit={async (data) => {
+          await performAction(
+            () => {},
+            {
+              source: 'register_viewing',
+              area_id: area.id,
+              notes: `Meeting requested for area: ${data.type} on ${format(data.date, 'PPP')} at ${data.time}. Message: ${data.message}`
+            }
+          )
+        }}
+      />
     </div>
   )
 }

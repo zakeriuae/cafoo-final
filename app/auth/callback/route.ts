@@ -13,12 +13,17 @@ export async function GET(request: NextRequest) {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        // Check if user is admin or agent to redirect to admin panel
+        // Check if user is admin or agent
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', user.id)
           .single()
+
+        // If next is not root, prioritize it. Otherwise go to admin if admin/agent
+        if (next !== '/' && next !== '') {
+          return NextResponse.redirect(`${origin}${next}`)
+        }
 
         if (profile?.role === 'admin' || profile?.role === 'agent') {
           return NextResponse.redirect(`${origin}/admin`)

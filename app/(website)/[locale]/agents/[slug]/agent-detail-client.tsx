@@ -26,6 +26,7 @@ import {
   Send,
   Facebook
 } from "lucide-react"
+import * as Icons from "lucide-react"
 import { useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
@@ -113,7 +114,7 @@ interface AgentDetailClientProps {
 }
 
 export function AgentDetailClient({ agent, properties, towers, locale }: AgentDetailClientProps) {
-  const { performAction } = useAuthAction()
+  const { performAction, isPending } = useAuthAction()
   const content = useContent()
   const isRtl = locale === 'fa'
   
@@ -237,8 +238,9 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                           notes: `User clicked call button for agent ${agentName}`
                         }
                       )}
+                      disabled={isPending}
                     >
-                      <Phone className="h-5 w-5 mr-3" />
+                      {isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <Phone className="h-5 w-5 mr-3" />}
                       {locale === 'fa' ? 'تماس' : 'Call'}
                     </Button>
                   )}
@@ -256,8 +258,9 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                           notes: `User clicked WhatsApp button for agent ${agentName}`
                         }
                       )}
+                      disabled={isPending}
                     >
-                      <MessageCircle className="h-5 w-5 mr-3" />
+                      {isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <MessageCircle className="h-5 w-5 mr-3" />}
                       WhatsApp
                     </Button>
                   )}

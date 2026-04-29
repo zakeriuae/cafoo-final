@@ -29,6 +29,27 @@ export async function trackUserAction(params: TrackActionParams) {
     .eq('id', user.id)
     .single()
 
+  // Prevent duplicate actions of the same type on the same target within 24 hours
+  // This avoids spamming the CRM with multiple clicks from the same user
+  const { data: existingLead } = await supabase
+    .from('leads')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('source', params.source)
+    .match({
+      ...(params.property_id ? { property_id: params.property_id } : {}),
+      ...(params.tower_id ? { tower_id: params.tower_id } : {}),
+      ...(params.area_id ? { area_id: params.area_id } : {}),
+      ...(params.agent_id ? { agent_id: params.agent_id } : {}),
+    })
+    .gt('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+    .limit(1)
+    .maybeSingle()
+
+  if (existingLead) {
+    return { success: true, message: 'Action already recorded today' }
+  }
+
   const { error } = await supabase
     .from('leads')
     .insert({

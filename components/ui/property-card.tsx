@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Bed, Bath, Maximize, Heart, ArrowRight } from "lucide-react"
+import { MapPin, Bed, Bath, Maximize, Heart, ArrowRight, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
 import { SmartImage } from "@/components/ui/smart-image"
@@ -32,7 +32,7 @@ export function PropertyCard({
   viewMode = "grid",
   hideLabels = false
 }: PropertyCardProps) {
-  const { performAction } = useAuthAction()
+  const { performAction, isPending } = useAuthAction()
   // Extract common fields depending on dummy data vs db data
   const title = property.title_fa && locale === 'fa' ? property.title_fa : (property.title[locale] || property.title);
   const areaName = property.area 
@@ -134,11 +134,16 @@ export function PropertyCard({
                 }
               }}
               className="h-10 w-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all group/btn border border-white/30"
+              disabled={isPending}
             >
-              <Heart className={cn(
-                "h-5 w-5 transition-colors",
-                isFavorite ? "fill-red-500 text-red-500" : "text-white group-hover/btn:text-red-500"
-              )} />
+              {isPending ? (
+                <Loader2 className="h-5 w-5 animate-spin text-white" />
+              ) : (
+                <Heart className={cn(
+                  "h-5 w-5 transition-colors",
+                  isFavorite ? "fill-red-500 text-red-500" : "text-white group-hover/btn:text-red-500"
+                )} />
+              )}
             </button>
           </div>
 
