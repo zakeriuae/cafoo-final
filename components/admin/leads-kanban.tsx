@@ -29,6 +29,8 @@ const columns = [
   { id: 'won', title: 'Won', color: 'bg-emerald-500' },
 ]
 
+import { differenceInDays } from 'date-fns'
+
 export function LeadsKanban({ leads }: LeadsKanbanProps) {
   const router = useRouter()
   const [localLeads, setLocalLeads] = useState(leads)
@@ -46,7 +48,7 @@ export function LeadsKanban({ leads }: LeadsKanbanProps) {
 
     // 1. Optimistic Update
     const updatedLeads = localLeads.map(l => 
-      l.id === draggableId ? { ...l, status: newStatus, updated_at: new Date().toISOString() } : l
+      l.id === draggableId ? { ...l, status: newStatus, status_updated_at: new Date().toISOString() } : l
     )
     setLocalLeads(updatedLeads)
 
@@ -66,6 +68,15 @@ export function LeadsKanban({ leads }: LeadsKanbanProps) {
 
   const getLeadsByStatus = (status: string) => {
     return localLeads.filter(l => l.status === status)
+  }
+
+  const getStaleness = (lead: any) => {
+    const lastStatusUpdate = new Date(lead.status_updated_at || lead.created_at)
+    const days = differenceInDays(new Date(), lastStatusUpdate)
+    
+    if (days >= 30) return 'critical' // Red
+    if (days >= 14) return 'warning'  // Orange
+    return 'fresh'
   }
 
   return (
@@ -93,55 +104,97 @@ export function LeadsKanban({ leads }: LeadsKanbanProps) {
                     snapshot.isDraggingOver ? "bg-slate-200/50" : "bg-slate-200/30"
                   )}
                 >
-                  {getLeadsByStatus(column.id).map((lead, index) => (
-                    <Draggable key={lead.id} draggableId={lead.id} index={index}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={cn(
-                            "group block",
-                            snapshot.isDragging ? "z-50" : ""
-                          )}
-                        >
-                          <Card className={cn(
-                            "border border-slate-100 shadow-sm hover:shadow transition-all duration-200 bg-white rounded-xl overflow-hidden",
-                            snapshot.isDragging ? "shadow-xl ring-2 ring-primary/20 scale-[1.02]" : ""
-                          )}>
-                            <CardContent className="p-3 space-y-2">
-                              <div className="flex justify-between items-start gap-2">
-                                <p className="font-bold text-xs text-slate-900 group-hover:text-primary transition-colors truncate">
-                                  {lead.name || 'Anonymous'}
-                                </p>
-                                <Button variant="ghost" size="icon" className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" asChild>
-                                  <Link href={`/admin/leads/${lead.id}`}>
-                                    <MoreVertical className="w-3 h-3" />
-                                  </Link>
-                                </Button>
-                              </div>
-
-                              <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-500 bg-slate-50 px-2 py-1 rounded-md border border-slate-100/50">
-                                <UserCheck className="w-3 h-3 text-primary/60" />
-                                <span className="truncate">{lead.agent?.name || 'Unassigned'}</span>
-                              </div>
-
-                              <div className="flex flex-col gap-0.5 pt-1 border-t border-slate-50">
-                                <div className="flex items-center justify-between text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
-                                  <span>Created:</span>
-                                  <span>{new Date(lead.created_at).toLocaleDateString()}</span>
+                  {getLeadsByStatus(column.id).map((lead, index) => {
+                    const staleness = getStaleness(lead)
+                    
+                    return (
+                      <Draggable key={lead.id} draggableId={lead.id} index={index}>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className={cn(
+                              "group block",
+                              snapshot.isDragging ? "z-50" : ""
+                            )}
+                          >
+                            <Card className={cn(
+                              "border transition-all duration-200 bg-white rounded-xl overflow-hidden",
+                              snapshot.isDragging ? "shadow-xl ring-2 ring-primary/20 scale-[1.02]" : "shadow-sm hover:shadow",
+                              staleness === 'critical' ? "border-red-200 bg-red-50/30" : 
+                              staleness === 'warning' ? "border-orange-200 bg-orange-50/30" : 
+                              "border-slate-100"
+                            )}>
+                              <CardContent className="p-3 space-y-2">
+                                <div className="flex justify-between items-start gap-2">
+                                  <div className="flex flex-col gap-0.5 min-w-0">
+                                    <p className={cn(
+                                      "font-bold text-xs transition-colors truncate",
+                                      staleness === 'critical' ? "text-red-900" :
+                                      staleness === 'warning' ? "text-orange-900" :
+                                      "text-slate-900 group-hover:text-primary"
+                                    )}>
+                                      {lead.name || 'Anonymous'}
+                                    </p>
+                                    {staleness !== 'fresh' && (
+                                      <span className={cn(
+                                        "text-[8px] font-black uppercase tracking-tighter px-1 rounded w-fit",
+                                        staleness === 'critical' ? "bg-red-100 text-red-600" : "bg-orange-100 text-orange-600"
+                                      )}>
+                                        {staleness === 'critical' ? 'Urgent: >30 Days' : 'Stale: >14 Days'}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <Button variant="ghost" size="icon" className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" asChild>
+                                    <Link href={`/admin/leads/${lead.id}`}>
+                                      <MoreVertical className="w-3 h-3" />
+                                    </Link>
+                                  </Button>
                                 </div>
-                                <div className="flex items-center justify-between text-[9px] text-primary/50 font-bold uppercase tracking-tighter">
-                                  <span>Updated:</span>
-                                  <span>{new Date(lead.updated_at).toLocaleDateString()}</span>
+
+                                <div className={cn(
+                                  "flex items-center gap-1.5 text-[10px] font-medium px-2 py-1 rounded-md border",
+                                  staleness === 'critical' ? "bg-red-100/50 border-red-200/50 text-red-700" :
+                                  staleness === 'warning' ? "bg-orange-100/50 border-orange-200/50 text-orange-700" :
+                                  "bg-slate-50 border-slate-100/50 text-slate-500"
+                                )}>
+                                  <UserCheck className={cn(
+                                    "w-3 h-3",
+                                    staleness === 'critical' ? "text-red-500" :
+                                    staleness === 'warning' ? "text-orange-500" :
+                                    "text-primary/60"
+                                  )} />
+                                  <span className="truncate">{lead.agent?.name || 'Unassigned'}</span>
                                 </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+
+                                <div className={cn(
+                                  "flex flex-col gap-0.5 pt-1 border-t",
+                                  staleness === 'critical' ? "border-red-100" :
+                                  staleness === 'warning' ? "border-orange-100" :
+                                  "border-slate-50"
+                                )}>
+                                  <div className="flex items-center justify-between text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
+                                    <span>Created:</span>
+                                    <span>{new Date(lead.created_at).toLocaleDateString()}</span>
+                                  </div>
+                                  <div className={cn(
+                                    "flex items-center justify-between text-[9px] font-bold uppercase tracking-tighter",
+                                    staleness === 'critical' ? "text-red-500" :
+                                    staleness === 'warning' ? "text-orange-500" :
+                                    "text-primary/50"
+                                  )}>
+                                    <span>In Status Since:</span>
+                                    <span>{new Date(lead.status_updated_at || lead.created_at).toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        )}
+                      </Draggable>
+                    )
+                  })}
                   {provided.placeholder}
                 </div>
               )}

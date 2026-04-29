@@ -19,7 +19,21 @@ export async function updateLead(id: string, formData: FormData) {
   if (name !== null) data.name = name as string || null
   if (email !== null) data.email = email as string || null
   if (phone !== null) data.phone = phone as string || null
-  if (status !== null) data.status = status as string
+  
+  if (status !== null) {
+    // Check if status actually changed to update status_updated_at
+    const { data: currentLead } = await supabase
+      .from('leads')
+      .select('status')
+      .eq('id', id)
+      .single()
+
+    if (currentLead?.status !== status) {
+      data.status_updated_at = new Date().toISOString()
+    }
+    data.status = status as string
+  }
+
   if (agent_id !== null) {
     data.agent_id = agent_id === 'none' ? null : agent_id as string
   }
@@ -27,13 +41,13 @@ export async function updateLead(id: string, formData: FormData) {
 
   // If status is changing to contacted, update contacted_at
   if (status === 'contacted') {
-    const { data: currentLead } = await supabase
+    const { data: leadForContact } = await supabase
       .from('leads')
       .select('status, contacted_at')
       .eq('id', id)
       .single()
     
-    if (currentLead?.status !== 'contacted' && !currentLead?.contacted_at) {
+    if (leadForContact?.status !== 'contacted' && !leadForContact?.contacted_at) {
       data.contacted_at = new Date().toISOString()
     }
   }
@@ -82,6 +96,7 @@ export async function createLead(formData: FormData) {
     agent_id: formData.get('agent_id') as string || null,
     referral_code: formData.get('referral_code') as string || null,
     status: 'new' as const,
+    status_updated_at: new Date().toISOString(),
     notes: formData.get('notes') as string || null,
   }
 
@@ -130,7 +145,8 @@ export async function convertActionToLead(actionId: string, agentId?: string) {
       area_id: action.area_id,
       agent_id: agentId || action.agent_id,
       notes: `Converted from action. Original notes: ${action.notes}`,
-      status: 'new'
+      status: 'new',
+      status_updated_at: new Date().toISOString()
     })
 
   if (insertError) {
