@@ -10,6 +10,21 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Check if user is admin or agent to redirect to admin panel
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single()
+
+        if (profile?.role === 'admin' || profile?.role === 'agent') {
+          return NextResponse.redirect(`${origin}/admin`)
+        }
+      }
+
       return NextResponse.redirect(`${origin}${next}`)
     }
   }

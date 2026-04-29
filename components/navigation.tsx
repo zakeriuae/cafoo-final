@@ -210,7 +210,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator className="bg-slate-50" />
-                    {profile?.role === 'admin' ? (
+                    {profile?.role === 'admin' || profile?.role === 'agent' ? (
                       <Link href="/admin">
                         <DropdownMenuItem className="rounded-xl focus:bg-primary/5 text-primary cursor-pointer gap-2 py-2.5">
                           <LayoutDashboard className="h-4 w-4" />
