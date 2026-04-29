@@ -14,6 +14,7 @@ export function useAuthAction() {
   const pathname = usePathname()
   const { locale } = useI18n()
   const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [isPending, setIsPending] = useState(false)
   const authModal = useAuthModal()
 
