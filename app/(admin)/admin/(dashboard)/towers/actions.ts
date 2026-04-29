@@ -23,6 +23,8 @@ export async function deleteTower(id: string) {
 export async function createTower(formData: FormData) {
   const supabase = await createClient()
 
+  const amenityIds = formData.get('amenity_ids') ? JSON.parse(formData.get('amenity_ids') as string) : []
+
   const data = {
     name: formData.get('name') as string,
     name_fa: formData.get('name_fa') as string || null,
@@ -59,7 +61,6 @@ export async function createTower(formData: FormData) {
     seo_title_fa: formData.get('seo_title_fa') as string || null,
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
-    amenities: formData.get('amenities') ? JSON.parse(formData.get('amenities') as string) : [],
     payment_plan_details: formData.get('payment_plan_details') ? JSON.parse(formData.get('payment_plan_details') as string) : [],
     payment_plan_details_fa: formData.get('payment_plan_details_fa') ? JSON.parse(formData.get('payment_plan_details_fa') as string) : [],
     connectivity: formData.get('connectivity') ? JSON.parse(formData.get('connectivity') as string) : [],
@@ -73,10 +74,22 @@ export async function createTower(formData: FormData) {
   if (data.developer_id === 'none') data.developer_id = null
   if (data.assigned_agent_id === 'none') data.assigned_agent_id = null
 
-  const { error } = await supabase.from('towers').insert(data)
+  const { data: tower, error } = await supabase.from('towers').insert(data).select().single()
 
   if (error) {
     return { success: false, error: error.message }
+  }
+
+  // Insert amenities
+  if (tower && amenityIds.length > 0) {
+    const amenitiesData = amenityIds.map((amenityId: string) => ({
+      tower_id: tower.id,
+      amenity_id: amenityId,
+    }))
+    const { error: amenityError } = await supabase.from('tower_amenities').insert(amenitiesData)
+    if (amenityError) {
+      console.error('Error inserting amenities:', amenityError)
+    }
   }
 
   revalidatePath('/admin/towers')
@@ -86,6 +99,8 @@ export async function createTower(formData: FormData) {
 
 export async function updateTower(id: string, formData: FormData) {
   const supabase = await createClient()
+
+  const amenityIds = formData.get('amenity_ids') ? JSON.parse(formData.get('amenity_ids') as string) : []
 
   const data = {
     name: formData.get('name') as string,
@@ -123,7 +138,6 @@ export async function updateTower(id: string, formData: FormData) {
     seo_title_fa: formData.get('seo_title_fa') as string || null,
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
-    amenities: formData.get('amenities') ? JSON.parse(formData.get('amenities') as string) : [],
     payment_plan_details: formData.get('payment_plan_details') ? JSON.parse(formData.get('payment_plan_details') as string) : [],
     payment_plan_details_fa: formData.get('payment_plan_details_fa') ? JSON.parse(formData.get('payment_plan_details_fa') as string) : [],
     connectivity: formData.get('connectivity') ? JSON.parse(formData.get('connectivity') as string) : [],
@@ -144,6 +158,20 @@ export async function updateTower(id: string, formData: FormData) {
 
   if (error) {
     return { success: false, error: error.message }
+  }
+
+  // Update amenities: delete old ones and insert new ones
+  await supabase.from('tower_amenities').delete().eq('tower_id', id)
+  
+  if (amenityIds.length > 0) {
+    const amenitiesData = amenityIds.map((amenityId: string) => ({
+      tower_id: id,
+      amenity_id: amenityId,
+    }))
+    const { error: amenityError } = await supabase.from('tower_amenities').insert(amenitiesData)
+    if (amenityError) {
+      console.error('Error updating amenities:', amenityError)
+    }
   }
 
   revalidatePath('/admin/towers')

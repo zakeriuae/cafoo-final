@@ -21,7 +21,8 @@ export default async function TowerDetailPage({ params }: Props) {
       *,
       area:areas(id, name, name_fa, slug),
       developer:developers(id, name, name_fa, logo_url),
-      assigned_agent:agents(id, name, name_fa, slug, title, title_fa, avatar_url, phone, whatsapp, email)
+      assigned_agent:agents(id, name, name_fa, slug, title, title_fa, avatar_url, phone, whatsapp, email),
+      tower_amenities(amenities(*))
     `)
     .eq("slug", slug)
     .single();

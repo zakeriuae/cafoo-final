@@ -16,13 +16,17 @@ export default async function EditPropertyPage({ params }: Props) {
     { data: towers },
     { data: developers },
     { data: agents },
+    { data: propertyAmenities },
   ] = await Promise.all([
     supabase.from('properties').select('*').eq('id', id).single(),
     supabase.from('areas').select('*').eq('status', 'published').order('name'),
     supabase.from('towers').select('*').eq('status', 'published').order('name'),
     supabase.from('developers').select('*').eq('status', 'published').order('name'),
     supabase.from('agents').select('*').eq('status', 'published').order('name'),
+    supabase.from('property_amenities').select('amenity_id').eq('property_id', id),
   ])
+
+  const selectedAmenityIds = propertyAmenities?.map(a => a.amenity_id) || []
 
   if (!property) {
     notFound()
@@ -48,6 +52,7 @@ export default async function EditPropertyPage({ params }: Props) {
       agents={agents || []}
       isAdmin={isAdmin}
       currentAgentId={currentAgentId}
+      initialAmenityIds={selectedAmenityIds}
     />
   )
 }

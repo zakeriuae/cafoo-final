@@ -36,7 +36,8 @@ export default async function PropertyDetailPage({ params }: Props) {
       area:areas(*),
       tower:towers(*, developer:developers(*)),
       developer:developers(*),
-      assigned_agent:agents(*)
+      assigned_agent:agents(*),
+      property_amenities(amenities(*))
     `)
     .eq("slug", slug)
     .eq("content_status", "published")

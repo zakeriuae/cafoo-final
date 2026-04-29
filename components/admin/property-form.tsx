@@ -22,6 +22,7 @@ import type { Property, Area, Tower, Developer, Agent } from '@/lib/database.typ
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { ImageUploader } from '@/components/admin/image-uploader'
+import { AmenitySelector } from '@/components/admin/amenity-selector'
 
 interface PropertyFormProps {
   property?: Property
@@ -31,6 +32,7 @@ interface PropertyFormProps {
   agents: Agent[]
   isAdmin: boolean
   currentAgentId?: string | null
+  initialAmenityIds?: string[]
 }
 
 const propertyTypes = [
@@ -53,7 +55,7 @@ const furnishingOptions = [
   { value: 'unfurnished', label: 'Unfurnished' },
 ]
 
-export function PropertyForm({ property, areas, towers, developers, agents, isAdmin, currentAgentId }: PropertyFormProps) {
+export function PropertyForm({ property, areas, towers, developers, agents, isAdmin, currentAgentId, initialAmenityIds = [] }: PropertyFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [featured, setFeatured] = useState(property?.featured || false)
@@ -61,6 +63,7 @@ export function PropertyForm({ property, areas, towers, developers, agents, isAd
   const [isOffPlan, setIsOffPlan] = useState(property?.is_off_plan || false)
   const [isVacant, setIsVacant] = useState(property?.is_vacant ?? true)
   const [balcony, setBalcony] = useState(property?.balcony || false)
+  const [selectedAmenityIds, setSelectedAmenityIds] = useState<string[]>(initialAmenityIds)
   const isEditing = !!property
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,6 +76,7 @@ export function PropertyForm({ property, areas, towers, developers, agents, isAd
     formData.set('is_off_plan', isOffPlan.toString())
     formData.set('is_vacant', isVacant.toString())
     formData.set('balcony', balcony.toString())
+    formData.set('amenity_ids', JSON.stringify(selectedAmenityIds))
     
     const result = isEditing
       ? await updateProperty(property.id, formData)
@@ -484,6 +488,18 @@ export function PropertyForm({ property, areas, towers, developers, agents, isAd
                     />
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Amenities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AmenitySelector
+                  selectedIds={selectedAmenityIds}
+                  onChange={setSelectedAmenityIds}
+                />
               </CardContent>
             </Card>
 

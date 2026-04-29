@@ -23,6 +23,7 @@ export async function deleteProperty(id: string) {
 export async function createProperty(formData: FormData) {
   const supabase = await createClient()
 
+  const amenityIds = formData.get('amenity_ids') ? JSON.parse(formData.get('amenity_ids') as string) : []
   const galleryRaw = formData.get('gallery') as string
   let gallery: string[] = []
   try { gallery = galleryRaw ? JSON.parse(galleryRaw) : [] } catch {}
@@ -86,10 +87,22 @@ export async function createProperty(formData: FormData) {
   if (data.developer_id === 'none') data.developer_id = null
   if (data.agent_id === 'none') data.agent_id = null
 
-  const { error } = await supabase.from('properties').insert(data)
+  const { data: property, error } = await supabase.from('properties').insert(data).select().single()
 
   if (error) {
     return { success: false, error: error.message }
+  }
+
+  // Insert amenities
+  if (property && amenityIds.length > 0) {
+    const amenitiesData = amenityIds.map((amenityId: string) => ({
+      property_id: property.id,
+      amenity_id: amenityId,
+    }))
+    const { error: amenityError } = await supabase.from('property_amenities').insert(amenitiesData)
+    if (amenityError) {
+      console.error('Error inserting amenities:', amenityError)
+    }
   }
 
   revalidatePath('/admin/properties')
@@ -100,6 +113,7 @@ export async function createProperty(formData: FormData) {
 export async function updateProperty(id: string, formData: FormData) {
   const supabase = await createClient()
 
+  const amenityIds = formData.get('amenity_ids') ? JSON.parse(formData.get('amenity_ids') as string) : []
   const galleryRaw2 = formData.get('gallery') as string
   let gallery2: string[] = []
   try { gallery2 = galleryRaw2 ? JSON.parse(galleryRaw2) : [] } catch {}
@@ -170,6 +184,20 @@ export async function updateProperty(id: string, formData: FormData) {
 
   if (error) {
     return { success: false, error: error.message }
+  }
+
+  // Update amenities: delete old ones and insert new ones
+  await supabase.from('property_amenities').delete().eq('property_id', id)
+  
+  if (amenityIds.length > 0) {
+    const amenitiesData = amenityIds.map((amenityId: string) => ({
+      property_id: id,
+      amenity_id: amenityId,
+    }))
+    const { error: amenityError } = await supabase.from('property_amenities').insert(amenitiesData)
+    if (amenityError) {
+      console.error('Error updating amenities:', amenityError)
+    }
   }
 
   revalidatePath('/admin/properties')

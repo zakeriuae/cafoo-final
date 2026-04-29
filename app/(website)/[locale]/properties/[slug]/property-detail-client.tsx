@@ -40,8 +40,10 @@ import {
   Car,
   Baby,
   Wind,
-  Layout
+  Layout,
+  Download
 } from "lucide-react"
+import * as Icons from "lucide-react"
 import { useContent, useI18n } from "@/lib/i18n"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
@@ -113,6 +115,7 @@ interface Property {
   view_type: string | null
   is_upgraded: boolean | null
   vacant_status: string | null
+  property_amenities?: { amenities: any }[]
 }
 
 interface SimilarProperty {
@@ -159,7 +162,20 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
 
   const propTitle = locale === 'fa' && property.title_fa ? property.title_fa : property.title
   const propDesc = locale === 'fa' && property.description_fa ? property.description_fa : property.description
-  const features = locale === 'fa' && property.features_fa ? property.features_fa : property.features
+  
+  const amenitiesList = (property.property_amenities || []).map(a => ({
+    name: locale === 'fa' && a.amenities.name_fa ? a.amenities.name_fa : a.amenities.name,
+    icon: a.amenities.icon
+  }))
+
+  const finalAmenities = amenitiesList.length ? amenitiesList : [
+    { name: locale === 'fa' ? 'استخر اختصاصی' : 'Swimming Pool', icon: 'Waves' },
+    { name: locale === 'fa' ? 'سالن ورزشی' : 'Gym', icon: 'Dumbbell' },
+    { name: locale === 'fa' ? 'نگهبانی ۲۴ ساعته' : '24/7 Security', icon: 'ShieldCheck' },
+    { name: locale === 'fa' ? 'پارکینگ سرپوشیده' : 'Covered Parking', icon: 'Car' },
+    { name: locale === 'fa' ? 'فضای بازی کودکان' : 'Kids Play Area', icon: 'Baby' },
+    { name: locale === 'fa' ? 'تهویه مرکزی' : 'Central A/C', icon: 'Wind' }
+  ]
   const areaName = property.area
     ? (locale === 'fa' && property.area.name_fa ? property.area.name_fa : property.area.name)
     : null
@@ -469,30 +485,15 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
             <div className="p-6 md:p-8">
               <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'ویژگی‌ها و امکانات رفاهی' : 'Features / Amenities'}</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                {(features && features.length > 0 ? features : [
-                  locale === 'fa' ? 'استخر اختصاصی' : 'Swimming Pool',
-                  locale === 'fa' ? 'سالن ورزشی' : 'Gym',
-                  locale === 'fa' ? 'نگهبانی ۲۴ ساعته' : '24/7 Security',
-                  locale === 'fa' ? 'پارکینگ سرپوشیده' : 'Covered Parking',
-                  locale === 'fa' ? 'فضای بازی کودکان' : 'Kids Play Area',
-                  locale === 'fa' ? 'تهویه مرکزی' : 'Central A/C'
-                ]).map((feature) => {
-                  const featureLower = feature.toLowerCase();
-                  let Icon = Check;
-                  if (featureLower.includes('pool') || featureLower.includes('استخر')) Icon = Waves;
-                  else if (featureLower.includes('gym') || featureLower.includes('ورزشی')) Icon = Dumbbell;
-                  else if (featureLower.includes('security') || featureLower.includes('نگهبانی')) Icon = ShieldCheck;
-                  else if (featureLower.includes('parking') || featureLower.includes('پارکینگ')) Icon = Car;
-                  else if (featureLower.includes('kids') || featureLower.includes('کودکان')) Icon = Baby;
-                  else if (featureLower.includes('a/c') || featureLower.includes('تهویه')) Icon = Wind;
-                  else if (featureLower.includes('balcony') || featureLower.includes('تراس')) Icon = Layout;
-
+                {finalAmenities.map((feature, idx) => {
+                  // @ts-ignore
+                  const Icon = Icons[feature.icon] || Icons.Check;
                   return (
-                    <div key={feature} className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 border border-slate-100/50 hover:bg-white hover:border-primary/20 transition-all group aspect-square text-center">
+                    <div key={idx} className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 border border-slate-100/50 hover:bg-white hover:border-primary/20 transition-all group aspect-square text-center">
                       <div className="mb-2">
                         <Icon className="h-5 w-5 text-slate-900 group-hover:text-primary transition-colors" />
                       </div>
-                      <span className="text-[10px] font-bold text-slate-700 leading-tight">{feature}</span>
+                      <span className="text-[10px] font-bold text-slate-700 leading-tight">{feature.name}</span>
                     </div>
                   );
                 })}

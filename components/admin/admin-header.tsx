@@ -28,7 +28,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
     setIsLoading(true)
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/admin/login')
+    window.location.href = '/admin/login'
   }
 
   const initials = user.email ? user.email.slice(0, 2).toUpperCase() : 'AD'

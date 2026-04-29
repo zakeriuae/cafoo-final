@@ -24,6 +24,7 @@ import Link from 'next/link'
 import { ImageUploader } from '@/components/admin/image-uploader'
 import { JsonArrayInput } from '@/components/admin/json-array-input'
 import { StringArrayInput } from '@/components/admin/string-array-input'
+import { AmenitySelector } from '@/components/admin/amenity-selector'
 
 interface TowerFormProps {
   tower?: Tower
@@ -32,13 +33,15 @@ interface TowerFormProps {
   agents: Agent[]
   isAdmin: boolean
   currentAgentId?: string | null
+  initialAmenityIds?: string[]
 }
 
-export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAgentId }: TowerFormProps) {
+export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAgentId, initialAmenityIds = [] }: TowerFormProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [featured, setFeatured] = useState(tower?.featured || false)
   const [isOffPlan, setIsOffPlan] = useState(tower?.is_off_plan || false)
+  const [selectedAmenityIds, setSelectedAmenityIds] = useState<string[]>(initialAmenityIds)
   const isEditing = !!tower
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -48,6 +51,7 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
     const formData = new FormData(e.currentTarget)
     formData.set('featured', featured.toString())
     formData.set('is_off_plan', isOffPlan.toString())
+    formData.set('amenity_ids', JSON.stringify(selectedAmenityIds))
     
     const result = isEditing
       ? await updateTower(tower.id, formData)
@@ -307,11 +311,13 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                 <CardTitle>Features & FAQ</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <StringArrayInput
-                  name="amenities"
-                  label="Amenities"
-                  initialValue={tower?.amenities || []}
-                />
+                <div className="space-y-4">
+                  <Label>Amenities</Label>
+                  <AmenitySelector
+                    selectedIds={selectedAmenityIds}
+                    onChange={setSelectedAmenityIds}
+                  />
+                </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <JsonArrayInput

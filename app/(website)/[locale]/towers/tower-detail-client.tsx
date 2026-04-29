@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import * as Icons from "lucide-react"
 import {
   MapPin,
   Building2,
@@ -71,7 +72,7 @@ interface Tower {
   brochure_url: string | null
   latitude: number | null
   longitude: number | null
-  amenities: string[] | null
+  tower_amenities?: { amenities: any }[]
   area: {
     id: string
     name: string
@@ -143,25 +144,18 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
   }
 
   // Amenities Icon Mapping
-  const getAmenityIcon = (feature: string) => {
-    const f = feature.toLowerCase()
-    if (f.includes('pool') || f.includes('استخر')) return Waves
-    if (f.includes('gym') || f.includes('ورزش')) return Dumbbell
-    if (f.includes('security') || f.includes('نگهبان')) return ShieldCheck
-    if (f.includes('parking') || f.includes('پارکینگ')) return Car
-    if (f.includes('ac') || f.includes('هوا')) return Wind
-    if (f.includes('balcony') || f.includes('تراس')) return Layout
-    if (f.includes('kids') || f.includes('کودکان')) return Baby
-    return Check
-  }
+  const amenitiesList = (tower.tower_amenities || []).map(a => ({
+    name: locale === 'fa' && a.amenities.name_fa ? a.amenities.name_fa : a.amenities.name,
+    icon: a.amenities.icon
+  }))
 
-  const amenitiesList = tower.amenities?.length ? tower.amenities : [
-    locale === 'fa' ? 'استخر اختصاصی' : 'Swimming Pool',
-    locale === 'fa' ? 'سالن ورزشی' : 'Gym',
-    locale === 'fa' ? 'نگهبانی ۲۴ ساعته' : '24/7 Security',
-    locale === 'fa' ? 'پارکینگ سرپوشیده' : 'Covered Parking',
-    locale === 'fa' ? 'فضای بازی کودکان' : 'Kids Play Area',
-    locale === 'fa' ? 'تهویه مرکزی' : 'Central A/C'
+  const finalAmenities = amenitiesList.length ? amenitiesList : [
+    { name: locale === 'fa' ? 'استخر اختصاصی' : 'Swimming Pool', icon: 'Waves' },
+    { name: locale === 'fa' ? 'سالن ورزشی' : 'Gym', icon: 'Dumbbell' },
+    { name: locale === 'fa' ? 'نگهبانی ۲۴ ساعته' : '24/7 Security', icon: 'ShieldCheck' },
+    { name: locale === 'fa' ? 'پارکینگ سرپوشیده' : 'Covered Parking', icon: 'Car' },
+    { name: locale === 'fa' ? 'فضای بازی کودکان' : 'Kids Play Area', icon: 'Baby' },
+    { name: locale === 'fa' ? 'تهویه مرکزی' : 'Central A/C', icon: 'Wind' }
   ]
 
   return (
@@ -401,14 +395,15 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
             <div className="p-6 md:p-8">
               <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'ویژگی‌ها و امکانات رفاهی' : 'Features / Amenities'}</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                {amenitiesList.map((feature) => {
-                  const Icon = getAmenityIcon(feature);
+                {finalAmenities.map((feature, idx) => {
+                  // @ts-ignore
+                  const Icon = Icons[feature.icon] || Icons.Check;
                   return (
-                    <div key={feature} className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 border border-slate-100/50 hover:bg-white hover:border-primary/20 transition-all group aspect-square text-center">
+                    <div key={idx} className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 border border-slate-100/50 hover:bg-white hover:border-primary/20 transition-all group aspect-square text-center">
                       <div className="mb-2">
                         <Icon className="h-5 w-5 text-slate-900 group-hover:text-primary transition-colors" />
                       </div>
-                      <span className="text-[10px] font-bold text-slate-700 leading-tight">{feature}</span>
+                      <span className="text-[10px] font-bold text-slate-700 leading-tight">{feature.name}</span>
                     </div>
                   );
                 })}

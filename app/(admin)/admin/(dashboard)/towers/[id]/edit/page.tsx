@@ -15,12 +15,16 @@ export default async function EditTowerPage({ params }: Props) {
     { data: areas },
     { data: developers },
     { data: agents },
+    { data: towerAmenities },
   ] = await Promise.all([
     supabase.from('towers').select('*').eq('id', id).single(),
     supabase.from('areas').select('*').eq('status', 'published').order('name'),
     supabase.from('developers').select('*').eq('status', 'published').order('name'),
     supabase.from('agents').select('*').eq('status', 'published').order('name'),
+    supabase.from('tower_amenities').select('amenity_id').eq('tower_id', id),
   ])
+
+  const selectedAmenityIds = towerAmenities?.map(a => a.amenity_id) || []
 
   if (!tower) {
     notFound()
@@ -45,6 +49,7 @@ export default async function EditTowerPage({ params }: Props) {
       agents={agents || []}
       isAdmin={isAdmin}
       currentAgentId={currentAgentId}
+      initialAmenityIds={selectedAmenityIds}
     />
   )
 }
