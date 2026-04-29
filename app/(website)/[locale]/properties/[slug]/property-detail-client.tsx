@@ -106,7 +106,9 @@ interface Property {
   } | null
   video_url: string | null
   floor_plan_url: string | null
+  brochure_url: string | null
   tour_360_url: string | null
+  additional_media: { title: string; url: string }[] | null
   service_charge: string | null
   payment_plan: any | null
   latitude: number | null
@@ -501,37 +503,55 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
           </div>
 
             {/* 4. Floor Plans & Interactive Media */}
-            {(property.floor_plan_url || property.video_url || property.tour_360_url) && (
+            {(property.floor_plan_url || property.video_url || property.tour_360_url || property.brochure_url || (property.additional_media && property.additional_media.length > 0)) && (
               <div className="p-6 md:p-8">
                 <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'نقشه و رسانه‌های تعاملی' : 'Floor Plans & Media'}</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {property.floor_plan_url && (
-                    <a href={property.floor_plan_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group">
+                    <a href={property.floor_plan_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
                       <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <Layout className="h-6 w-6 text-primary" />
                       </div>
-                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'نقشه طبقه' : 'Floor Plan'}</span>
+                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'نقشه واحد' : 'Floor Plan'}</span>
                       <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">View PDF</span>
                     </a>
                   )}
-                  {property.video_url && (
-                    <a href={property.video_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group">
+                  {property.brochure_url && (
+                    <a href={property.brochure_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
                       <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Waves className="h-6 w-6 text-primary" />
+                        <Download className="h-6 w-6 text-primary" />
                       </div>
-                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'ویدیو ملک' : 'Video Tour'}</span>
+                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'کاتالوگ ملک' : 'Brochure'}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">PDF - View</span>
+                    </a>
+                  )}
+                  {property.video_url && (
+                    <a href={property.video_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
+                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <Icons.Play className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'ویدیو تور' : 'Video Tour'}</span>
                       <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Watch Now</span>
                     </a>
                   )}
                   {property.tour_360_url && (
-                    <a href={property.tour_360_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group">
+                    <a href={property.tour_360_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
                       <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <Compass className="h-6 w-6 text-primary" />
                       </div>
-                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'تور ۳۶۰ درجه' : '360° View'}</span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Explore Space</span>
+                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'تور مجازی' : '360° Tour'}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Explore</span>
                     </a>
                   )}
+                  {property.additional_media?.map((media, idx) => (
+                    <a key={idx} href={media.url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
+                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <Icons.FileText className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-900 truncate max-w-full px-2">{media.title}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Link</span>
+                    </a>
+                  ))}
                 </div>
               </div>
             )}
