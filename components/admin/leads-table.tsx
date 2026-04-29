@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   Table,
@@ -31,9 +32,10 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { updateLead, deleteLead } from '@/app/(admin)/admin/(dashboard)/leads/actions'
 import type { Lead, Agent } from '@/lib/database.types'
-import { Search, Phone, Mail, MessageSquare, Trash2, Edit2 } from 'lucide-react'
+import { Search, Phone, Mail, MessageSquare, Trash2, Edit2, Eye } from 'lucide-react'
 
 interface LeadsTableProps {
+  title?: string
   leads: (Lead & {
     property?: { id: string; title: string } | null
     tower?: { id: string; name: string } | null
@@ -61,7 +63,7 @@ const sourceLabels: Record<string, string> = {
   referral: 'Referral',
 }
 
-export function LeadsTable({ leads, agents }: LeadsTableProps) {
+export function LeadsTable({ leads, agents, title = "Leads (CRM)" }: LeadsTableProps) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -125,7 +127,7 @@ export function LeadsTable({ leads, agents }: LeadsTableProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Leads (CRM)</h1>
+          <h1 className="text-2xl font-bold">{title}</h1>
           <p className="text-muted-foreground">Manage and track your leads</p>
         </div>
         <div className="flex items-center gap-2">
@@ -261,6 +263,15 @@ export function LeadsTable({ leads, agents }: LeadsTableProps) {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        asChild
+                      >
+                        <Link href={`/admin/leads/${lead.id}`}>
+                          <Eye className="w-4 h-4" />
+                        </Link>
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
