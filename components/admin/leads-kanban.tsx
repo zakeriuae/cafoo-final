@@ -264,6 +264,13 @@ export function LeadsKanban({ leads, agents = [] }: LeadsKanbanProps) {
                                           {agent.name[0]}
                                         </div>
                                       ))
+                                    ) : lead.agent ? (
+                                      <div 
+                                        className="w-4 h-4 rounded-full border border-white bg-slate-100 flex items-center justify-center text-[7px] font-bold text-slate-500"
+                                        title={lead.agent.name}
+                                      >
+                                        {lead.agent.name[0]}
+                                      </div>
                                     ) : (
                                       <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400">
                                         <UserCheck className="w-3 h-3" />

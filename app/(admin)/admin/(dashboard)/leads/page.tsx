@@ -24,7 +24,8 @@ async function getLeads() {
       property:properties(id, title),
       tower:towers(id, name),
       area:areas(id, name),
-      agent:agents(id, name)
+      agent:agents(id, name),
+      agent_ids
     `)
     .order('created_at', { ascending: false })
 
