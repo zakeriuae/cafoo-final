@@ -43,7 +43,7 @@ export function AdminSidebar({ role = 'admin' }: AdminSidebarProps) {
   const pathname = usePathname()
 
   return (
-    <aside className="w-64 bg-background border-r border-border flex flex-col">
+    <aside className="w-64 h-full bg-background border-r border-border flex flex-col">
       {/* Logo */}
       <div className="h-16 flex items-center px-6 border-b border-border">
         <Link href="/admin" className="flex items-center gap-2">
