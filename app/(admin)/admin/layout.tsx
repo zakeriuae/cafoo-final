@@ -12,8 +12,8 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased overflow-hidden">
+    <html lang="en" className="h-full">
+      <body className="font-sans antialiased overflow-hidden h-full">
         {children}
         <Toaster />
       </body>
