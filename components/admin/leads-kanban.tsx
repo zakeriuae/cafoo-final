@@ -67,10 +67,15 @@ const getSourceIcon = (source: string) => {
   }
 }
 
-export function LeadsKanban({ leads }: LeadsKanbanProps) {
+export function LeadsKanban({ leads, agents = [] }: LeadsKanbanProps) {
   const router = useRouter()
   const [localLeads, setLocalLeads] = useState(leads)
   const [isUpdating, setIsUpdating] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const handleDeleteLead = async (id: string) => {
     if (!confirm('Are you sure you want to delete this lead?')) return
@@ -141,6 +146,8 @@ export function LeadsKanban({ leads }: LeadsKanbanProps) {
     if (days >= 14) return 'warning'
     return 'fresh'
   }
+
+  if (!isClient) return <div className="h-[500px] w-full bg-slate-50/50 rounded-2xl animate-pulse" />
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>

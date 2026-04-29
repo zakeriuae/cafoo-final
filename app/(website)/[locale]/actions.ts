@@ -87,23 +87,29 @@ export async function trackUserAction(params: TrackActionParams) {
   }
 
   // 3. Log to lead_messages for unified history if lead exists
-  const { data: currentLead } = await supabase
-    .from('leads')
-    .select('id')
-    .eq('user_id', user.id)
-    .maybeSingle()
+  try {
+    const { data: currentLead } = await supabase
+      .from('leads')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle()
 
-  if (currentLead) {
-    await supabase.from('lead_messages').insert({
-      lead_id: currentLead.id,
-      content: params.notes || `User performed action: ${params.source}`,
-      type: 'action',
-      metadata: {
-        source: params.source,
-        property_id: params.property_id,
-        tower_id: params.tower_id
-      }
-    })
+    if (currentLead) {
+      await supabase.from('lead_messages').insert({
+        lead_id: currentLead.id,
+        content: params.notes || `User performed action: ${params.source}`,
+        type: 'action',
+        metadata: {
+          source: params.source,
+          property_id: params.property_id,
+          tower_id: params.tower_id,
+          agent_id: params.agent_id
+        }
+      })
+    }
+  } catch (logError) {
+    console.error('Non-critical: Error logging to lead_messages:', logError)
+    // We don't return failure here because the primary action (user_actions) was recorded
   }
 
   return { success: true }

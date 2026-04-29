@@ -59,18 +59,14 @@ export function useAuthAction() {
     try {
       if (trackingParams) {
         setPendingSource(trackingParams.source)
-        // If authenticated, track the action if params provided
-        const result = await trackUserAction({
+        // Trigger tracking in background so UI remains responsive
+        trackUserAction({
           ...trackingParams,
           source_url: pathname
-        })
-
-        if (!result.success) {
-          toast.error(result.error || 'Failed to record interaction')
-        }
+        }).catch(err => console.error('Tracking failed:', err))
       }
 
-      // Execute the action
+      // Execute the action immediately
       await action()
     } catch (err) {
       console.error('Error performing action:', err)
