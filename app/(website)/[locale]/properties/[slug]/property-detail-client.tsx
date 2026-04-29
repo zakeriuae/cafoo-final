@@ -158,7 +158,7 @@ interface PropertyDetailClientProps {
 }
 
 export function PropertyDetailClient({ property, similarProperties, locale }: PropertyDetailClientProps) {
-  const { performAction, isPending } = useAuthAction()
+  const { performAction, pendingSource } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
@@ -357,9 +357,9 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                       notes: `User liked property: ${propTitle}`
                     }
                   )}
-                  disabled={isPending}
+                  disabled={!!pendingSource}
                 >
-                  {isPending ? (
+                  {pendingSource === 'like' ? (
                     <Icons.Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
@@ -754,9 +754,9 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                             notes: `User clicked call button for agent ${property.assigned_agent?.name}`
                           }
                         )}
-                        disabled={isPending}
+                        disabled={!!pendingSource}
                       >
-                        {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
+                        {pendingSource === 'call' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
                         {locale === 'fa' ? 'تماس' : 'Call'}
                       </Button>
                       <Button 
@@ -772,9 +772,9 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                             notes: `User clicked WhatsApp button for agent ${property.assigned_agent?.name}`
                           }
                         )}
-                        disabled={isPending}
+                        disabled={!!pendingSource}
                       >
-                        {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
+                        {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                         WA
                       </Button>
                       <Button 
@@ -788,9 +788,9 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                             notes: `User clicked Inquire/Request Viewing for property: ${propTitle}`
                           }
                         )}
-                        disabled={isPending}
+                        disabled={!!pendingSource}
                       >
-                        {isPending ? (
+                        {pendingSource === 'register_viewing' ? (
                           <Icons.Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />

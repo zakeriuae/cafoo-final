@@ -114,7 +114,7 @@ interface AgentDetailClientProps {
 }
 
 export function AgentDetailClient({ agent, properties, towers, locale }: AgentDetailClientProps) {
-  const { performAction, isPending } = useAuthAction()
+  const { performAction, pendingSource } = useAuthAction()
   const content = useContent()
   const isRtl = locale === 'fa'
   
@@ -238,13 +238,13 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                           notes: `User clicked call button for agent ${agentName}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <Phone className="h-5 w-5 mr-3" />}
+                      {pendingSource === 'call' ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <Phone className="h-5 w-5 mr-3" />}
                       {locale === 'fa' ? 'تماس' : 'Call'}
                     </Button>
                   )}
-                  {(agent.whatsapp || agent.phone) && (
+                  {agent.phone && (
                     <Button 
                       size="lg" 
                       className="h-14 px-8 rounded-2xl font-bold text-base bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full"
@@ -258,9 +258,9 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                           notes: `User clicked WhatsApp button for agent ${agentName}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <MessageCircle className="h-5 w-5 mr-3" />}
+                      {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-5 w-5 animate-spin mr-3" /> : <MessageCircle className="h-5 w-5 mr-3" />}
                       WhatsApp
                     </Button>
                   )}

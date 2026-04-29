@@ -66,7 +66,7 @@ const sourceLabels: Record<string, string> = {
   share: 'Shared',
 }
 
-export function LeadsTable({ leads, agents, title = "Leads (CRM)" }: LeadsTableProps) {
+export function LeadsTable({ leads, agents, title }: LeadsTableProps) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -128,17 +128,19 @@ export function LeadsTable({ leads, agents, title = "Leads (CRM)" }: LeadsTableP
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{title}</h1>
-          <p className="text-muted-foreground">Manage and track your leads</p>
+      {title && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">{title}</h1>
+            <p className="text-muted-foreground">Manage and track your leads</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-lg px-3 py-1">
+              {filteredLeads.length} leads
+            </Badge>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-lg px-3 py-1">
-            {filteredLeads.length} leads
-          </Badge>
-        </div>
-      </div>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-4">

@@ -78,7 +78,7 @@ export default async function ActionsPage() {
         </div>
       </div>
 
-      <LeadsTable leads={leads} agents={agents} title="Actions" />
+      <LeadsTable leads={leads} agents={agents} />
     </div>
   )
 }

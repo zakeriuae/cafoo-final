@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="fixed inset-0 flex bg-muted/30 overflow-hidden">
+    <div className="fixed inset-0 flex bg-slate-50 overflow-hidden">
       <AdminSidebar role={profile.role} />
       <div className="flex flex-col flex-1 min-w-0 h-full overflow-hidden">
         <AdminHeader user={user} />

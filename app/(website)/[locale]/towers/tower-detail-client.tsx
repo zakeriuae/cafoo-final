@@ -129,7 +129,7 @@ interface TowerDetailClientProps {
 }
 
 export function TowerDetailClient({ tower, properties, locale }: TowerDetailClientProps) {
-  const { performAction, isPending } = useAuthAction()
+  const { performAction, pendingSource } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
@@ -234,9 +234,9 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                       notes: `User liked tower: ${towerName}`
                     }
                   )}
-                  disabled={isPending}
+                  disabled={!!pendingSource}
                 >
-                  {isPending ? (
+                  {pendingSource === 'like' ? (
                     <Icons.Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
@@ -664,9 +664,9 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                           notes: `User clicked call button for tower agent ${tower.assigned_agent?.name || 'Specialist'}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
+                      {pendingSource === 'call' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
                     </Button>
                     <Button 
                       className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-green-100/20"
@@ -681,9 +681,9 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                           notes: `User clicked WhatsApp button for tower agent ${tower.assigned_agent?.name || 'Specialist'}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
+                      {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                     </Button>
                     <Button 
                       className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center shadow-lg shadow-primary/20 transition-all active:scale-95"
@@ -696,9 +696,9 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                           notes: `User clicked Inquire for tower: ${towerName}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'fa' ? 'درخواست' : 'Inquire')}
+                      {pendingSource === 'register_viewing' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : (locale === 'fa' ? 'درخواست' : 'Inquire')}
                     </Button>
                   </div>
                 </div>
@@ -736,9 +736,9 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
 
       <div className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 p-4 z-50 shadow-lg">
         <div className="grid grid-cols-3 gap-2">
-          <Button className="h-12 bg-slate-900" disabled={isPending} onClick={() => performAction(() => { window.location.href = `tel:${tower.assigned_agent?.phone || '+971503491050'}` }, { source: 'call', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5" />}</Button>
-          <Button className="h-12 bg-[#25D366]" disabled={isPending} onClick={() => performAction(() => { window.open(`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank') }, { source: 'whatsapp', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}</Button>
-          <Button className="h-12 bg-primary font-black uppercase text-xs" disabled={isPending} onClick={() => performAction(() => { setIsMeetingModalOpen(true) }, { source: 'register_viewing', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : (locale === 'fa' ? 'مشاوره' : 'Inquire')}</Button>
+          <Button className="h-12 bg-slate-900" disabled={!!pendingSource} onClick={() => performAction(() => { window.location.href = `tel:${tower.assigned_agent?.phone || '+971503491050'}` }, { source: 'call', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}>{pendingSource === 'call' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5" />}</Button>
+          <Button className="h-12 bg-[#25D366]" disabled={!!pendingSource} onClick={() => performAction(() => { window.open(`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank') }, { source: 'whatsapp', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}>{pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}</Button>
+          <Button className="h-12 bg-primary font-black uppercase text-xs" disabled={!!pendingSource} onClick={() => performAction(() => { setIsMeetingModalOpen(true) }, { source: 'register_viewing', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}>{pendingSource === 'register_viewing' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : (locale === 'fa' ? 'مشاوره' : 'Inquire')}</Button>
         </div>
       </div>
       {/* Meeting Modal */}

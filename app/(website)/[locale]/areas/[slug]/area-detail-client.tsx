@@ -130,7 +130,7 @@ interface AreaDetailClientProps {
 }
 
 export function AreaDetailClient({ area, properties, towers, locale }: AreaDetailClientProps) {
-  const { performAction, isPending } = useAuthAction()
+  const { performAction, pendingSource } = useAuthAction()
   const content = useContent()
   const { isRtl } = useI18n()
   const [activeImage, setActiveImage] = useState(0)
@@ -243,9 +243,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                       notes: `User liked area: ${areaName}`
                     }
                   )}
-                  disabled={isPending}
+                  disabled={!!pendingSource}
                 >
-                  {isPending ? (
+                  {pendingSource === 'like' ? (
                     <Icons.Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
@@ -691,9 +691,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                           notes: `User clicked call button for area ${areaName}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
+                      {pendingSource === 'call' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <Phone className="h-4 w-4" />}
                       {locale === 'fa' ? 'تماس' : 'Call'}
                     </Button>
                     <Button 
@@ -708,9 +708,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                           notes: `User clicked WhatsApp button for area ${areaName}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
+                      {pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <MessageCircle className="h-4 w-4" />}
                       WA
                     </Button>
                     <Button 
@@ -723,9 +723,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                           notes: `User clicked Inquire for area: ${areaName}`
                         }
                       )}
-                      disabled={isPending}
+                      disabled={!!pendingSource}
                     >
-                      {isPending ? (
+                      {pendingSource === 'register_viewing' ? (
                         <Icons.Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
@@ -761,9 +761,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
         {/* Mobile Contact Bar */}
       <div className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 p-4 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="grid grid-cols-3 gap-2">
-          <Button className="h-12 bg-slate-900 rounded-xl" disabled={isPending} onClick={() => performAction(() => { window.location.href = `tel:+971503491050` }, { source: 'call', area_id: area.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5" />}</Button>
-          <Button className="h-12 bg-[#25D366] rounded-xl" disabled={isPending} onClick={() => performAction(() => { window.open(`https://wa.me/971503491050`, '_blank') }, { source: 'whatsapp', area_id: area.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}</Button>
-          <Button className="h-12 bg-primary rounded-xl font-black uppercase text-xs" disabled={isPending} onClick={() => performAction(() => { setIsMeetingModalOpen(true) }, { source: 'register_viewing', area_id: area.id })}>{isPending ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : (locale === 'fa' ? 'مشاوره' : 'Inquire')}</Button>
+          <Button className="h-12 bg-slate-900 rounded-xl" disabled={!!pendingSource} onClick={() => performAction(() => { window.location.href = `tel:+971503491050` }, { source: 'call', area_id: area.id })}>{pendingSource === 'call' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <Phone className="h-5 w-5" />}</Button>
+          <Button className="h-12 bg-[#25D366] rounded-xl" disabled={!!pendingSource} onClick={() => performAction(() => { window.open(`https://wa.me/971503491050`, '_blank') }, { source: 'whatsapp', area_id: area.id })}>{pendingSource === 'whatsapp' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : <MessageCircle className="h-5 w-5" />}</Button>
+          <Button className="h-12 bg-primary rounded-xl font-black uppercase text-xs" disabled={!!pendingSource} onClick={() => performAction(() => { setIsMeetingModalOpen(true) }, { source: 'register_viewing', area_id: area.id })}>{pendingSource === 'register_viewing' ? <Icons.Loader2 className="h-5 w-5 animate-spin" /> : (locale === 'fa' ? 'مشاوره' : 'Inquire')}</Button>
         </div>
       </div>
       {/* Meeting Modal */}

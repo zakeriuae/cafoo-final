@@ -15,7 +15,7 @@ export function useAuthAction() {
   const { locale } = useI18n()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [isPending, setIsPending] = useState(false)
+  const [pendingSource, setPendingSource] = useState<LeadSource | null>(null)
   const authModal = useAuthModal()
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export function useAuthAction() {
       notes?: string
     }
   ) => {
-    if (loading || isPending) return
+    if (loading || pendingSource) return
 
     if (!user) {
       // Open the modal instead of redirecting
@@ -56,9 +56,9 @@ export function useAuthAction() {
     }
 
     try {
-      setIsPending(true)
-      // If authenticated, track the action if params provided
       if (trackingParams) {
+        setPendingSource(trackingParams.source)
+        // If authenticated, track the action if params provided
         await trackUserAction({
           ...trackingParams,
           source_url: pathname
@@ -70,14 +70,14 @@ export function useAuthAction() {
     } catch (err) {
       console.error('Error performing action:', err)
     } finally {
-      setIsPending(false)
+      setPendingSource(null)
     }
   }
 
   return {
     user,
     loading,
-    isPending,
+    pendingSource,
     performAction,
     isAuthenticated: !!user
   }
