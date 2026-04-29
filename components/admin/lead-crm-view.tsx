@@ -22,7 +22,10 @@ import {
   Check,
   UserPlus,
   X,
-  Share2
+  Share2,
+  MoreVertical,
+  Search,
+  Paperclip
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -44,6 +47,7 @@ interface LeadCRMViewProps {
   lead: any
   messages: any[]
   agents: any[]
+  userActions?: any[]
 }
 
 const statusColors: Record<string, string> = {
@@ -57,7 +61,7 @@ const statusColors: Record<string, string> = {
 
 const statusOrder = ['new', 'contacted', 'qualified', 'negotiating', 'won']
 
-export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewProps) {
+export function LeadCRMView({ lead, messages = [], agents = [], userActions = [] }: LeadCRMViewProps) {
   const router = useRouter()
   const [newNote, setNewNote] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -247,20 +251,20 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                 </DropdownMenu>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-4 space-y-2">
+            <CardContent className="p-3 space-y-2">
               {(lead.agent_ids?.length > 0 || lead.agent) ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   {agents.filter(a => (lead.agent_ids || []).includes(a.id) || lead.agent_id === a.id).map(agent => (
-                    <div key={agent.id} className="flex items-center gap-3 p-2 rounded-xl bg-slate-50/50 border border-slate-100 group">
-                      <Avatar className="w-8 h-8 border border-white shadow-sm">
+                    <div key={agent.id} className="flex items-center gap-2.5 p-1.5 rounded-xl bg-slate-50/50 border border-slate-100 group">
+                      <Avatar className="w-7 h-7 border border-white shadow-sm">
                         <AvatarImage src={agent.avatar_url} />
-                        <AvatarFallback className="bg-slate-200 text-slate-600 text-[10px] font-bold">
+                        <AvatarFallback className="bg-slate-200 text-slate-600 text-[9px] font-bold">
                           {getInitials(agent.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-bold text-slate-800 truncate">{agent.name}</p>
-                        <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest">Consultant</p>
+                        <p className="text-[10px] font-black text-slate-800 truncate">{agent.name}</p>
+                        <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Consultant</p>
                       </div>
                       <Button 
                         variant="ghost" 
@@ -274,8 +278,8 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-4 text-slate-400">
-                  <p className="text-[10px] font-medium italic">No agents assigned</p>
+                <div className="text-center py-2 text-slate-400">
+                  <p className="text-[9px] font-medium italic">No agents assigned</p>
                 </div>
               )}
             </CardContent>
@@ -289,151 +293,217 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                 Linked Asset
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               {lead.property ? (
                 <Link href={`/properties/${lead.property.id}`} className="group block">
-                  <div className="relative h-32 w-full rounded-xl overflow-hidden mb-3 bg-slate-100 shadow-inner">
+                  <div className="relative h-20 w-full rounded-xl overflow-hidden mb-2 bg-slate-100 shadow-inner">
                     {lead.property.cover_image_url && (
                       <img 
                         src={lead.property.cover_image_url} 
                         className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700" 
                       />
                     )}
-                    <div className="absolute top-2 right-2">
-                      <Badge className="bg-white/90 backdrop-blur-sm text-slate-900 border-none font-bold text-[9px] uppercase">
+                    <div className="absolute top-1 right-1">
+                      <Badge className="bg-white/90 backdrop-blur-sm text-slate-900 border-none font-black text-[8px] uppercase px-1.5 py-0">
                         {lead.property.listing_type}
                       </Badge>
                     </div>
                   </div>
-                  <h4 className="font-bold text-slate-900 text-sm line-clamp-1">{lead.property.title}</h4>
-                  <div className="flex items-center justify-between mt-2">
-                    <p className="text-primary font-bold text-sm">AED {lead.property.price?.toLocaleString()}</p>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
+                  <h4 className="font-black text-slate-800 text-[11px] line-clamp-1">{lead.property.title}</h4>
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-primary font-black text-[11px]">AED {lead.property.price?.toLocaleString()}</p>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                      <MapPin className="w-2.5 h-2.5" />
                       {lead.property.area?.name || 'Dubai'}
                     </p>
                   </div>
                 </Link>
               ) : (
-                <div className="text-center py-6 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/30">
-                   <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center mx-auto mb-3">
-                     <Share2 className="w-5 h-5 text-slate-300" />
-                   </div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Origin Source</p>
-                  <p className="text-xs font-bold text-slate-600">{lead.notes || 'Direct/Unknown'}</p>
+                <div className="text-center py-4 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/30">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">Origin Source</p>
+                  <p className="text-[10px] font-black text-slate-600 truncate px-2">{lead.notes || 'Direct'}</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* User Journey / Actions */}
+          <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden">
+            <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-3 px-6">
+              <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-primary" />
+                User Journey
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3">
+               {userActions.length > 0 ? (
+                 <div className="space-y-1">
+                   {userActions.map((action, i) => (
+                     <div key={action.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors group">
+                       <div className={cn(
+                         "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
+                         action.source === 'call' ? "bg-blue-50 text-blue-500" :
+                         action.source === 'whatsapp' ? "bg-green-50 text-green-500" :
+                         "bg-red-50 text-red-500"
+                       )}>
+                         {action.source === 'call' ? <Phone className="w-3.5 h-3.5" /> :
+                          action.source === 'whatsapp' ? <MessageSquare className="w-3.5 h-3.5" /> :
+                          <Heart className="w-3.5 h-3.5 fill-current" />}
+                       </div>
+                       <div className="flex-1 min-w-0">
+                         <div className="flex items-center justify-between gap-2">
+                           <p className="text-[10px] font-black text-slate-700 capitalize leading-none">{action.source}</p>
+                           <span className="text-[8px] text-slate-400 font-bold uppercase">{formatDateSafe(action.created_at, 'HH:mm')}</span>
+                         </div>
+                         <p className="text-[9px] text-slate-400 truncate font-medium mt-1">
+                           {action.notes || 'User performed action'}
+                         </p>
+                       </div>
+                     </div>
+                   ))}
+                 </div>
+               ) : (
+                 <div className="text-center py-4 text-slate-300">
+                   <p className="text-[9px] font-bold uppercase tracking-widest">No previous actions</p>
+                 </div>
+               )}
             </CardContent>
           </Card>
         </div>
 
         {/* Right Column: Telegram Hub */}
-        <div className="lg:col-span-2 flex flex-col h-[700px]">
-          <Card className="flex-1 border-slate-100 shadow-sm rounded-3xl overflow-hidden flex flex-col bg-[#F0F2F5] relative">
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+        <div className="lg:col-span-2 flex flex-col h-[750px] shadow-2xl rounded-[2rem] overflow-hidden border border-slate-200">
+          <Card className="flex-1 border-none flex flex-col bg-[#E6EBEE] relative">
             
-            {/* Messages Area */}
+            {/* Telegram Header */}
+            <div className="h-16 bg-white border-b border-slate-200/60 px-6 flex items-center justify-between z-20 shadow-sm">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-10 h-10 border border-slate-100">
+                  <AvatarImage src={lead.user?.avatar_url} />
+                  <AvatarFallback className="bg-primary text-white text-sm font-black">
+                    {getInitials(lead.name || 'Anonymous')}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <h3 className="text-sm font-black text-slate-800 leading-none">{lead.name || 'Anonymous Lead'}</h3>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Pipeline</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-primary rounded-full">
+                  <Search className="w-5 h-5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-primary rounded-full">
+                  <MoreVertical className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Messages Area with Wallpaper */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar relative z-10">
+               {/* Wallpaper Pattern */}
+               <div className="absolute inset-0 opacity-[0.15] pointer-events-none grayscale" 
+                    style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/p-5.png")' }} />
+               
                {messages.length === 0 ? (
-                 <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-3">
-                   <div className="w-16 h-16 rounded-full bg-slate-200/50 flex items-center justify-center shadow-inner">
+                 <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-3 relative z-20">
+                   <div className="w-16 h-16 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center shadow-inner">
                      <MessageSquare className="w-8 h-8 opacity-30" />
                    </div>
                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">No history recorded yet</p>
                  </div>
                ) : (
-                 messages.map((msg, i) => {
-                   const isAction = msg.type === 'action' || msg.type === 'system'
-                   
-                   if (isAction) {
-                     return (
-                       <div key={msg.id} className="flex justify-center my-6">
-                         <div className="bg-white/80 backdrop-blur-md border border-slate-200 shadow-[0_2px_10px_rgba(0,0,0,0.03)] rounded-full px-6 py-1.5 flex items-center gap-3 transition-all hover:scale-105">
-                           <div className="p-1.5 rounded-full bg-slate-50 shadow-inner">
-                             {msg.metadata?.source === 'like' ? <Heart className="w-3.5 h-3.5 text-red-500 fill-current" /> :
-                              msg.metadata?.source === 'call' ? <Phone className="w-3.5 h-3.5 text-blue-500" /> :
-                              msg.metadata?.source === 'whatsapp' ? <MessageSquare className="w-3.5 h-3.5 text-green-500" /> :
-                              <Clock className="w-3.5 h-3.5 text-slate-400" />}
-                           </div>
-                           <div className="flex flex-col">
+                 <div className="relative z-20 space-y-4">
+                   {messages.map((msg, i) => {
+                     const isAction = msg.type === 'action' || msg.type === 'system'
+                     
+                     if (isAction) {
+                       return (
+                         <div key={msg.id} className="flex justify-center my-6">
+                           <div className="bg-slate-500/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-1.5 flex items-center gap-3 transition-all hover:bg-slate-500/20">
                              <span className="text-[10px] font-black text-slate-600 uppercase tracking-wide leading-none">
                                {msg.content}
                              </span>
-                             <span className="text-[8px] text-slate-400 font-medium uppercase mt-0.5">
-                               {formatDateSafe(msg.created_at, 'HH:mm')} • System Log
-                             </span>
-                           </div>
-                         </div>
-                       </div>
-                     )
-                   }
-
-                   return (
-                     <div key={msg.id} className={cn("flex gap-3 items-end", "justify-end")}>
-                       <div className={cn(
-                         "max-w-[85%] rounded-2xl px-4 py-3 shadow-[0_2px_5px_rgba(0,0,0,0.05)] relative group transition-all hover:shadow-md",
-                         "bg-[#E1FEC6] text-slate-800 rounded-tr-none border border-green-200/50"
-                       )}>
-                         <div className="flex items-center justify-between gap-6 mb-1.5">
-                           <span className="text-[10px] font-black text-green-700 uppercase tracking-widest">
-                             {msg.sender?.full_name || 'System Consultant'}
-                           </span>
-                           <div className="flex items-center gap-1">
-                             <span className="text-[9px] text-green-600/60 font-bold">
+                             <span className="text-[9px] text-slate-400 font-medium uppercase">
                                {formatDateSafe(msg.created_at, 'HH:mm')}
                              </span>
-                             <Check className="w-3 h-3 text-green-500 opacity-40" />
                            </div>
                          </div>
-                         <p className="text-[13px] leading-relaxed whitespace-pre-line font-medium">{msg.content}</p>
-                         
-                         {/* Bubble tail */}
-                         <div className="absolute top-0 -right-2 w-3 h-3 bg-[#E1FEC6] border-t border-green-200/50 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]" />
+                       )
+                     }
+
+                     return (
+                       <div key={msg.id} className="flex gap-3 items-end justify-end">
+                         <div className="max-w-[85%] rounded-2xl px-4 py-2.5 shadow-sm relative group bg-white text-slate-800 rounded-tr-none border border-slate-200/50">
+                           <div className="flex items-center justify-between gap-6 mb-1">
+                             <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                               {msg.sender?.full_name || 'Consultant'}
+                             </span>
+                             <div className="flex items-center gap-1">
+                               <span className="text-[9px] text-slate-400 font-bold">
+                                 {formatDateSafe(msg.created_at, 'HH:mm')}
+                               </span>
+                               <Check className="w-3 h-3 text-primary opacity-60" />
+                             </div>
+                           </div>
+                           <p className="text-sm leading-relaxed whitespace-pre-line font-medium">{msg.content}</p>
+                           
+                           {/* Bubble tail */}
+                           <div className="absolute top-0 -right-2 w-3 h-3 bg-white border-t border-slate-200/50 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]" />
+                         </div>
+                         <Avatar className="w-7 h-7 border-2 border-white shadow-md mb-0.5 shrink-0">
+                           <AvatarImage src={msg.sender?.avatar_url} />
+                           <AvatarFallback className="bg-primary/10 text-primary text-[9px] font-black">
+                             {msg.sender?.full_name?.[0] || 'A'}
+                           </AvatarFallback>
+                         </Avatar>
                        </div>
-                       <Avatar className="w-7 h-7 border-2 border-white shadow-md mb-0.5 shrink-0">
-                         <AvatarImage src={msg.sender?.avatar_url} />
-                         <AvatarFallback className="bg-green-200 text-green-800 text-[9px] font-black">
-                           {msg.sender?.full_name?.[0] || 'A'}
-                         </AvatarFallback>
-                       </Avatar>
-                     </div>
-                   )
-                 })
+                     )
+                   })}
+                 </div>
                )}
             </div>
 
-            {/* Input Area */}
-            <div className="p-4 bg-white border-t border-slate-100 relative z-10">
-               <form onSubmit={handleAddNote} className="flex items-end gap-3 max-w-4xl mx-auto">
-                 <div className="flex-1 relative">
-                   <textarea 
-                     value={newNote}
-                     onChange={(e) => setNewNote(e.target.value)}
-                     placeholder="Write an internal note or update..."
-                     className="w-full bg-slate-50 border-none rounded-2xl p-4 pr-12 text-sm focus:ring-2 focus:ring-primary/20 transition-all resize-none min-h-[50px] max-h-[150px]"
-                     rows={1}
-                     onKeyDown={(e) => {
-                       if (e.key === 'Enter' && !e.shiftKey) {
-                         e.preventDefault()
-                         handleAddNote(e)
-                       }
-                     }}
-                   />
-                   <div className="absolute right-3 bottom-3 text-slate-300">
-                      <FileText className="w-5 h-5" />
-                   </div>
+            {/* Telegram Input Area */}
+            <div className="p-4 bg-[#E6EBEE] relative z-20">
+               <div className="max-w-3xl mx-auto flex items-end gap-2">
+                 <div className="flex-1 bg-white rounded-[1.5rem] shadow-sm border border-slate-200 flex items-end p-2 px-4 transition-all focus-within:shadow-md focus-within:border-primary/30">
+                   <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-400 hover:text-primary shrink-0 rounded-full">
+                     <Paperclip className="w-5 h-5" />
+                   </Button>
+                   <form onSubmit={handleAddNote} className="flex-1">
+                     <textarea 
+                       value={newNote}
+                       onChange={(e) => setNewNote(e.target.value)}
+                       placeholder="Write a message..."
+                       className="w-full bg-transparent border-none focus:ring-0 text-sm py-3 px-2 resize-none min-h-[44px] max-h-[200px]"
+                       rows={1}
+                       onKeyDown={(e) => {
+                         if (e.key === 'Enter' && !e.shiftKey) {
+                           e.preventDefault()
+                           handleAddNote(e)
+                         }
+                       }}
+                     />
+                   </form>
+                   <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-400 hover:text-primary shrink-0 rounded-full">
+                     <Heart className="w-5 h-5" />
+                   </Button>
                  </div>
+                 
                  <Button 
-                    type="submit" 
+                    onClick={handleAddNote}
                     disabled={!newNote.trim() || isSubmitting}
-                    size="icon" 
-                    className="h-12 w-12 rounded-full shadow-lg hover:scale-105 transition-all flex-shrink-0"
+                    className="h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 hover:scale-105 transition-all shrink-0 p-0 flex items-center justify-center"
                   >
-                   <Send className="w-5 h-5" />
+                   <Send className="w-5 h-5 text-white" />
                  </Button>
-               </form>
-               <p className="text-[10px] text-center text-slate-400 mt-2 font-medium">
-                 Enter to send. Notes are only visible to agents and admins.
+               </div>
+               <p className="text-[9px] text-center text-slate-400 mt-3 font-bold uppercase tracking-widest opacity-60">
+                 This is an internal note only visible to admins
                </p>
             </div>
           </Card>

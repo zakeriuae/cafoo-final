@@ -51,12 +51,32 @@ export default async function LeadDetailPage({ params }: Props) {
     .eq('status', 'published')
     .order('name')
 
+  // Fetch user's recent actions for context
+  let userActions = []
+  if (lead.user_id || lead.phone) {
+    let query = supabase
+      .from('user_actions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(10)
+    
+    if (lead.user_id) {
+      query = query.eq('user_id', lead.user_id)
+    } else {
+      query = query.eq('phone', lead.phone)
+    }
+    
+    const { data: actions } = await query
+    userActions = actions || []
+  }
+
   return (
     <div className="container mx-auto py-6">
       <LeadCRMView 
         lead={lead} 
         messages={messages || []} 
         agents={allAgents || []}
+        userActions={userActions}
       />
     </div>
   )
