@@ -157,3 +157,39 @@ export async function convertActionToLead(actionId: string, agentId?: string) {
   revalidatePath('/admin/actions')
   return { success: true }
 }
+
+export async function addLeadMessage(leadId: string, content: string, type: 'note' | 'system' = 'note') {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { error } = await supabase
+    .from('lead_messages')
+    .insert({
+      lead_id: leadId,
+      sender_id: user?.id,
+      content,
+      type
+    })
+
+  if (error) return { success: false, error: error.message }
+  
+  revalidatePath(`/admin/leads/${leadId}`)
+  return { success: true }
+}
+
+export async function reassignLead(leadId: string, agentId: string | 'none') {
+  const supabase = await createClient()
+  
+  const { error } = await supabase
+    .from('leads')
+    .update({ 
+      agent_id: agentId === 'none' ? null : agentId,
+      status_updated_at: new Date().toISOString() 
+    })
+    .eq('id', leadId)
+
+  if (error) return { success: false, error: error.message }
+  
+  revalidatePath(`/admin/leads/${leadId}`)
+  return { success: true }
+}

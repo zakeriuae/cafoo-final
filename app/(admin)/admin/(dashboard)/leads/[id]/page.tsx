@@ -33,22 +33,30 @@ export default async function LeadDetailPage({ params }: Props) {
     notFound()
   }
 
-  // Fetch last 10 actions for this user if available
-  let actions = []
-  if (lead.user_id) {
-    const { data: userActions } = await supabase
-      .from('user_actions')
-      .select('*')
-      .eq('user_id', lead.user_id)
-      .order('created_at', { ascending: false })
-      .limit(10)
-    
-    actions = userActions || []
-  }
+  // Fetch unified history from lead_messages
+  const { data: messages } = await supabase
+    .from('lead_messages')
+    .select(`
+      *,
+      sender:profiles(full_name, avatar_url)
+    `)
+    .eq('lead_id', id)
+    .order('created_at', { ascending: true })
+
+  // Fetch all agents for reassignment
+  const { data: allAgents } = await supabase
+    .from('agents')
+    .select('id, name, avatar_url')
+    .eq('status', 'published')
+    .order('name')
 
   return (
     <div className="container mx-auto py-6">
-      <LeadCRMView lead={lead} actions={actions} />
+      <LeadCRMView 
+        lead={lead} 
+        messages={messages || []} 
+        agents={allAgents || []}
+      />
     </div>
   )
 }

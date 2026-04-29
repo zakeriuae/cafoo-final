@@ -86,5 +86,25 @@ export async function trackUserAction(params: TrackActionParams) {
     }
   }
 
+  // 3. Log to lead_messages for unified history if lead exists
+  const { data: currentLead } = await supabase
+    .from('leads')
+    .select('id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (currentLead) {
+    await supabase.from('lead_messages').insert({
+      lead_id: currentLead.id,
+      content: params.notes || `User performed action: ${params.source}`,
+      type: 'action',
+      metadata: {
+        source: params.source,
+        property_id: params.property_id,
+        tower_id: params.tower_id
+      }
+    })
+  }
+
   return { success: true }
 }

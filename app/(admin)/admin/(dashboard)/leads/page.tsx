@@ -53,7 +53,7 @@ export default async function LeadsPage() {
         </div>
       </div>
 
-      <LeadsKanban leads={leads} />
+      <LeadsKanban leads={leads} agents={agents || []} />
     </div>
   )
 }
