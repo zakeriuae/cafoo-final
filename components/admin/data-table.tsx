@@ -115,12 +115,12 @@ export function DataTable<T extends { id: string }>({
           placeholder={searchPlaceholder}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
+          className="pl-10 bg-white"
         />
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg">
+      <div className="border rounded-lg bg-white overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

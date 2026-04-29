@@ -170,11 +170,11 @@ export function LeadsTable({ leads, agents, title, isActionLog = false }: LeadsT
             placeholder="Search by name, email, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-white"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-40 bg-white">
             <SelectValue placeholder="All statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -190,7 +190,7 @@ export function LeadsTable({ leads, agents, title, isActionLog = false }: LeadsT
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg">
+      <div className="border rounded-lg bg-white overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
