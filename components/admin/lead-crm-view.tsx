@@ -38,6 +38,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+import { format } from 'date-fns'
+
 interface LeadCRMViewProps {
   lead: any
   messages: any[]
@@ -87,11 +89,22 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
   }
 
   const getInitials = (name: string) => {
+    if (!name) return '?'
     return name.split(' ').map(n => n[0]).join('').toUpperCase()
   }
 
   const currentStatusIndex = statusOrder.indexOf(lead.status)
   const progression = Math.round(((currentStatusIndex + 1) / statusOrder.length) * 100)
+
+  // Safe date formatting
+  const formatDateSafe = (dateStr: string, formatStr: string) => {
+    try {
+      if (!dateStr) return 'N/A'
+      return format(new Date(dateStr), formatStr)
+    } catch (err) {
+      return 'N/A'
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -107,7 +120,7 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
         </div>
         <div className="flex items-center gap-2">
            <Badge variant="outline" className="bg-white/50 backdrop-blur-sm border-slate-200">
-             ID: {lead.id.split('-')[0]}
+             ID: {lead.id?.toString().substring(0, 8) || 'N/A'}
            </Badge>
         </div>
       </div>
@@ -143,7 +156,7 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-primary" />
-                  Added {new Date(lead.created_at).toLocaleDateString()}
+                  Added {formatDateSafe(lead.created_at, 'MMM dd, yyyy')}
                 </div>
               </div>
 
@@ -183,7 +196,7 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
               </div>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Status Update</p>
               <h3 className="text-lg font-bold">
-                {new Date(lead.status_updated_at || lead.created_at).toLocaleDateString()}
+                {formatDateSafe(lead.status_updated_at || lead.created_at, 'MMM dd, yyyy')}
               </h3>
             </div>
           </div>
@@ -331,7 +344,6 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                ) : (
                  messages.map((msg, i) => {
                    const isAction = msg.type === 'action' || msg.type === 'system'
-                   const isAgent = msg.type === 'note'
                    
                    if (isAction) {
                      return (
@@ -348,7 +360,7 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                                {msg.content}
                              </span>
                              <span className="text-[8px] text-slate-400 font-medium uppercase mt-0.5">
-                               {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • System Log
+                               {formatDateSafe(msg.created_at, 'HH:mm')} • System Log
                              </span>
                            </div>
                          </div>
@@ -368,7 +380,7 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                            </span>
                            <div className="flex items-center gap-1">
                              <span className="text-[9px] text-green-600/60 font-bold">
-                               {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                               {formatDateSafe(msg.created_at, 'HH:mm')}
                              </span>
                              <Check className="w-3 h-3 text-green-500 opacity-40" />
                            </div>
@@ -408,7 +420,7 @@ export function LeadCRMView({ lead, messages = [], agents = [] }: LeadCRMViewPro
                      }}
                    />
                    <div className="absolute right-3 bottom-3 text-slate-300">
-                     <FileText className="w-5 h-5" />
+                      <FileText className="w-5 h-5" />
                    </div>
                  </div>
                  <Button 
