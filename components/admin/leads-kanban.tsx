@@ -29,7 +29,7 @@ import { updateLead, deleteLead } from '@/app/(admin)/admin/(dashboard)/leads/ac
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { differenceInDays, formatDistanceToNow } from 'date-fns'
-import { fa } from 'date-fns/locale'
+import { faIR } from 'date-fns/locale'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -266,7 +266,7 @@ export function LeadsKanban({ leads }: LeadsKanbanProps) {
                                     staleness === 'warning' ? "bg-orange-100 text-orange-600" :
                                     "bg-slate-100 text-slate-400"
                                   )}>
-                                    {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true, locale: fa })}
+                                    {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true, locale: faIR })}
                                   </div>
                                 </div>
                               </CardContent>
