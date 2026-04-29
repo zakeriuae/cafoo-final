@@ -581,7 +581,7 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {property.payment_plan_details.map((plan, idx) => (
                     <div key={idx} className="bg-white p-4 rounded-2xl border border-primary/10">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{plan.phase}</p>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">{locale === 'fa' && (plan as any).phase_fa ? (plan as any).phase_fa : plan.phase}</p>
                       <p className="text-lg font-black text-primary">{plan.percent}</p>
                     </div>
                   ))}

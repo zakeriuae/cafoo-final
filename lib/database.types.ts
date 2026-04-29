@@ -248,6 +248,16 @@ export interface Property {
   seo_keywords: string[]
   canonical_url: string | null
   og_image_url: string | null
+  additional_media: { title: string; url: string; type: string }[] | null
+  highlights: string | null
+  highlights_fa: string | null
+  architectural_details: string | null
+  architectural_details_fa: string | null
+  investment_potential: string | null
+  investment_potential_fa: string | null
+  permit_number: string | null
+  rera_orn: string | null
+  payment_plan_details: { phase: string; percent: string; phase_fa?: string }[] | null
   created_at: string
   updated_at: string
   // Relations
