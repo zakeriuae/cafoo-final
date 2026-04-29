@@ -166,7 +166,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                               {
                                 source: 'call',
                                 agent_id: agent.id,
-                                notes: `User clicked call button for agent ${agentName} from home page`
+                                notes: 'Home Page'
                               }
                             )}
                             disabled={!!pendingSource}
@@ -184,7 +184,7 @@ export default function AgentsSectionClient({ agents }: AgentsSectionClientProps
                               {
                                 source: 'whatsapp',
                                 agent_id: agent.id,
-                                notes: `User clicked WhatsApp button for agent ${agentName} from home page`
+                                notes: 'Home Page'
                               }
                             )}
                             disabled={!!pendingSource}

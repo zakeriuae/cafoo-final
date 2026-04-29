@@ -24,7 +24,8 @@ export default async function LeadDetailPage({ params }: Props) {
       ),
       tower:towers(id, name),
       area:areas(id, name),
-      agent:agents(id, name, avatar_url)
+      agent:agents(id, name, avatar_url),
+      agent_ids
     `)
     .eq('id', id)
     .single()

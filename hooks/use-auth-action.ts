@@ -22,14 +22,20 @@ export function useAuthAction() {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setUser(session?.user ?? null)
+      } catch (err) {
+        console.error('Session check failed:', err)
+      } finally {
+        setLoading(false)
+      }
     }
     checkUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      setLoading(false)
     })
 
     return () => subscription.unsubscribe()
@@ -59,13 +65,28 @@ export function useAuthAction() {
     },
     required: boolean = true
   ) => {
-    if (loading || (pendingSource && !required)) return
+    // Don't block on loading anymore to avoid "dead" buttons
+    if (pendingSource && !required) return
 
     // If login is required and user is not present, store the intent and open modal
-    if (required && !user) {
+    // We only block if we are ABSOLUTELY SURE there is no user (loading is false)
+    // or if we want to be safe and just open the modal.
+    if (required && !user && !loading) {
       setPendingAction({ action, trackingParams })
       authModal.onOpen(pathname)
       return
+    }
+
+    // If still loading, we might want to wait a bit or just assume no user
+    if (required && !user && loading) {
+      // Small wait to see if session arrives
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) {
+        setPendingAction({ action, trackingParams })
+        authModal.onOpen(pathname)
+        return
+      }
+      // If session arrived, continue...
     }
 
     try {
