@@ -231,7 +231,14 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                     "bg-white/90 backdrop-blur-sm rounded-lg border-0 shadow-lg gap-2 h-10 px-4 font-bold transition-all hover:bg-white",
                     isFavorite ? "text-red-500" : "text-slate-900"
                   )}
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={() => performAction(
+                    () => setIsFavorite(!isFavorite),
+                    { 
+                      source: 'like', 
+                      area_id: area.id,
+                      notes: `User liked area: ${areaName}`
+                    }
+                  )}
                 >
                   <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
                   {locale === 'fa' ? 'ذخیره' : 'Save'}
@@ -665,27 +672,48 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
                   <div className="grid grid-cols-3 gap-2">
                     <Button 
                       className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
-                      onClick={() => performAction(() => {
-                        window.location.href = `tel:+971503491050`
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          window.location.href = `tel:+971503491050`
+                        },
+                        {
+                          source: 'call',
+                          area_id: area.id,
+                          notes: `User clicked call button for area ${areaName}`
+                        }
+                      )}
                     >
                       <Phone className="h-4 w-4" />
                       {locale === 'fa' ? 'تماس' : 'Call'}
                     </Button>
                     <Button 
                       className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-green-100/20"
-                      onClick={() => performAction(() => {
-                        window.open(`https://wa.me/971503491050`, '_blank')
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          window.open(`https://wa.me/971503491050`, '_blank')
+                        },
+                        {
+                          source: 'whatsapp',
+                          area_id: area.id,
+                          notes: `User clicked WhatsApp button for area ${areaName}`
+                        }
+                      )}
                     >
                       <MessageCircle className="h-4 w-4" />
                       WA
                     </Button>
                     <Button 
                       className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn"
-                      onClick={() => performAction(() => {
-                        console.log('Inquiry submitted')
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          console.log('Inquiry submitted')
+                        },
+                        {
+                          source: 'register_viewing',
+                          area_id: area.id,
+                          notes: `User clicked Inquire for area: ${areaName}`
+                        }
+                      )}
                     >
                       <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                       {locale === 'fa' ? 'درخواست' : 'Inquire'}
@@ -719,15 +747,9 @@ export function AreaDetailClient({ area, properties, towers, locale }: AreaDetai
         {/* Mobile Contact Bar */}
       <div className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 p-4 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         <div className="grid grid-cols-3 gap-2">
-          <Button className="h-12 bg-slate-900 rounded-xl">
-            <Phone className="h-5 w-5" />
-          </Button>
-          <Button className="h-12 bg-[#25D366] rounded-xl">
-            <MessageCircle className="h-5 w-5" />
-          </Button>
-          <Button className="h-12 bg-primary rounded-xl font-black uppercase text-xs">
-            {locale === 'fa' ? 'مشاوره' : 'Inquire'}
-          </Button>
+          <Button className="h-12 bg-slate-900 rounded-xl" onClick={() => performAction(() => { window.location.href = `tel:+971503491050` }, { source: 'call', area_id: area.id })}><Phone className="h-5 w-5" /></Button>
+          <Button className="h-12 bg-[#25D366] rounded-xl" onClick={() => performAction(() => { window.open(`https://wa.me/971503491050`, '_blank') }, { source: 'whatsapp', area_id: area.id })}><MessageCircle className="h-5 w-5" /></Button>
+          <Button className="h-12 bg-primary rounded-xl font-black uppercase text-xs" onClick={() => performAction(() => { console.log('Mobile Inquire') }, { source: 'register_viewing', area_id: area.id })}>{locale === 'fa' ? 'مشاوره' : 'Inquire'}</Button>
         </div>
       </div>
     </div>

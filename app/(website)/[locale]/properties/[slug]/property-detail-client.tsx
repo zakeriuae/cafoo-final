@@ -339,7 +339,14 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                     "bg-white/90 backdrop-blur-sm rounded-lg border-0 shadow-lg gap-2 h-10 px-4 font-bold transition-all hover:bg-white",
                     isFavorite ? "text-red-500" : "text-slate-900"
                   )}
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={() => performAction(
+                    () => setIsFavorite(!isFavorite),
+                    { 
+                      source: 'like', 
+                      property_id: property.id,
+                      notes: `User liked property: ${propTitle}`
+                    }
+                  )}
                 >
                   <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
                   {locale === 'fa' ? 'ذخیره' : 'Save'}
@@ -721,27 +728,52 @@ export function PropertyDetailClient({ property, similarProperties, locale }: Pr
                     <div className="grid grid-cols-3 gap-2">
                       <Button 
                         className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
-                        onClick={() => performAction(() => {
-                          window.location.href = `tel:${property.assigned_agent?.phone || '+971503491050'}`
-                        })}
+                        onClick={() => performAction(
+                          () => {
+                            window.location.href = `tel:${property.assigned_agent?.phone || '+971503491050'}`
+                          },
+                          {
+                            source: 'call',
+                            property_id: property.id,
+                            agent_id: property.assigned_agent?.id,
+                            notes: `User clicked call button for agent ${property.assigned_agent?.name}`
+                          }
+                        )}
                       >
                         <Phone className="h-4 w-4" />
                         {locale === 'fa' ? 'تماس' : 'Call'}
                       </Button>
                       <Button 
                         className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-green-100/20"
-                        onClick={() => performAction(() => {
-                          window.open(`https://wa.me/${(property.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank')
-                        })}
+                        onClick={() => performAction(
+                          () => {
+                            window.open(`https://wa.me/${(property.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank')
+                          },
+                          {
+                            source: 'whatsapp',
+                            property_id: property.id,
+                            agent_id: property.assigned_agent?.id,
+                            notes: `User clicked WhatsApp button for agent ${property.assigned_agent?.name}`
+                          }
+                        )}
                       >
                         <MessageCircle className="h-4 w-4" />
                         WA
                       </Button>
                       <Button 
                         className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group/btn"
-                        onClick={() => performAction(() => {
-                          console.log('Inquiry submitted')
-                        })}
+                        onClick={() => performAction(
+                          () => {
+                            console.log('Inquiry submitted')
+                            // Logic for opening inquiry form or similar could go here
+                          },
+                          {
+                            source: 'register_viewing',
+                            property_id: property.id,
+                            agent_id: property.assigned_agent?.id,
+                            notes: `User clicked Inquire/Request Viewing for property: ${propTitle}`
+                          }
+                        )}
                       >
                         <ArrowUpRight className="h-4 w-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                         {locale === 'fa' ? 'درخواست' : 'Inquire'}

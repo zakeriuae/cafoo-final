@@ -123,7 +123,14 @@ export function PropertyCard({
                 e.preventDefault()
                 e.stopPropagation()
                 if (onToggleFavorite) {
-                  performAction(() => onToggleFavorite(e))
+                  performAction(
+                    () => onToggleFavorite(e),
+                    {
+                      source: 'like',
+                      property_id: property.id,
+                      notes: `Liked from property card: ${title}`
+                    }
+                  )
                 }
               }}
               className="h-10 w-10 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all group/btn border border-white/30"

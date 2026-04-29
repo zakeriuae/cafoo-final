@@ -227,9 +227,16 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                     <Button 
                       size="lg" 
                       className="h-14 px-8 rounded-2xl font-bold text-base shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 w-full"
-                      onClick={() => performAction(() => {
-                        window.location.href = `tel:${agent.phone}`
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          window.location.href = `tel:${agent.phone}`
+                        },
+                        {
+                          source: 'call',
+                          agent_id: agent.id,
+                          notes: `User clicked call button for agent ${agentName}`
+                        }
+                      )}
                     >
                       <Phone className="h-5 w-5 mr-3" />
                       {locale === 'fa' ? 'تماس' : 'Call'}
@@ -239,9 +246,16 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                     <Button 
                       size="lg" 
                       className="h-14 px-8 rounded-2xl font-bold text-base bg-[#25D366] hover:bg-[#20bd5c] shadow-lg shadow-green-100/30 transition-all hover:scale-[1.02] active:scale-95 w-full"
-                      onClick={() => performAction(() => {
-                        window.open(`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`, '_blank')
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          window.open(`https://wa.me/${(agent.whatsapp || agent.phone || '').replace(/\D/g, '')}`, '_blank')
+                        },
+                        {
+                          source: 'whatsapp',
+                          agent_id: agent.id,
+                          notes: `User clicked WhatsApp button for agent ${agentName}`
+                        }
+                      )}
                     >
                       <MessageCircle className="h-5 w-5 mr-3" />
                       WhatsApp
@@ -251,10 +265,18 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                   {/* Social Links */}
                   <div className="flex justify-center md:justify-end gap-4 mt-3">
                     {/* Instagram */}
-                    <a 
-                      href={agent.social_instagram ? `https://instagram.com/${agent.social_instagram}` : "#"} 
-                      target={agent.social_instagram ? "_blank" : "_self"}
-                      rel="noopener noreferrer" 
+                    <button 
+                      onClick={() => performAction(
+                        () => {
+                          if (agent.social_instagram) window.open(`https://instagram.com/${agent.social_instagram}`, '_blank')
+                        },
+                        {
+                          source: 'social',
+                          agent_id: agent.id,
+                          notes: `User clicked Instagram for agent ${agentName}`
+                        }
+                      )}
+                      disabled={!agent.social_instagram}
                       className={cn(
                         "p-4 rounded-2xl transition-all duration-300",
                         agent.social_instagram 
@@ -263,13 +285,21 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                       )}
                     >
                       <Instagram className="h-6 w-6" />
-                    </a>
+                    </button>
 
                     {/* LinkedIn */}
-                    <a 
-                      href={agent.social_linkedin ? `https://linkedin.com/in/${agent.social_linkedin}` : "#"} 
-                      target={agent.social_linkedin ? "_blank" : "_self"}
-                      rel="noopener noreferrer" 
+                    <button 
+                      onClick={() => performAction(
+                        () => {
+                          if (agent.social_linkedin) window.open(`https://linkedin.com/in/${agent.social_linkedin}`, '_blank')
+                        },
+                        {
+                          source: 'social',
+                          agent_id: agent.id,
+                          notes: `User clicked LinkedIn for agent ${agentName}`
+                        }
+                      )}
+                      disabled={!agent.social_linkedin}
                       className={cn(
                         "p-4 rounded-2xl transition-all duration-300",
                         agent.social_linkedin 
@@ -278,13 +308,21 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                       )}
                     >
                       <Linkedin className="h-6 w-6" />
-                    </a>
+                    </button>
 
                     {/* Telegram */}
-                    <a 
-                      href={agent.social_telegram ? `https://t.me/${agent.social_telegram}` : "#"} 
-                      target={agent.social_telegram ? "_blank" : "_self"}
-                      rel="noopener noreferrer" 
+                    <button 
+                      onClick={() => performAction(
+                        () => {
+                          if (agent.social_telegram) window.open(`https://t.me/${agent.social_telegram}`, '_blank')
+                        },
+                        {
+                          source: 'social',
+                          agent_id: agent.id,
+                          notes: `User clicked Telegram for agent ${agentName}`
+                        }
+                      )}
+                      disabled={!agent.social_telegram}
                       className={cn(
                         "p-4 rounded-2xl transition-all duration-300",
                         agent.social_telegram 
@@ -293,13 +331,21 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                       )}
                     >
                       <Send className="h-6 w-6" />
-                    </a>
+                    </button>
 
                     {/* Facebook */}
-                    <a 
-                      href={agent.social_facebook ? `https://facebook.com/${agent.social_facebook}` : "#"} 
-                      target={agent.social_facebook ? "_blank" : "_self"}
-                      rel="noopener noreferrer" 
+                    <button 
+                      onClick={() => performAction(
+                        () => {
+                          if (agent.social_facebook) window.open(`https://facebook.com/${agent.social_facebook}`, '_blank')
+                        },
+                        {
+                          source: 'social',
+                          agent_id: agent.id,
+                          notes: `User clicked Facebook for agent ${agentName}`
+                        }
+                      )}
+                      disabled={!agent.social_facebook}
                       className={cn(
                         "p-4 rounded-2xl transition-all duration-300",
                         agent.social_facebook 
@@ -308,7 +354,7 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                       )}
                     >
                       <Facebook className="h-6 w-6" />
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>

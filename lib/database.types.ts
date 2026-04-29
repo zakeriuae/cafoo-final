@@ -6,7 +6,7 @@ export type PropertyType = 'apartment' | 'villa' | 'townhouse' | 'penthouse' | '
 export type PropertyStatus = 'available' | 'sold' | 'rented' | 'reserved' | 'off_market'
 export type FurnishingStatus = 'furnished' | 'semi_furnished' | 'unfurnished'
 export type ContentStatus = 'draft' | 'published' | 'archived'
-export type LeadSource = 'call' | 'whatsapp' | 'email' | 'register_viewing' | 'contact_form' | 'referral'
+export type LeadSource = 'call' | 'whatsapp' | 'email' | 'register_viewing' | 'contact_form' | 'referral' | 'like' | 'social' | 'share'
 export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'negotiating' | 'won' | 'lost'
 
 export interface Profile {

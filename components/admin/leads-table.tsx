@@ -61,6 +61,9 @@ const sourceLabels: Record<string, string> = {
   register_viewing: 'Viewing Request',
   contact_form: 'Contact Form',
   referral: 'Referral',
+  like: 'Property Like',
+  social: 'Social Media',
+  share: 'Shared',
 }
 
 export function LeadsTable({ leads, agents, title = "Leads (CRM)" }: LeadsTableProps) {

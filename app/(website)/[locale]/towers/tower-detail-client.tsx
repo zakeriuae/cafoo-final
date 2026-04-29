@@ -223,7 +223,14 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                     "bg-white/90 backdrop-blur-sm rounded-lg border-0 shadow-lg gap-2 h-10 px-4 font-bold transition-all hover:bg-white",
                     isFavorite ? "text-red-500" : "text-slate-900"
                   )}
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={() => performAction(
+                    () => setIsFavorite(!isFavorite),
+                    { 
+                      source: 'like', 
+                      tower_id: tower.id,
+                      notes: `User liked tower: ${towerName}`
+                    }
+                  )}
                 >
                   <Heart className={cn("h-4 w-4", isFavorite && "fill-red-500")} />
                   {locale === 'fa' ? 'ذخیره' : 'Save'}
@@ -638,27 +645,49 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                   <div className="grid grid-cols-3 gap-2">
                     <Button 
                       className="h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-sm"
-                      onClick={() => performAction(() => {
-                        window.location.href = `tel:${tower.assigned_agent?.phone || '+971503491050'}`
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          window.location.href = `tel:${tower.assigned_agent?.phone || '+971503491050'}`
+                        },
+                        {
+                          source: 'call',
+                          tower_id: tower.id,
+                          agent_id: tower.assigned_agent?.id,
+                          notes: `User clicked call button for tower agent ${tower.assigned_agent?.name || 'Specialist'}`
+                        }
+                      )}
                     >
                       <Phone className="h-4 w-4" />
                     </Button>
                     <Button 
                       className="h-12 rounded-2xl bg-[#25D366] hover:bg-[#20bd5c] text-white font-bold text-xs flex items-center justify-center transition-all active:scale-95 shadow-lg shadow-green-100/20"
-                      onClick={() => performAction(() => {
-                        window.open(`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank')
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          window.open(`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank')
+                        },
+                        {
+                          source: 'whatsapp',
+                          tower_id: tower.id,
+                          agent_id: tower.assigned_agent?.id,
+                          notes: `User clicked WhatsApp button for tower agent ${tower.assigned_agent?.name || 'Specialist'}`
+                        }
+                      )}
                     >
                       <MessageCircle className="h-4 w-4" />
                     </Button>
                     <Button 
                       className="h-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs flex items-center justify-center shadow-lg shadow-primary/20 transition-all active:scale-95"
-                      onClick={() => performAction(() => {
-                        // For now just show a toast or open a modal
-                        // This will be replaced with real lead capture later
-                        console.log('Inquiry submitted')
-                      })}
+                      onClick={() => performAction(
+                        () => {
+                          console.log('Inquiry submitted')
+                        },
+                        {
+                          source: 'register_viewing',
+                          tower_id: tower.id,
+                          agent_id: tower.assigned_agent?.id,
+                          notes: `User clicked Inquire for tower: ${towerName}`
+                        }
+                      )}
                     >
                       {locale === 'fa' ? 'درخواست' : 'Inquire'}
                     </Button>
@@ -698,9 +727,9 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
 
       <div className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 p-4 z-50 shadow-lg">
         <div className="grid grid-cols-3 gap-2">
-          <Button className="h-12 bg-slate-900"><Phone className="h-5 w-5" /></Button>
-          <Button className="h-12 bg-[#25D366]"><MessageCircle className="h-5 w-5" /></Button>
-          <Button className="h-12 bg-primary font-black uppercase text-xs">{locale === 'fa' ? 'مشاوره' : 'Inquire'}</Button>
+          <Button className="h-12 bg-slate-900" onClick={() => performAction(() => { window.location.href = `tel:${tower.assigned_agent?.phone || '+971503491050'}` }, { source: 'call', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}><Phone className="h-5 w-5" /></Button>
+          <Button className="h-12 bg-[#25D366]" onClick={() => performAction(() => { window.open(`https://wa.me/${(tower.assigned_agent?.whatsapp || '971503491050').replace(/\D/g, '')}`, '_blank') }, { source: 'whatsapp', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}><MessageCircle className="h-5 w-5" /></Button>
+          <Button className="h-12 bg-primary font-black uppercase text-xs" onClick={() => performAction(() => { console.log('Mobile Inquire') }, { source: 'register_viewing', tower_id: tower.id, agent_id: tower.assigned_agent?.id })}>{locale === 'fa' ? 'مشاوره' : 'Inquire'}</Button>
         </div>
       </div>
     </div>

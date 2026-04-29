@@ -4,13 +4,10 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, usePathname } from 'next/navigation'
 import { useI18n } from '@/lib/i18n'
-import { toast } from 'sonner'
+import { useAuthModal } from './use-auth-modal'
+import { trackUserAction } from '@/app/(website)/[locale]/actions'
+import { LeadSource } from '@/lib/database.types'
 
-/**
- * Hook to wrap actions that require authentication.
- * If the user is not logged in, it redirects them to the login page
- * and saves the current page as a 'returnTo' parameter.
- */
 export function useAuthAction() {
   const supabase = createClient()
   const router = useRouter()
@@ -18,6 +15,7 @@ export function useAuthAction() {
   const { locale } = useI18n()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const authModal = useAuthModal()
 
   useEffect(() => {
     const checkUser = async () => {
@@ -36,26 +34,35 @@ export function useAuthAction() {
 
   /**
    * Wraps an action with an authentication check.
-   * @param action The function to execute if authenticated
-   * @param message Optional toast message to show if not authenticated
    */
-  const performAction = async (action: () => void | Promise<void>, message?: string) => {
+  const performAction = async (
+    action: () => void | Promise<void>, 
+    trackingParams?: {
+      source: LeadSource
+      property_id?: string
+      tower_id?: string
+      area_id?: string
+      agent_id?: string
+      notes?: string
+    }
+  ) => {
     if (loading) return
 
     if (!user) {
-      if (message) {
-        toast.error(message)
-      } else {
-        toast.info(locale === 'fa' ? 'لطفاً ابتدا وارد حساب کاربری خود شوید' : 'Please log in to continue')
-      }
-      
-      // Save current path to redirect back after login
-      const loginUrl = `/${locale}/login?returnTo=${encodeURIComponent(pathname)}`
-      router.push(loginUrl)
+      // Open the modal instead of redirecting
+      authModal.onOpen(pathname)
       return
     }
 
-    // If authenticated, execute the action
+    // If authenticated, track the action if params provided
+    if (trackingParams) {
+      await trackUserAction({
+        ...trackingParams,
+        source_url: pathname
+      })
+    }
+
+    // Execute the action
     await action()
   }
 
