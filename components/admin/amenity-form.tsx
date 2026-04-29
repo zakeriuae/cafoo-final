@@ -17,7 +17,13 @@ import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
 import { createAmenity, updateAmenity } from '@/app/(admin)/admin/(dashboard)/amenities/actions'
 import type { Amenity } from '@/lib/database.types'
-import { ArrowLeft, Waves, Dumbbell, ShieldCheck, Car, Wind, Layout, Baby, Check, Sparkles, Coffee, TreePine, Tv, Wifi, Utensils, Bath, Bike, Camera } from 'lucide-react'
+import { 
+  ArrowLeft, Waves, Dumbbell, ShieldCheck, Car, Wind, Layout, Baby, Check, Sparkles, Coffee, TreePine, 
+  Tv, Wifi, Utensils, Bath, Bike, Camera, Flame, Leaf, Film, Book, Puzzle, Sun, Sunset, Footprints, 
+  Target, Dribbble, Activity, Flower2, Heart, Shield, Video, ConciergeBell, Wand2, WashingMachine, 
+  ShoppingBag, Briefcase, Cpu, ChefHat, Archive, BookOpen, Bus, Zap, Dog, ArrowUpCircle, Phone, 
+  MapPin, Cloud, Moon, Snowflake, Anchor, Umbrella, Music, Gamepad2, GraduationCap, Map
+} from 'lucide-react'
 import Link from 'next/link'
 
 interface AmenityFormProps {
@@ -25,23 +31,69 @@ interface AmenityFormProps {
 }
 
 const ICON_OPTIONS = [
-  { name: 'Waves', icon: Waves },
+  // Fitness & Wellness
   { name: 'Dumbbell', icon: Dumbbell },
-  { name: 'ShieldCheck', icon: ShieldCheck },
-  { name: 'Car', icon: Car },
-  { name: 'Wind', icon: Wind },
-  { name: 'Layout', icon: Layout },
-  { name: 'Baby', icon: Baby },
-  { name: 'Check', icon: Check },
-  { name: 'Sparkles', icon: Sparkles },
-  { name: 'Coffee', icon: Coffee },
+  { name: 'Waves', icon: Waves },
+  { name: 'Footprints', icon: Footprints },
+  { name: 'Target', icon: Target },
+  { name: 'Dribbble', icon: Dribbble },
+  { name: 'Activity', icon: Activity },
+  { name: 'Flower2', icon: Flower2 },
+  { name: 'Sun', icon: Sun },
+  { name: 'Thermometer', icon: Activity }, // Use Activity as fallback if Thermometer is not imported
+  
+  // Leisure & Entertainment
+  { name: 'Flame', icon: Flame },
+  { name: 'Leaf', icon: Leaf },
   { name: 'TreePine', icon: TreePine },
+  { name: 'Film', icon: Film },
+  { name: 'Book', icon: Book },
+  { name: 'Puzzle', icon: Puzzle },
+  { name: 'Sunset', icon: Sunset },
+  { name: 'Coffee', icon: Coffee },
   { name: 'Tv', icon: Tv },
-  { name: 'Wifi', icon: Wifi },
-  { name: 'Utensils', icon: Utensils },
+  { name: 'Music', icon: Music },
+  { name: 'Gamepad2', icon: Gamepad2 },
+  
+  // Family & Kids
+  { name: 'Baby', icon: Baby },
+  { name: 'Gamepad2', icon: Gamepad2 },
+  { name: 'GraduationCap', icon: GraduationCap },
+  
+  // Services & Security
+  { name: 'ShieldCheck', icon: ShieldCheck },
+  { name: 'Shield', icon: Shield },
+  { name: 'Video', icon: Video },
+  { name: 'ConciergeBell', icon: ConciergeBell },
+  { name: 'Wand2', icon: Wand2 },
+  { name: 'WashingMachine', icon: WashingMachine },
+  { name: 'Phone', icon: Phone },
+  { name: 'Briefcase', icon: Briefcase },
+  { name: 'ShoppingBag', icon: ShoppingBag },
+  
+  // Unit Features
+  { name: 'Layout', icon: Layout },
+  { name: 'Wind', icon: Wind },
+  { name: 'Cpu', icon: Cpu },
+  { name: 'ChefHat', icon: ChefHat },
+  { name: 'Archive', icon: Archive },
+  { name: 'BookOpen', icon: BookOpen },
   { name: 'Bath', icon: Bath },
-  { name: 'Bike', icon: Bike },
+  { name: 'Wifi', icon: Wifi },
+  
+  // Transport & Others
+  { name: 'Car', icon: Car },
+  { name: 'Bus', icon: Bus },
+  { name: 'Zap', icon: Zap },
+  { name: 'ArrowUpCircle', icon: ArrowUpCircle },
+  { name: 'MapPin', icon: MapPin },
+  { name: 'Map', icon: Map },
+  { name: 'Dog', icon: Dog },
   { name: 'Camera', icon: Camera },
+  { name: 'Anchor', icon: Anchor },
+  { name: 'Umbrella', icon: Umbrella },
+  { name: 'Sparkles', icon: Sparkles },
+  { name: 'Check', icon: Check },
 ]
 
 export function AmenityForm({ amenity }: AmenityFormProps) {

@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { deleteAmenity } from './actions'
+import { deleteAmenity, seedAmenities } from './actions'
 import { DeleteButton } from '@/components/admin/delete-button'
 import * as Icons from 'lucide-react'
 
@@ -30,12 +30,23 @@ export default async function AmenitiesPage() {
             Manage global amenities for towers and properties
           </p>
         </div>
-        <Button asChild>
-          <Link href="/admin/amenities/new">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Amenity
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <form action={async () => {
+            'use server'
+            await seedAmenities()
+          }}>
+            <Button variant="outline" type="submit">
+              <Icons.Download className="w-4 h-4 mr-2" />
+              Import Defaults
+            </Button>
+          </form>
+          <Button asChild>
+            <Link href="/admin/amenities/new">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Amenity
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="bg-background border rounded-lg">
