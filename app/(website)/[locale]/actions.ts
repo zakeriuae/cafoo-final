@@ -18,23 +18,7 @@ export async function trackUserAction(params: TrackActionParams) {
   
   const { data: { user } } = await supabase.auth.getUser()
   
-  if (!user) {
-    return { success: false, error: 'User not authenticated' }
-  }
-
-  // Get user profile
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, email, phone')
-    .eq('id', user.id)
-    .single()
-
-  // Prepare data, ensuring null for optional UUIDs
-  const userData = {
-    user_id: user.id,
-    name: profile?.full_name || user.user_metadata?.full_name || 'Anonymous',
-    email: profile?.email || user.email,
-    phone: profile?.phone || null,
+  let userData: any = {
     source: params.source,
     property_id: params.property_id || null,
     tower_id: params.tower_id || null,
@@ -44,6 +28,32 @@ export async function trackUserAction(params: TrackActionParams) {
     notes: params.notes || `User performed action: ${params.source}`
   }
 
+  if (user) {
+    // Get user profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, email, phone')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    userData = {
+      ...userData,
+      user_id: user.id,
+      name: profile?.full_name || user.user_metadata?.full_name || 'Authenticated User',
+      email: profile?.email || user.email,
+      phone: profile?.phone || null,
+    }
+  } else {
+    // Anonymous user
+    userData = {
+      ...userData,
+      user_id: null,
+      name: 'Anonymous Guest',
+      email: null,
+      phone: null,
+    }
+  }
+
   // 1. Always record the event in user_actions
   const { error: actionError } = await supabase
     .from('user_actions')
@@ -51,7 +61,6 @@ export async function trackUserAction(params: TrackActionParams) {
 
   if (actionError) {
     console.error('CRITICAL: Error tracking action in user_actions:', actionError)
-    // We return the error here so we can see it in the UI/Console
     return { success: false, error: `Action log failed: ${actionError.message}` }
   }
 

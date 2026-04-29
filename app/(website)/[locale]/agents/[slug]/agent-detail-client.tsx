@@ -236,7 +236,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                             source: 'call',
                             agent_id: agent.id,
                             notes: `User clicked call button for agent ${agentName}`
-                          }
+                          },
+                          false
                         )}
                         disabled={!!pendingSource}
                       >
@@ -256,7 +257,8 @@ export function AgentDetailClient({ agent, properties, towers, locale }: AgentDe
                             source: 'whatsapp',
                             agent_id: agent.id,
                             notes: `User clicked WhatsApp button for agent ${agentName}`
-                          }
+                          },
+                          false
                         )}
                         disabled={!!pendingSource}
                       >

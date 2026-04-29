@@ -46,12 +46,13 @@ export function useAuthAction() {
       area_id?: string
       agent_id?: string
       notes?: string
-    }
+    },
+    required: boolean = true // Default to true for backward compatibility
   ) => {
     if (loading || pendingSource) return
 
-    if (!user) {
-      // Open the modal instead of redirecting
+    // If login is required and user is not present, open modal and stop
+    if (required && !user) {
       authModal.onOpen(pathname)
       return
     }
@@ -59,7 +60,7 @@ export function useAuthAction() {
     try {
       if (trackingParams) {
         setPendingSource(trackingParams.source)
-        // Trigger tracking in background so UI remains responsive
+        // Trigger tracking (will handle anonymous user if trackUserAction updated)
         trackUserAction({
           ...trackingParams,
           source_url: pathname
@@ -72,7 +73,8 @@ export function useAuthAction() {
       console.error('Error performing action:', err)
       toast.error('Something went wrong. Please try again.')
     } finally {
-      setPendingSource(null)
+      // Small delay to show loading state if it was very fast
+      setTimeout(() => setPendingSource(null), 500)
     }
   }
 

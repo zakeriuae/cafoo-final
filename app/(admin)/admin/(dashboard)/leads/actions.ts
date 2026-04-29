@@ -190,6 +190,42 @@ export async function reassignLead(leadId: string, agentId: string | 'none') {
 
   if (error) return { success: false, error: error.message }
   
-  revalidatePath(`/admin/leads/${leadId}`)
+  revalidatePath('/admin/leads')
+  return { success: true }
+}
+
+export async function toggleLeadAgent(leadId: string, agentId: string) {
+  const supabase = await createClient()
+  
+  // 1. Get current lead to find existing agent_ids
+  const { data: lead } = await supabase
+    .from('leads')
+    .select('agent_ids')
+    .eq('id', leadId)
+    .single()
+  
+  let currentIds: string[] = lead?.agent_ids || []
+  
+  if (currentIds.includes(agentId)) {
+    // Remove it
+    currentIds = currentIds.filter(id => id !== agentId)
+  } else {
+    // Add it
+    currentIds = [...currentIds, agentId]
+  }
+
+  const { error } = await supabase
+    .from('leads')
+    .update({ 
+      agent_ids: currentIds,
+      // For backward compatibility we can also keep the first one in agent_id
+      agent_id: currentIds.length > 0 ? currentIds[0] : null,
+      status_updated_at: new Date().toISOString() 
+    })
+    .eq('id', leadId)
+
+  if (error) return { success: false, error: error.message }
+  
+  revalidatePath('/admin/leads')
   return { success: true }
 }
