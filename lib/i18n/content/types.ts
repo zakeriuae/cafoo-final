@@ -210,4 +210,16 @@ export interface LocaleContent {
     error: string;
     retry: string;
   };
+
+  profile: {
+    title: string;
+    description: string;
+    fullName: string;
+    phone: string;
+    country: string;
+    submit: string;
+    placeholderName: string;
+    placeholderPhone: string;
+    success: string;
+  };
 }

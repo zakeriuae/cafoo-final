@@ -8,6 +8,7 @@ import { getContent } from '@/lib/i18n';
 import { I18nProvider } from '@/lib/i18n';
 import { SmoothScroll } from '@/components/smooth-scroll';
 import { AuthModal } from '@/components/auth-modal';
+import { ProfileCompletionModal } from '@/components/profile-completion-modal';
 import '../../globals.css';
 
 const geist = Geist({
@@ -185,6 +186,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body className={`font-sans antialiased ${rtl ? 'font-vazirmatn' : ''}`}>
         <I18nProvider locale={locale}>
           <AuthModal />
+          <ProfileCompletionModal />
           <SmoothScroll>
             {children}
           </SmoothScroll>

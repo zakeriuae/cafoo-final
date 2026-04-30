@@ -224,4 +224,15 @@ export const en: LocaleContent = {
     error: 'Something went wrong',
     retry: 'Try Again',
   },
+  profile: {
+    title: 'Complete Your Profile',
+    description: 'Please provide your name and phone number to continue.',
+    fullName: 'Full Name',
+    phone: 'Phone Number',
+    country: 'Country',
+    submit: 'Save & Continue',
+    placeholderName: 'Enter your full name',
+    placeholderPhone: 'Enter your phone number',
+    success: 'Profile updated successfully',
+  },
 };

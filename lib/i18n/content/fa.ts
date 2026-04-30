@@ -225,4 +225,15 @@ export const fa: LocaleContent = {
     error: 'خطایی رخ داد',
     retry: 'تلاش مجدد',
   },
+  profile: {
+    title: 'تکمیل اطلاعات حساب کاربری',
+    description: 'لطفاً نام و شماره موبایل خود را برای ادامه ثبت کنید.',
+    fullName: 'نام و نام خانوادگی',
+    phone: 'شماره موبایل',
+    country: 'کشور',
+    submit: 'ذخیره و ادامه',
+    placeholderName: 'نام و نام خانوادگی خود را وارد کنید',
+    placeholderPhone: 'شماره موبایل خود را وارد کنید',
+    success: 'اطلاعات با موفقیت بروزرسانی شد',
+  },
 };
