@@ -144,6 +144,19 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
     }
   }
 
+  const handleToggleAgent = async (agentId: string) => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    const res = await toggleLeadAgent(lead.id, agentId)
+    setIsSubmitting(false)
+    
+    if (res.success) {
+      router.refresh()
+    } else {
+      toast.error(res.error || 'Failed to update agents')
+    }
+  }
+
   const getInitials = (name: string) => {
     if (!name) return '?'
     return name.split(' ').map(n => n[0]).join('').toUpperCase()
@@ -514,25 +527,15 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                            </div>
                          </div>
                        )
-                                 {formatDateSafe(msg.created_at, 'HH:mm')}
-                               </span>
-                               <Check className="w-3 h-3 text-primary opacity-60" />
-                             </div>
-                           </div>
-                           <p className="text-sm leading-relaxed whitespace-pre-line font-medium">{msg.content}</p>
-                           
-                           {/* Bubble tail */}
-                           <div className="absolute top-0 -right-2 w-3 h-3 bg-white border-t border-slate-200/50 [clip-path:polygon(0%_0%,100%_0%,0%_100%)]" />
-                         </div>
-                         <Avatar className="w-7 h-7 border-2 border-white shadow-md mb-0.5 shrink-0">
-                           <AvatarImage src={msg.sender?.avatar_url} />
-                           <AvatarFallback className="bg-primary/10 text-primary text-[9px] font-black">
-                             {msg.sender?.full_name?.[0] || 'A'}
-                           </AvatarFallback>
-                         </Avatar>
+                     })
+                   ) : (
+                     <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-4 opacity-40 py-20">
+                       <div className="w-20 h-20 rounded-full bg-white/50 flex items-center justify-center shadow-inner">
+                         <MessageSquare className="w-10 h-10" />
                        </div>
-                     )
-                   })}
+                       <p className="text-xs font-bold uppercase tracking-widest">{isRtl ? 'هنوز پیامی ثبت نشده است' : 'No history recorded yet'}</p>
+                     </div>
+                   )}
                  </div>
                )}
             </div>
