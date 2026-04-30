@@ -379,10 +379,10 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
 
           {/* Linked Asset */}
           <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="bg-slate-50/50 border-b border-slate-100">
+            <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-3 px-6">
               <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
                 <Home className="w-4 h-4 text-primary" />
-                Linked Asset
+                {t.asset}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4">
@@ -412,10 +412,56 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                 </Link>
               ) : (
                 <div className="text-center py-4 border-2 border-dashed border-slate-100 rounded-xl bg-slate-50/30">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">Origin Source</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1 leading-none">{t.origin}</p>
                   <p className="text-[10px] font-black text-slate-600 truncate px-2">{lead.notes || 'Direct'}</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* User Journey / Actions */}
+          <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden mt-6">
+            <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-3 px-6">
+              <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-primary" />
+                {t.journey}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3">
+               {userActions && userActions.length > 0 ? (
+                 <div className="space-y-1">
+                   {userActions.map((action: any) => {
+                       const isImportant = action.source?.includes('register') || action.source?.includes('viewing')
+                       
+                       return (
+                         <div key={action.id} className={cn(
+                           "flex items-center gap-3 p-2 rounded-lg transition-colors group",
+                           isImportant ? "bg-emerald-50/60 hover:bg-emerald-100/60 border border-emerald-100" : "hover:bg-slate-50"
+                         )}>
+                           <div className={cn(
+                             "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
+                             getActionColor(action.source || '')
+                           )}>
+                             {getActionIcon(action.source || '')}
+                           </div>
+                           <div className="flex-1 min-w-0">
+                             <div className="flex items-center justify-between gap-2">
+                               <p className="text-[10px] font-bold text-slate-700 capitalize leading-none">{action.source}</p>
+                               <span className="text-[8px] text-slate-400 font-bold uppercase">{formatDateSafe(action.created_at, 'HH:mm')}</span>
+                             </div>
+                             <p className="text-[9px] text-slate-400 truncate font-medium mt-1">
+                               {action.notes || (isRtl ? 'فعالیت کاربر' : 'User performed action')}
+                             </p>
+                           </div>
+                         </div>
+                       )
+                    })}
+                 </div>
+               ) : (
+                 <div className="text-center py-4 text-slate-300">
+                   <p className="text-[9px] font-bold uppercase tracking-widest">{isRtl ? 'فعالیتی ثبت نشده' : 'No previous actions'}</p>
+                 </div>
+               )}
             </CardContent>
           </Card>
         </div>
@@ -457,86 +503,75 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                <div className="absolute inset-0 opacity-[0.15] pointer-events-none grayscale" 
                     style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/p-5.png")' }} />
                
-                 <div className="relative z-20 space-y-4">
-                   {fullTimeline.length > 0 ? (
-                     fullTimeline.map((item: any) => {
-                       const isAction = item.timelineType === 'action' || item.type === 'system'
-                       
-                       if (isAction) {
-                         const source = item.metadata?.source || item.source || ''
-                         const isEvent = source.includes('register') || source.includes('viewing') || item.metadata?.type === 'event'
-                         
-                         if (isEvent) {
-                           return (
-                             <div key={item.id} className="flex justify-center my-6">
-                               <div className="bg-white rounded-2xl shadow-lg border border-emerald-100 overflow-hidden max-w-sm w-full transition-all hover:scale-[1.02]">
-                                 <div className="bg-emerald-500 p-3 flex items-center gap-3 text-white">
-                                   <Calendar className="w-5 h-5" />
-                                   <span className="text-xs font-semibold uppercase tracking-widest">{isRtl ? 'درخواست بازدید' : 'Viewing Request'}</span>
-                                 </div>
-                                 <div className="p-4 space-y-3">
-                                   <div className="flex items-start gap-3">
-                                     <Clock className="w-4 h-4 text-emerald-500 mt-0.5" />
-                                     <div>
-                                       <p className="text-sm font-semibold text-slate-800">
-                                         {formatDateSafe(item.metadata?.scheduled_at || item.created_at, 'PPPP')}
-                                       </p>
-                                       <p className="text-xs font-medium text-slate-500">
-                                         {formatDateSafe(item.metadata?.scheduled_at || item.created_at, 'p')}
-                                       </p>
-                                     </div>
-                                   </div>
-                                   <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                     <p className="text-[10px] text-slate-500 italic leading-relaxed">
-                                       {item.notes || item.metadata?.event_notes || (isRtl ? 'درخواست ثبت شده توسط کاربر' : 'User requested a viewing')}
-                                     </p>
-                                   </div>
-                                 </div>
-                               </div>
-                             </div>
-                           )
-                         }
+                  <div className="relative z-20 space-y-4">
+                    {fullTimeline.length > 0 ? (
+                      fullTimeline.map((item: any) => {
+                        const isAction = item.timelineType === 'action' || item.type === 'system'
+                        
+                        if (isAction) {
+                          const source = item.metadata?.source || item.source || ''
+                          const isEvent = source.includes('register') || source.includes('viewing') || item.metadata?.type === 'event'
+                          
+                          if (isEvent) {
+                            return (
+                              <div key={item.id} className="flex justify-center my-6">
+                                <div className="bg-white rounded-2xl shadow-lg border border-emerald-100 overflow-hidden max-w-sm w-full transition-all hover:scale-[1.02]">
+                                  <div className="bg-emerald-500 p-3 flex items-center gap-3 text-white">
+                                    <Calendar className="w-5 h-5" />
+                                    <span className="text-xs font-semibold uppercase tracking-widest">{isRtl ? 'درخواست بازدید' : 'Viewing Request'}</span>
+                                  </div>
+                                  <div className="p-4 space-y-3">
+                                    <div className="flex items-start gap-3">
+                                      <Clock className="w-4 h-4 text-emerald-500 mt-0.5" />
+                                      <div>
+                                        <p className="text-sm font-semibold text-slate-800">
+                                          {formatDateSafe(item.metadata?.scheduled_at || item.created_at, 'PPPP')}
+                                        </p>
+                                        <p className="text-xs font-medium text-slate-500">
+                                          {formatDateSafe(item.metadata?.scheduled_at || item.created_at, 'p')}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                      <p className="text-[10px] text-slate-500 italic leading-relaxed">
+                                        {item.notes || item.metadata?.event_notes || (isRtl ? 'درخواست ثبت شده توسط کاربر' : 'User requested a viewing')}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          }
 
-                         return (
-                           <div key={item.id} className="flex justify-center my-6">
-                             <div className="bg-slate-500/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-1.5 flex items-center gap-3 transition-all hover:bg-slate-500/20">
-                               <div className={cn("p-1.5 rounded-full shadow-inner", getActionColor(source))}>
-                                 {getActionIcon(source)}
-                               </div>
-                               <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                                 {source}
-                               </span>
-                               <span className="text-[9px] text-slate-400 font-bold">{formatDateSafe(item.created_at, 'HH:mm')}</span>
-                             </div>
-                           </div>
-                         )
-                       }
+                          // General actions are now in the sidebar, so we skip them in chat to keep it clean
+                          return null
+                        }
 
-                       const isMe = item.sender_id === lead.assigned_agent_id
-                       return (
-                         <div key={item.id} className={cn("flex w-full mb-4 px-4", isMe ? "justify-end" : "justify-start")}>
-                           <div className={cn(
-                             "max-w-[75%] rounded-[1.25rem] p-3 shadow-sm relative",
-                             isMe ? "bg-primary text-white rounded-tr-none" : "bg-white text-slate-800 rounded-tl-none"
-                           )}>
-                             <p className="text-[13px] leading-relaxed mb-1 whitespace-pre-wrap">{item.content}</p>
-                             <div className={cn("text-[9px] flex items-center gap-1", isMe ? "text-white/70 justify-end" : "text-slate-400")}>
-                               {formatDateSafe(item.created_at, 'HH:mm')}
-                               {isMe && <Check className="w-2.5 h-2.5" />}
-                             </div>
-                           </div>
-                         </div>
-                       )
-                     })
-                   ) : (
-                     <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-4 opacity-40 py-20">
-                       <div className="w-20 h-20 rounded-full bg-white/50 flex items-center justify-center shadow-inner">
-                         <MessageSquare className="w-10 h-10" />
-                       </div>
-                       <p className="text-xs font-bold uppercase tracking-widest">{isRtl ? 'هنوز پیامی ثبت نشده است' : 'No history recorded yet'}</p>
-                     </div>
-                   )}
-                 </div>
+                        const isMe = item.sender_id === lead.assigned_agent_id
+                        return (
+                          <div key={item.id} className={cn("flex w-full mb-4 px-4", isMe ? "justify-end" : "justify-start")}>
+                            <div className={cn(
+                              "max-w-[75%] rounded-[1.25rem] p-3 shadow-sm relative",
+                              isMe ? "bg-primary text-white rounded-tr-none" : "bg-white text-slate-800 rounded-tl-none"
+                            )}>
+                              <p className="text-[13px] leading-relaxed mb-1 whitespace-pre-wrap">{item.content}</p>
+                              <div className={cn("text-[9px] flex items-center gap-1", isMe ? "text-white/70 justify-end" : "text-slate-400")}>
+                                {formatDateSafe(item.created_at, 'HH:mm')}
+                                {isMe && <Check className="w-2.5 h-2.5" />}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="h-full flex flex-col items-center justify-center text-slate-300 gap-4 opacity-40 py-20">
+                        <div className="w-20 h-20 rounded-full bg-white/50 flex items-center justify-center shadow-inner">
+                          <MessageSquare className="w-10 h-10" />
+                        </div>
+                        <p className="text-xs font-bold uppercase tracking-widest">{isRtl ? 'هنوز پیامی ثبت نشده است' : 'No history recorded yet'}</p>
+                      </div>
+                    )}
+                  </div>
             </div>
 
             {/* Telegram Input Area - Stuck to bottom */}
@@ -592,48 +627,35 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                  </div>
                )}
 
-               <div className="max-w-4xl mx-auto flex items-end gap-3">
-                 <div className="flex-1 bg-slate-50 rounded-[1.5rem] flex items-end p-2 px-4 transition-all focus-within:bg-white focus-within:shadow-md border border-transparent focus-within:border-slate-100">
-                   <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-primary shrink-0 rounded-full">
-                     <Paperclip className="w-5 h-5" />
-                   </Button>
-                   <Button 
-                     variant="ghost" 
-                     size="icon" 
-                     className={cn("h-9 w-9 shrink-0 rounded-full transition-colors", showEventModal ? "text-primary bg-primary/10" : "text-slate-400 hover:text-primary")}
-                     onClick={() => setShowEventModal(!showEventModal)}
-                   >
-                     <Calendar className="w-5 h-5" />
-                   </Button>
-                   <form onSubmit={handleAddNote} className="flex-1">
-                     <textarea 
-                       value={newNote}
-                       onChange={(e) => setNewNote(e.target.value)}
-                       placeholder={t.placeholder}
-                       className="w-full bg-transparent border-none focus:ring-0 text-sm py-2.5 px-2 resize-none min-h-[40px] max-h-[150px]"
-                       rows={1}
-                       onKeyDown={(e) => {
-                         if (e.key === 'Enter' && !e.shiftKey) {
-                           e.preventDefault()
-                           handleAddNote(e)
-                         }
-                       }}
-                     />
-                   </form>
-                 </div>
-                 
-                 <Button 
+                    <textarea 
+                      placeholder={t.placeholder}
+                      value={newNote}
+                      onChange={(e) => setNewNote(e.target.value)}
+                      rows={1}
+                      className="flex-1 bg-transparent border-none focus:ring-0 resize-none py-2 text-sm max-h-32 min-h-[40px] custom-scrollbar"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          handleAddNote(e)
+                        }
+                      }}
+                    />
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-primary shrink-0 rounded-full">
+                       <Heart className="w-5 h-5" />
+                    </Button>
+                  </div>
+                  <Button 
                     onClick={handleAddNote}
                     disabled={!newNote.trim() || isSubmitting}
                     className="h-11 w-11 rounded-full shadow-lg bg-primary hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shrink-0 p-0 flex items-center justify-center mb-1"
                   >
                    <Send className="w-5 h-5 text-white" />
                  </Button>
-               </div>
-               <p className="text-[9px] text-center text-slate-400 mt-4 font-medium opacity-60">
-                 {t.internal}
-               </p>
-            </div>
+                </div>
+                <p className="text-[9px] text-center text-slate-400 font-bold uppercase tracking-[0.2em] mt-3 opacity-60">
+                  {t.internal}
+                </p>
+             </div>
           </Card>
         </div>
 

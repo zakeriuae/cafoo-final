@@ -188,7 +188,7 @@ export function LeadsKanban({ leads, agents = [] }: LeadsKanbanProps) {
                                 lead.scheduled_at && "bg-emerald-50/80 border-emerald-200"
                               )}
                             >
-                              <CardContent className="p-3 py-1.5 space-y-1.5">
+                              <CardContent className="p-3 py-1 space-y-1">
                                 <div className="flex items-start justify-between gap-2">
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-1.5 mb-1">
