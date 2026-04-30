@@ -152,7 +152,12 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
   const currentStatusIndex = statusOrder.indexOf(lead.status)
   const progression = Math.round(((currentStatusIndex + 1) / statusOrder.length) * 100)
 
-  // Safe date formatting
+  // Combine and sort messages + userActions for the timeline
+  const fullTimeline = [
+    ...(messages || []).map(m => ({ ...m, timelineType: 'message' })),
+    ...(userActions || []).map(a => ({ ...a, timelineType: 'action', type: 'action' }))
+  ].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+
   const formatDateSafe = (dateStr: string, formatStr: string) => {
     try {
       if (!dateStr) return 'N/A'
@@ -325,19 +330,19 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                 </DropdownMenu>
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-3 space-y-2">
-              {(lead.agent_ids?.length > 0 || lead.agent) ? (
-                <div className="flex flex-col gap-1.5">
-                  {agents.filter(a => (lead.agent_ids || []).includes(a.id) || lead.agent_id === a.id).map(agent => (
-                    <div key={agent.id} className="flex items-center gap-2.5 p-1.5 rounded-xl bg-slate-50/50 border border-slate-100 group">
-                      <Avatar className="w-7 h-7 border border-white shadow-sm">
+            <CardContent className="p-4">
+              {lead.agent_ids?.length > 0 ? (
+                <div className="space-y-3">
+                  {agents.filter(a => lead.agent_ids.includes(a.id)).map((agent) => (
+                    <div key={agent.id} className="flex items-center gap-3 p-2 rounded-xl bg-slate-50 border border-slate-100 group transition-all hover:bg-white hover:shadow-md">
+                      <Avatar className="w-9 h-9 border border-white">
                         <AvatarImage src={agent.avatar_url} />
                         <AvatarFallback className="bg-slate-200 text-slate-600 text-[9px] font-bold">
                           {getInitials(agent.name)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-black text-slate-800 truncate">{agent.name}</p>
+                        <p className="text-[10px] font-bold text-slate-800 truncate">{agent.name}</p>
                         <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Consultant</p>
                       </div>
                       <Button 
@@ -400,52 +405,6 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
               )}
             </CardContent>
           </Card>
-
-          {/* User Journey / Actions */}
-          <Card className="border-slate-100 shadow-sm rounded-2xl overflow-hidden">
-            <CardHeader className="bg-slate-50/50 border-b border-slate-100 py-3 px-6">
-              <CardTitle className="text-xs font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-primary" />
-                User Journey
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-3">
-               {userActions.length > 0 ? (
-                 <div className="space-y-1">
-                   {userActions.map((action, i) => {
-                       const isImportant = action.source?.includes('register') || action.source?.includes('viewing')
-                       
-                       return (
-                         <div key={action.id} className={cn(
-                           "flex items-center gap-3 p-2 rounded-lg transition-colors group",
-                           isImportant ? "bg-emerald-50/60 hover:bg-emerald-100/60 border border-emerald-100" : "hover:bg-slate-50"
-                         )}>
-                           <div className={cn(
-                             "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
-                             getActionColor(action.source || '')
-                           )}>
-                             {getActionIcon(action.source || '')}
-                           </div>
-                           <div className="flex-1 min-w-0">
-                             <div className="flex items-center justify-between gap-2">
-                               <p className="text-[10px] font-black text-slate-700 capitalize leading-none">{action.source}</p>
-                               <span className="text-[8px] text-slate-400 font-bold uppercase">{formatDateSafe(action.created_at, 'HH:mm')}</span>
-                             </div>
-                             <p className="text-[9px] text-slate-400 truncate font-medium mt-1">
-                               {action.notes || 'User performed action'}
-                             </p>
-                           </div>
-                         </div>
-                       )
-                    })}
-                 </div>
-               ) : (
-                 <div className="text-center py-4 text-slate-300">
-                   <p className="text-[9px] font-bold uppercase tracking-widest">No previous actions</p>
-                 </div>
-               )}
-            </CardContent>
-          </Card>
         </div>
 
         {/* Right Column: Telegram Hub */}
@@ -485,75 +444,76 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                <div className="absolute inset-0 opacity-[0.15] pointer-events-none grayscale" 
                     style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/p-5.png")' }} />
                
-               {messages.length === 0 ? (
-                 <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-3 relative z-20">
-                   <div className="w-16 h-16 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center shadow-inner">
-                     <MessageSquare className="w-8 h-8 opacity-30" />
-                   </div>
-                   <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">No history recorded yet</p>
-                 </div>
-               ) : (
                  <div className="relative z-20 space-y-4">
-                   {messages.map((msg, i) => {
-                     const isAction = msg.type === 'action' || msg.type === 'system'
-                     
-                     if (isAction) {
-                       const isEvent = msg.metadata?.type === 'event'
+                   {fullTimeline.length > 0 ? (
+                     fullTimeline.map((item: any) => {
+                       const isAction = item.timelineType === 'action' || item.type === 'system'
                        
-                       if (isEvent) {
-                         return (
-                           <div key={msg.id} className="flex justify-center my-6">
-                             <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden max-w-sm w-full transition-all hover:scale-[1.02]">
-                               <div className="bg-primary p-3 flex items-center gap-3 text-white">
-                                 <Calendar className="w-5 h-5" />
-                                 <span className="text-xs font-black uppercase tracking-widest">Scheduled Event</span>
-                               </div>
-                               <div className="p-4 space-y-3">
-                                 <div className="flex items-start gap-3">
-                                   <Clock className="w-4 h-4 text-primary mt-0.5" />
-                                   <div>
-                                     <p className="text-sm font-black text-slate-800">
-                                       {formatDateSafe(msg.metadata.scheduled_at, 'PPPP')}
-                                     </p>
-                                     <p className="text-xs font-bold text-slate-500">
-                                       {formatDateSafe(msg.metadata.scheduled_at, 'p')}
+                       if (isAction) {
+                         const source = item.metadata?.source || item.source || ''
+                         const isEvent = source.includes('register') || source.includes('viewing') || item.metadata?.type === 'event'
+                         
+                         if (isEvent) {
+                           return (
+                             <div key={item.id} className="flex justify-center my-6">
+                               <div className="bg-white rounded-2xl shadow-lg border border-emerald-100 overflow-hidden max-w-sm w-full transition-all hover:scale-[1.02]">
+                                 <div className="bg-emerald-500 p-3 flex items-center gap-3 text-white">
+                                   <Calendar className="w-5 h-5" />
+                                   <span className="text-xs font-semibold uppercase tracking-widest">{isRtl ? 'درخواست بازدید' : 'Viewing Request'}</span>
+                                 </div>
+                                 <div className="p-4 space-y-3">
+                                   <div className="flex items-start gap-3">
+                                     <Clock className="w-4 h-4 text-emerald-500 mt-0.5" />
+                                     <div>
+                                       <p className="text-sm font-semibold text-slate-800">
+                                         {formatDateSafe(item.metadata?.scheduled_at || item.created_at, 'PPPP')}
+                                       </p>
+                                       <p className="text-xs font-medium text-slate-500">
+                                         {formatDateSafe(item.metadata?.scheduled_at || item.created_at, 'p')}
+                                       </p>
+                                     </div>
+                                   </div>
+                                   <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                     <p className="text-[10px] text-slate-500 italic leading-relaxed">
+                                       {item.notes || item.metadata?.event_notes || (isRtl ? 'درخواست ثبت شده توسط کاربر' : 'User requested a viewing')}
                                      </p>
                                    </div>
                                  </div>
-                                 {msg.metadata.event_notes && (
-                                   <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                     <p className="text-[10px] text-slate-500 italic">"{msg.metadata.event_notes}"</p>
-                                   </div>
-                                 )}
                                </div>
+                             </div>
+                           )
+                         }
+
+                         return (
+                           <div key={item.id} className="flex justify-center my-6">
+                             <div className="bg-slate-500/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-1.5 flex items-center gap-3 transition-all hover:bg-slate-500/20">
+                               <div className={cn("p-1.5 rounded-full shadow-inner", getActionColor(source))}>
+                                 {getActionIcon(source)}
+                               </div>
+                               <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                                 {source}
+                               </span>
+                               <span className="text-[9px] text-slate-400 font-bold">{formatDateSafe(item.created_at, 'HH:mm')}</span>
                              </div>
                            </div>
                          )
                        }
 
+                       const isMe = item.sender_id === lead.assigned_agent_id
                        return (
-                         <div key={msg.id} className="flex justify-center my-6">
-                           <div className="bg-slate-500/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-1.5 flex items-center gap-3 transition-all hover:bg-slate-500/20">
-                             <span className="text-[10px] font-black text-slate-600 uppercase tracking-wide leading-none">
-                               {msg.content}
-                             </span>
-                             <span className="text-[9px] text-slate-400 font-medium uppercase">
-                               {formatDateSafe(msg.created_at, 'HH:mm')}
-                             </span>
+                         <div key={item.id} className={cn("flex w-full mb-4 px-4", isMe ? "justify-end" : "justify-start")}>
+                           <div className={cn(
+                             "max-w-[75%] rounded-[1.25rem] p-3 shadow-sm relative",
+                             isMe ? "bg-primary text-white rounded-tr-none" : "bg-white text-slate-800 rounded-tl-none"
+                           )}>
+                             <p className="text-[13px] leading-relaxed mb-1 whitespace-pre-wrap">{item.content}</p>
+                             <div className={cn("text-[9px] flex items-center gap-1", isMe ? "text-white/70 justify-end" : "text-slate-400")}>
+                               {formatDateSafe(item.created_at, 'HH:mm')}
+                               {isMe && <Check className="w-2.5 h-2.5" />}
+                             </div>
                            </div>
                          </div>
                        )
-                     }
-
-                     return (
-                       <div key={msg.id} className="flex gap-3 items-end justify-end">
-                         <div className="max-w-[85%] rounded-2xl px-4 py-2.5 shadow-sm relative group bg-white text-slate-800 rounded-tr-none border border-slate-200/50">
-                           <div className="flex items-center justify-between gap-6 mb-1">
-                             <span className="text-[10px] font-black text-primary uppercase tracking-widest">
-                               {msg.sender?.full_name || 'Consultant'}
-                             </span>
-                             <div className="flex items-center gap-1">
-                               <span className="text-[9px] text-slate-400 font-bold">
                                  {formatDateSafe(msg.created_at, 'HH:mm')}
                                </span>
                                <Check className="w-3 h-3 text-primary opacity-60" />
@@ -663,7 +623,7 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                  <Button 
                     onClick={handleAddNote}
                     disabled={!newNote.trim() || isSubmitting}
-                    className="h-11 w-11 rounded-full shadow-lg bg-primary hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shrink-0 p-0 flex items-center justify-center"
+                    className="h-11 w-11 rounded-full shadow-lg bg-primary hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shrink-0 p-0 flex items-center justify-center mb-1"
                   >
                    <Send className="w-5 h-5 text-white" />
                  </Button>
