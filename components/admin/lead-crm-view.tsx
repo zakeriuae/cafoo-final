@@ -627,6 +627,16 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                  </div>
                )}
 
+                  <div className="max-w-4xl mx-auto flex items-end gap-3">
+                  <div className="flex-1 bg-slate-50 rounded-[1.5rem] flex items-end p-2 px-4 transition-all focus-within:bg-white focus-within:shadow-md border border-transparent focus-within:border-slate-100">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className={cn("h-9 w-9 shrink-0 rounded-full transition-colors", showEventModal ? "text-primary bg-primary/10" : "text-slate-400 hover:text-primary")}
+                      onClick={() => setShowEventModal(!showEventModal)}
+                    >
+                      <Calendar className="w-5 h-5" />
+                    </Button>
                     <textarea 
                       placeholder={t.placeholder}
                       value={newNote}
