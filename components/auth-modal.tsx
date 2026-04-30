@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, ShieldCheck } from "lucide-react"
 import { useAuthModal } from "@/hooks/use-auth-modal"
 import { useI18n } from "@/lib/i18n"
+import { cn } from "@/lib/utils"
 
 export function AuthModal() {
   const { isOpen, onClose, nextUrl } = useAuthModal()
