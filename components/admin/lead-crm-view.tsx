@@ -537,7 +537,6 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                      </div>
                    )}
                  </div>
-               )}
             </div>
 
             {/* Telegram Input Area - Stuck to bottom */}
