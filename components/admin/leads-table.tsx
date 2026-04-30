@@ -32,7 +32,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { updateLead, deleteLead, convertActionToLead } from '@/app/(admin)/admin/(dashboard)/leads/actions'
 import type { Lead, Agent } from '@/lib/database.types'
-import { Search, Phone, Mail, MessageSquare, Trash2, Edit2, Eye, UserPlus, UserCheck, Heart, Clock } from 'lucide-react'
+import { Search, Phone, Mail, MessageSquare, Trash2, Edit2, Eye, UserPlus, UserCheck, Heart, Clock, Instagram, Linkedin, MessageCircle } from 'lucide-react'
 
 interface LeadsTableProps {
   title?: string
@@ -235,8 +235,11 @@ export function LeadsTable({ leads, agents, title, isActionLog = false }: LeadsT
                       {isActionLog && (
                         <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
                           {lead.source === 'call' ? <Phone className="w-4 h-4" /> :
-                           lead.source === 'whatsapp' ? <MessageSquare className="w-4 h-4" /> :
+                           lead.source === 'whatsapp' ? <MessageCircle className="w-4 h-4 text-green-500" /> :
+                           lead.source.includes('instagram') ? <Instagram className="w-4 h-4 text-pink-500" /> :
+                           lead.source.includes('linkedin') ? <Linkedin className="w-4 h-4 text-blue-700" /> :
                            lead.source === 'like' ? <Heart className="w-4 h-4 text-red-500 fill-current" /> :
+                           lead.source.includes('viewing') ? <Eye className="w-4 h-4 text-orange-500" /> :
                            <Clock className="w-4 h-4" />}
                         </div>
                       )}

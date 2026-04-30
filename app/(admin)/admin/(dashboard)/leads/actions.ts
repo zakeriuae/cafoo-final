@@ -229,3 +229,39 @@ export async function toggleLeadAgent(leadId: string, agentId: string) {
   revalidatePath('/admin/leads')
   return { success: true }
 }
+export async function scheduleLeadEvent(leadId: string, date: string, notes?: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // 1. Update lead scheduled_at
+  const { error: leadError } = await supabase
+    .from('leads')
+    .update({ 
+      scheduled_at: date,
+      status: 'qualified' // Automatically qualify if a meeting is set
+    })
+    .eq('id', leadId)
+
+  if (leadError) return { success: false, error: leadError.message }
+
+  // 2. Add system message to chat
+  const { error: msgError } = await supabase
+    .from('lead_messages')
+    .insert({
+      lead_id: leadId,
+      sender_id: user?.id,
+      content: `Meeting scheduled for ${format(new Date(date), 'PPP p')}${notes ? ` - ${notes}` : ''}`,
+      type: 'system',
+      metadata: { 
+        type: 'event',
+        scheduled_at: date,
+        event_notes: notes 
+      }
+    })
+
+  if (msgError) return { success: false, error: msgError.message }
+
+  revalidatePath('/admin/leads')
+  revalidatePath(`/admin/leads/${leadId}`)
+  return { success: true }
+}

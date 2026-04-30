@@ -25,11 +25,16 @@ import {
   Share2,
   MoreVertical,
   Search,
-  Paperclip
+  Paperclip,
+  Instagram,
+  Linkedin,
+  Eye,
+  MessageCircle,
+  Hash
 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { addLeadMessage, toggleLeadAgent } from '@/app/(admin)/admin/(dashboard)/leads/actions'
+import { addLeadMessage, toggleLeadAgent, scheduleLeadEvent } from '@/app/(admin)/admin/(dashboard)/leads/actions'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
@@ -42,6 +47,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { format } from 'date-fns'
+import { useI18n } from '@/lib/i18n'
+import { CheckCircle2 } from 'lucide-react'
 
 interface LeadCRMViewProps {
   lead: any
@@ -62,9 +69,42 @@ const statusColors: Record<string, string> = {
 const statusOrder = ['new', 'contacted', 'qualified', 'negotiating', 'won']
 
 export function LeadCRMView({ lead, messages = [], agents = [], userActions = [] }: LeadCRMViewProps) {
+  const { locale } = useI18n()
   const router = useRouter()
   const [newNote, setNewNote] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showEventModal, setShowEventModal] = useState(false)
+  const [eventDate, setEventDate] = useState('')
+  const [eventNotes, setEventNotes] = useState('')
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false)
+
+  const isRtl = locale === 'fa'
+
+  const t = isRtl ? {
+    schedule: 'زمان‌بندی بازدید',
+    date: 'تاریخ و ساعت',
+    notes: 'توضیحات (اختیاری)',
+    confirm: 'ثبت و تایید نهایی',
+    success: 'بازدید با موفقیت ثبت شد',
+    internal: 'یادداشت داخلی - فقط برای ادمین‌ها',
+    placeholder: 'پیام خود را بنویسید...',
+    journey: 'مسیر کاربر',
+    responsible: 'مسئولین پیگیری',
+    asset: 'ملک مرتبط',
+    origin: 'منبع ورودی'
+  } : {
+    schedule: 'Schedule Viewing',
+    date: 'Date & Time',
+    notes: 'Notes (optional)',
+    confirm: 'Confirm Schedule',
+    success: 'Event scheduled successfully',
+    internal: 'Internal note - Admins only',
+    placeholder: 'Write a message...',
+    journey: 'User Journey',
+    responsible: 'Responsible Agents',
+    asset: 'Linked Asset',
+    origin: 'Origin Source'
+  }
 
   const handleAddNote = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,13 +122,25 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
     }
   }
 
-  const handleToggleAgent = async (agentId: string) => {
-    const res = await toggleLeadAgent(lead.id, agentId)
+  const handleScheduleEvent = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!eventDate || isSubmitting) return
+
+    setIsSubmitting(true)
+    const res = await scheduleLeadEvent(lead.id, eventDate, eventNotes)
+    setIsSubmitting(false)
+
     if (res.success) {
-      toast.success('Agents updated')
-      router.refresh()
+      setEventDate('')
+      setEventNotes('')
+      setShowEventModal(false)
+      setShowSuccessOverlay(true)
+      setTimeout(() => {
+        setShowSuccessOverlay(false)
+        router.refresh()
+      }, 2000)
     } else {
-      toast.error(res.error || 'Failed to update agents')
+      toast.error(res.error || 'Failed to schedule event')
     }
   }
 
@@ -108,6 +160,28 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
     } catch (err) {
       return 'N/A'
     }
+  }
+
+  const getActionIcon = (source: string) => {
+    const s = source?.toLowerCase() || ''
+    if (s.includes('instagram')) return <Instagram className="w-3.5 h-3.5" />
+    if (s.includes('linkedin')) return <Linkedin className="w-3.5 h-3.5" />
+    if (s.includes('whatsapp')) return <MessageCircle className="w-3.5 h-3.5" />
+    if (s.includes('call')) return <Phone className="w-3.5 h-3.5" />
+    if (s.includes('like')) return <Heart className="w-3.5 h-3.5 fill-current" />
+    if (s.includes('register') || s.includes('viewing')) return <Eye className="w-3.5 h-3.5" />
+    return <Hash className="w-3.5 h-3.5" />
+  }
+
+  const getActionColor = (source: string) => {
+    const s = source?.toLowerCase() || ''
+    if (s.includes('instagram')) return "bg-pink-50 text-pink-500"
+    if (s.includes('linkedin')) return "bg-blue-50 text-blue-700"
+    if (s.includes('whatsapp')) return "bg-green-50 text-green-500"
+    if (s.includes('call')) return "bg-blue-50 text-blue-500"
+    if (s.includes('like')) return "bg-red-50 text-red-500"
+    if (s.includes('register') || s.includes('viewing')) return "bg-orange-50 text-orange-500"
+    return "bg-slate-50 text-slate-500"
   }
 
   return (
@@ -338,29 +412,32 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
             <CardContent className="p-3">
                {userActions.length > 0 ? (
                  <div className="space-y-1">
-                   {userActions.map((action, i) => (
-                     <div key={action.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors group">
-                       <div className={cn(
-                         "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
-                         action.source === 'call' ? "bg-blue-50 text-blue-500" :
-                         action.source === 'whatsapp' ? "bg-green-50 text-green-500" :
-                         "bg-red-50 text-red-500"
-                       )}>
-                         {action.source === 'call' ? <Phone className="w-3.5 h-3.5" /> :
-                          action.source === 'whatsapp' ? <MessageSquare className="w-3.5 h-3.5" /> :
-                          <Heart className="w-3.5 h-3.5 fill-current" />}
-                       </div>
-                       <div className="flex-1 min-w-0">
-                         <div className="flex items-center justify-between gap-2">
-                           <p className="text-[10px] font-black text-slate-700 capitalize leading-none">{action.source}</p>
-                           <span className="text-[8px] text-slate-400 font-bold uppercase">{formatDateSafe(action.created_at, 'HH:mm')}</span>
+                   {userActions.map((action, i) => {
+                       const isImportant = action.source?.includes('register') || action.source?.includes('viewing')
+                       
+                       return (
+                         <div key={action.id} className={cn(
+                           "flex items-center gap-3 p-2 rounded-lg transition-colors group",
+                           isImportant ? "bg-emerald-50/60 hover:bg-emerald-100/60 border border-emerald-100" : "hover:bg-slate-50"
+                         )}>
+                           <div className={cn(
+                             "w-7 h-7 rounded-full flex items-center justify-center shrink-0",
+                             getActionColor(action.source || '')
+                           )}>
+                             {getActionIcon(action.source || '')}
+                           </div>
+                           <div className="flex-1 min-w-0">
+                             <div className="flex items-center justify-between gap-2">
+                               <p className="text-[10px] font-black text-slate-700 capitalize leading-none">{action.source}</p>
+                               <span className="text-[8px] text-slate-400 font-bold uppercase">{formatDateSafe(action.created_at, 'HH:mm')}</span>
+                             </div>
+                             <p className="text-[9px] text-slate-400 truncate font-medium mt-1">
+                               {action.notes || 'User performed action'}
+                             </p>
+                           </div>
                          </div>
-                         <p className="text-[9px] text-slate-400 truncate font-medium mt-1">
-                           {action.notes || 'User performed action'}
-                         </p>
-                       </div>
-                     </div>
-                   ))}
+                       )
+                    })}
                  </div>
                ) : (
                  <div className="text-center py-4 text-slate-300">
@@ -376,7 +453,7 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
           <Card className="flex-1 border-none flex flex-col bg-[#E6EBEE] relative">
             
             {/* Telegram Header */}
-            <div className="h-16 bg-white border-b border-slate-200/60 px-6 flex items-center justify-between z-20 shadow-sm">
+            <div className="h-16 bg-white border-b border-slate-200/60 px-6 flex items-center justify-between z-30 shadow-sm shrink-0">
               <div className="flex items-center gap-3">
                 <Avatar className="w-10 h-10 border border-slate-100">
                   <AvatarImage src={lead.user?.avatar_url} />
@@ -421,6 +498,39 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                      const isAction = msg.type === 'action' || msg.type === 'system'
                      
                      if (isAction) {
+                       const isEvent = msg.metadata?.type === 'event'
+                       
+                       if (isEvent) {
+                         return (
+                           <div key={msg.id} className="flex justify-center my-6">
+                             <div className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden max-w-sm w-full transition-all hover:scale-[1.02]">
+                               <div className="bg-primary p-3 flex items-center gap-3 text-white">
+                                 <Calendar className="w-5 h-5" />
+                                 <span className="text-xs font-black uppercase tracking-widest">Scheduled Event</span>
+                               </div>
+                               <div className="p-4 space-y-3">
+                                 <div className="flex items-start gap-3">
+                                   <Clock className="w-4 h-4 text-primary mt-0.5" />
+                                   <div>
+                                     <p className="text-sm font-black text-slate-800">
+                                       {formatDateSafe(msg.metadata.scheduled_at, 'PPPP')}
+                                     </p>
+                                     <p className="text-xs font-bold text-slate-500">
+                                       {formatDateSafe(msg.metadata.scheduled_at, 'p')}
+                                     </p>
+                                   </div>
+                                 </div>
+                                 {msg.metadata.event_notes && (
+                                   <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                     <p className="text-[10px] text-slate-500 italic">"{msg.metadata.event_notes}"</p>
+                                   </div>
+                                 )}
+                               </div>
+                             </div>
+                           </div>
+                         )
+                       }
+
                        return (
                          <div key={msg.id} className="flex justify-center my-6">
                            <div className="bg-slate-500/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-1.5 flex items-center gap-3 transition-all hover:bg-slate-500/20">
@@ -467,19 +577,78 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                )}
             </div>
 
-            {/* Telegram Input Area */}
-            <div className="p-4 bg-[#E6EBEE] relative z-20">
-               <div className="max-w-3xl mx-auto flex items-end gap-2">
-                 <div className="flex-1 bg-white rounded-[1.5rem] shadow-sm border border-slate-200 flex items-end p-2 px-4 transition-all focus-within:shadow-md focus-within:border-primary/30">
-                   <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-400 hover:text-primary shrink-0 rounded-full">
+            {/* Telegram Input Area - Stuck to bottom */}
+            <div className="mt-auto bg-white border-t border-slate-100 p-4 z-30">
+               {showEventModal && (
+                 <div className={cn(
+                   "absolute bottom-full left-4 right-4 mb-4 bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 z-40 animate-in slide-in-from-bottom-4 duration-500",
+                   isRtl && "text-right"
+                 )}>
+                   <div className="flex items-center justify-between mb-8">
+                     <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                          <Calendar className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-lg font-semibold text-slate-800">{t.schedule}</h4>
+                     </div>
+                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => setShowEventModal(false)}>
+                       <X className="w-4 h-4 text-slate-400" />
+                     </Button>
+                   </div>
+                   
+                   <div className="space-y-6">
+                     <div className="space-y-2">
+                       <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">{t.date}</label>
+                       <input 
+                         type="datetime-local" 
+                         step="3600"
+                         className="w-full bg-slate-50 border-slate-100 rounded-2xl text-sm p-4 focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                         value={eventDate}
+                         onChange={(e) => setEventDate(e.target.value)}
+                       />
+                     </div>
+                     
+                     <div className="space-y-2">
+                       <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">{t.notes}</label>
+                       <textarea 
+                         placeholder={t.notes}
+                         className="w-full bg-slate-50 border-slate-100 rounded-2xl text-sm p-4 resize-none focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                         rows={3}
+                         value={eventNotes}
+                         onChange={(e) => setEventNotes(e.target.value)}
+                       />
+                     </div>
+
+                     <Button 
+                       className="w-full rounded-2xl bg-primary hover:bg-primary/90 text-white font-semibold h-14 shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                       onClick={handleScheduleEvent}
+                       disabled={!eventDate || isSubmitting}
+                     >
+                       {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t.confirm}
+                     </Button>
+                   </div>
+                 </div>
+               )}
+
+               <div className="max-w-4xl mx-auto flex items-end gap-3">
+                 <div className="flex-1 bg-slate-50 rounded-[1.5rem] flex items-end p-2 px-4 transition-all focus-within:bg-white focus-within:shadow-md border border-transparent focus-within:border-slate-100">
+                   <Button variant="ghost" size="icon" className="h-9 w-9 text-slate-400 hover:text-primary shrink-0 rounded-full">
                      <Paperclip className="w-5 h-5" />
+                   </Button>
+                   <Button 
+                     variant="ghost" 
+                     size="icon" 
+                     className={cn("h-9 w-9 shrink-0 rounded-full transition-colors", showEventModal ? "text-primary bg-primary/10" : "text-slate-400 hover:text-primary")}
+                     onClick={() => setShowEventModal(!showEventModal)}
+                   >
+                     <Calendar className="w-5 h-5" />
                    </Button>
                    <form onSubmit={handleAddNote} className="flex-1">
                      <textarea 
                        value={newNote}
                        onChange={(e) => setNewNote(e.target.value)}
-                       placeholder="Write a message..."
-                       className="w-full bg-transparent border-none focus:ring-0 text-sm py-3 px-2 resize-none min-h-[44px] max-h-[200px]"
+                       placeholder={t.placeholder}
+                       className="w-full bg-transparent border-none focus:ring-0 text-sm py-2.5 px-2 resize-none min-h-[40px] max-h-[150px]"
                        rows={1}
                        onKeyDown={(e) => {
                          if (e.key === 'Enter' && !e.shiftKey) {
@@ -489,25 +658,34 @@ export function LeadCRMView({ lead, messages = [], agents = [], userActions = []
                        }}
                      />
                    </form>
-                   <Button variant="ghost" size="icon" className="h-10 w-10 text-slate-400 hover:text-primary shrink-0 rounded-full">
-                     <Heart className="w-5 h-5" />
-                   </Button>
                  </div>
                  
                  <Button 
                     onClick={handleAddNote}
                     disabled={!newNote.trim() || isSubmitting}
-                    className="h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 hover:scale-105 transition-all shrink-0 p-0 flex items-center justify-center"
+                    className="h-11 w-11 rounded-full shadow-lg bg-primary hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shrink-0 p-0 flex items-center justify-center"
                   >
                    <Send className="w-5 h-5 text-white" />
                  </Button>
                </div>
-               <p className="text-[9px] text-center text-slate-400 mt-3 font-bold uppercase tracking-widest opacity-60">
-                 This is an internal note only visible to admins
+               <p className="text-[9px] text-center text-slate-400 mt-4 font-medium opacity-60">
+                 {t.internal}
                </p>
             </div>
           </Card>
         </div>
+
+        {/* Success Overlay */}
+        {showSuccessOverlay && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/80 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-white rounded-[3rem] p-12 shadow-2xl flex flex-col items-center gap-6 animate-in zoom-in-95 duration-500">
+               <div className="w-24 h-24 rounded-full bg-green-500 flex items-center justify-center text-white shadow-2xl shadow-green-200">
+                 <CheckCircle2 className="w-12 h-12" />
+               </div>
+               <h2 className="text-2xl font-semibold text-slate-900">{t.success}</h2>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

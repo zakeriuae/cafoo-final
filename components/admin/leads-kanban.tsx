@@ -172,57 +172,78 @@ export function LeadsKanban({ leads, agents = [] }: LeadsKanbanProps) {
                 >
                   {getLeadsByStatus(column.id).map((lead, index) => {
                     const staleness = getStaleness(lead)
-                    const daysInStatus = differenceInDays(new Date(), new Date(lead.status_updated_at || lead.created_at))
-                    const totalDays = differenceInDays(new Date(), new Date(lead.created_at))
                     
                     return (
                       <Draggable key={lead.id} draggableId={lead.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={cn("group block", snapshot.isDragging ? "z-50" : "")}
-                          >
-                            <Card className={cn(
-                              "border transition-all duration-200 bg-white rounded-lg overflow-hidden",
-                              snapshot.isDragging ? "shadow-lg ring-2 ring-primary/20" : "shadow-sm hover:shadow",
-                              staleness === 'critical' ? "border-red-200 bg-red-50/20" : 
-                              staleness === 'warning' ? "border-orange-200 bg-orange-50/20" : 
-                              "border-slate-100"
-                            )}>
-                              <CardContent className="px-2.5 py-1.5">
-                                <div className="flex justify-between items-start gap-1.5">
-                                  <div className="flex items-center gap-1.5 min-w-0 mt-0.5">
-                                    {getSourceIcon(lead.source)}
-                                    <p className={cn(
-                                      "font-bold text-[13px] leading-tight truncate",
-                                      staleness === 'critical' ? "text-red-900" :
-                                      staleness === 'warning' ? "text-orange-900" :
-                                      "text-slate-800"
-                                    )}>
-                                      {lead.name || 'Anonymous'}
-                                    </p>
+                         {(provided, snapshot) => (
+                           <div
+                             ref={provided.innerRef}
+                             {...provided.draggableProps}
+                             {...provided.dragHandleProps}
+                             className={cn("group block mb-2", snapshot.isDragging ? "z-50" : "")}
+                           >
+                            <Card 
+                              className={cn(
+                                "group border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 rounded-xl overflow-hidden cursor-default",
+                                lead.scheduled_at && "bg-emerald-50/80 border-emerald-200"
+                              )}
+                            >
+                              <CardContent className="p-3 py-1.5 space-y-1.5">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-1.5 mb-1">
+                                       {getSourceIcon(lead.source)}
+                                       <Link href={`/admin/leads/${lead.id}`} className="hover:text-primary transition-colors inline-block">
+                                         <h4 className={cn(
+                                           "font-bold text-[13px] leading-tight truncate",
+                                           staleness === 'critical' ? "text-red-900" :
+                                           staleness === 'warning' ? "text-orange-900" :
+                                           "text-slate-800"
+                                         )}>
+                                           {lead.name || 'Anonymous'}
+                                         </h4>
+                                       </Link>
+                                    </div>
+                                    
+                                    <div className="flex flex-wrap gap-1">
+                                      {lead.agent_ids?.length > 0 ? (
+                                        agents.filter(a => lead.agent_ids.includes(a.id)).map(agent => (
+                                          <div key={agent.id} className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[8px] font-bold text-slate-500 uppercase tracking-tight">
+                                            {agent.name}
+                                          </div>
+                                        ))
+                                      ) : lead.agent ? (
+                                        <div className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-[8px] font-bold text-slate-500 uppercase tracking-tight">
+                                          {lead.agent.name}
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center gap-1 text-[8px] font-bold text-slate-300 uppercase tracking-widest px-1">
+                                          <UserCheck className="w-2.5 h-2.5" />
+                                          <span>Unassigned</span>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
+
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="icon" className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <MoreVertical className="w-3 h-3 text-slate-400" />
+                                      <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                        <MoreVertical className="w-3.5 h-3.5" />
                                       </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-48">
-                                      <DropdownMenuLabel className="text-[10px] uppercase font-bold text-slate-400">Lead Actions</DropdownMenuLabel>
+                                    <DropdownMenuContent align="end" className="w-48 rounded-xl">
+                                      <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Actions</DropdownMenuLabel>
                                       <DropdownMenuSeparator />
-                                      <DropdownMenuItem asChild className="cursor-pointer">
-                                        <Link href={`/admin/leads/${lead.id}`}>
+                                      <DropdownMenuItem asChild className="text-xs font-semibold cursor-pointer">
+                                        <Link href={`/admin/leads/${lead.id}`} className="flex items-center">
                                           <Eye className="w-3.5 h-3.5 mr-2" />
-                                          <span className="text-xs font-medium">View Detail</span>
+                                          View Details
                                         </Link>
                                       </DropdownMenuItem>
                                       <DropdownMenuSub>
-                                        <DropdownMenuSubTrigger className="cursor-pointer">
+                                        <DropdownMenuSubTrigger className="cursor-pointer text-xs font-semibold">
                                           <UserPlus className="w-3.5 h-3.5 mr-2" />
-                                          <span className="text-xs font-medium">Assign Consultants...</span>
+                                          Add Agent
                                         </DropdownMenuSubTrigger>
                                         <DropdownMenuPortal>
                                           <DropdownMenuSubContent className="max-h-64 overflow-y-auto w-48">
@@ -253,39 +274,15 @@ export function LeadsKanban({ leads, agents = [] }: LeadsKanbanProps) {
                                 </div>
 
                                 <div className="flex items-center justify-between gap-2">
-                                  <div className="flex items-center -space-x-1 overflow-hidden min-w-0">
-                                    {(lead.agent_ids && lead.agent_ids.length > 0) ? (
-                                      agents.filter(a => lead.agent_ids.includes(a.id)).slice(0, 3).map((agent, i) => (
-                                        <div 
-                                          key={agent.id}
-                                          className="w-4 h-4 rounded-full border border-white bg-slate-100 flex items-center justify-center text-[7px] font-bold text-slate-500"
-                                          title={agent.name}
-                                        >
-                                          {agent.name[0]}
-                                        </div>
-                                      ))
-                                    ) : lead.agent ? (
-                                      <div 
-                                        className="w-4 h-4 rounded-full border border-white bg-slate-100 flex items-center justify-center text-[7px] font-bold text-slate-500"
-                                        title={lead.agent.name}
-                                      >
-                                        {lead.agent.name[0]}
-                                      </div>
-                                    ) : (
-                                      <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400">
-                                        <UserCheck className="w-3 h-3" />
-                                        <span>Unassigned</span>
-                                      </div>
-                                    )}
-                                    {lead.agent_ids?.length > 3 && (
-                                      <div className="w-4 h-4 rounded-full border border-white bg-slate-50 flex items-center justify-center text-[7px] font-bold text-slate-400">
-                                        +{lead.agent_ids.length - 3}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="text-[10px] font-medium text-slate-400">
+                                  <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
                                     {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true }).replace('about ', '')}
                                   </div>
+                                  {lead.scheduled_at && (
+                                    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500 text-white shadow-sm shrink-0 scale-90 origin-right">
+                                      <Calendar className="w-2.5 h-2.5" />
+                                      <span className="text-[9px] font-black">{format(new Date(lead.scheduled_at), 'MMM dd, p')}</span>
+                                    </div>
+                                  )}
                                 </div>
                               </CardContent>
                             </Card>
