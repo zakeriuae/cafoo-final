@@ -21,6 +21,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { LogOut, User as UserIcon, LayoutDashboard, Settings } from "lucide-react"
 import { User } from "@supabase/supabase-js"
+import { useProfileModal } from "@/hooks/use-profile-modal"
 
 interface NavigationProps {
   variant?: "transparent" | "light"
@@ -36,6 +37,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<any>(null)
   const supabase = createClient()
+  const profileModal = useProfileModal()
 
   useEffect(() => {
     const getData = async () => {
@@ -225,6 +227,14 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                         </DropdownMenuItem>
                       </Link>
                     )}
+                    <DropdownMenuSeparator className="bg-slate-50" />
+                    <DropdownMenuItem 
+                      onClick={() => profileModal.onOpen()}
+                      className="rounded-xl focus:bg-slate-50 cursor-pointer gap-2 py-2.5"
+                    >
+                      <UserIcon className="h-4 w-4 text-slate-400" />
+                      <span className="text-xs font-bold text-slate-600">{content.profile.title}</span>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator className="bg-slate-50" />
                     <DropdownMenuItem 
                       onClick={handleLogout}

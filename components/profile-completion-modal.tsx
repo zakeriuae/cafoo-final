@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { countries } from "@/lib/countries"
 import { updateUserProfile } from "@/app/(website)/[locale]/actions"
 import { toast } from "sonner"
+import { useProfileModal } from "@/hooks/use-profile-modal"
 
 export function ProfileCompletionModal() {
   const { locale } = useI18n()
@@ -32,7 +33,7 @@ export function ProfileCompletionModal() {
   const t = content.profile
   const isRtl = locale === 'fa'
   
-  const [isOpen, setIsOpen] = useState(false)
+  const { isOpen, onOpen, onClose } = useProfileModal()
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   
@@ -54,7 +55,7 @@ export function ProfileCompletionModal() {
         
         if (profile && !profile.phone) {
           setFullName(profile.full_name || user.user_metadata?.full_name || "")
-          setIsOpen(true)
+          onOpen()
         }
       }
     }
@@ -71,10 +72,10 @@ export function ProfileCompletionModal() {
         
         if (profile && !profile.phone) {
           setFullName(profile.full_name || session.user.user_metadata?.full_name || "")
-          setIsOpen(true)
+          onOpen()
         }
       } else if (event === 'SIGNED_OUT') {
-        setIsOpen(false)
+        onClose()
       }
     })
 
@@ -98,7 +99,7 @@ export function ProfileCompletionModal() {
 
     if (result.success) {
       toast.success(t.success)
-      setIsOpen(false)
+      onClose()
     } else {
       toast.error(result.error || (isRtl ? 'خطایی رخ داد' : 'An error occurred'))
     }
@@ -115,7 +116,7 @@ export function ProfileCompletionModal() {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
       // Don't allow closing without completion unless specifically needed
-      if (!isSubmitting) setIsOpen(open)
+      if (!open) onClose()
     }}>
       <DialogContent className="sm:max-w-md border-none rounded-[2rem] overflow-hidden bg-white p-0 shadow-2xl" onPointerDownOutside={(e) => e.preventDefault()}>
         <div className={cn("pt-12 pb-10 px-8 flex flex-col items-center", isRtl && "font-vazir text-right")}>
