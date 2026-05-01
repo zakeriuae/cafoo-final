@@ -376,36 +376,31 @@ export default function MapClient({ initialProperties }: MapClientProps) {
                   fillOpacity: 0.1,
                 }}
               >
-                {filteredProperties.map(p => {
-                  const coords = getCoords(p)
-                  if (!coords) return null
-                  
-                  return (
-                    <Marker 
-                      key={p.id} 
-                      position={coords}
-                      eventHandlers={{
-                        click: () => setSelectedProperty(p),
-                      }}
-                    >
-                      <Popup className="property-popup">
-                        <div className="w-48 p-0">
-                          <div className="relative h-28 rounded-t-xl overflow-hidden mb-2">
-                            <Image src={p.cover_image_url || "/images/placeholder.jpg"} alt="Property" fill className="object-cover" />
-                            <Badge className="absolute top-2 right-2 bg-primary text-white border-none font-black text-[9px] flex items-center gap-1">
-                              <CurrencyIconSmall /> {Math.round(convert(p.price || 0)).toLocaleString()}
-                            </Badge>
-                          </div>
-                          <div className="p-2">
-                            <h5 className="font-bold text-xs text-slate-900 line-clamp-1 mb-1">{p.title[locale] || p.title}</h5>
-                            <Link href={`/${locale}/properties/${p.slug}`} className="text-[10px] font-black text-primary flex items-center gap-1 hover:gap-2 transition-all">
-                              {fa ? "مشاهده جزئیات" : "View Details"} <ChevronRight className="w-3 h-3" />
-                            </Link>
-                          </div>
+                {filteredProperties.map((p) => (
+                  <Marker 
+                    key={p.id} 
+                    position={getCoords(p)!}
+                    eventHandlers={{
+                      click: () => setSelectedProperty(p),
+                    }}
+                  >
+                    <Popup className="property-popup">
+                      <div className="w-48 p-0">
+                        <div className="relative h-28 rounded-t-xl overflow-hidden mb-2">
+                          <Image src={p.cover_image_url || "/images/placeholder.jpg"} alt="Property" fill className="object-cover" />
+                          <Badge className="absolute top-2 right-2 bg-primary text-white border-none font-black text-[9px] flex items-center gap-1">
+                            <CurrencyIconSmall /> {Math.round(convert(p.price || 0)).toLocaleString()}
+                          </Badge>
                         </div>
-                      </Popup>
-                    </Marker>
-                  )
+                        <div className="p-2">
+                          <h5 className="font-bold text-xs text-slate-900 line-clamp-1 mb-1">{p.title[locale] || p.title}</h5>
+                          <Link href={`/${locale}/properties/${p.slug}`} className="text-[10px] font-black text-primary flex items-center gap-1 hover:gap-2 transition-all">
+                            {fa ? "مشاهده جزئیات" : "View Details"} <ChevronRight className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Marker>
                 ))}
               </MarkerClusterGroup>
             </MapContainer>
