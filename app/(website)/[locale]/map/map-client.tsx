@@ -66,7 +66,7 @@ export default function MapClient({ initialProperties }: MapClientProps) {
 
   // Filter States
   const [filters, setFilters] = useState<any>({
-    listing: 'sale',
+    listing: 'any',
     type: 'any',
     priceMin: '',
     priceMax: '',
@@ -80,7 +80,7 @@ export default function MapClient({ initialProperties }: MapClientProps) {
 
   const clearFilters = () => {
     setFilters({
-      listing: 'sale',
+      listing: 'any',
       type: 'any',
       priceMin: '',
       priceMax: '',
@@ -103,7 +103,7 @@ export default function MapClient({ initialProperties }: MapClientProps) {
   const filteredProperties = useMemo(() => {
     return properties.filter(p => {
       // Listing Type
-      if (filters.listing && p.listing_type !== filters.listing) return false
+      if (filters.listing && filters.listing !== 'any' && p.listing_type !== filters.listing) return false
       
       // Property Type
       if (filters.type && filters.type !== 'any' && p.property_type !== filters.type) return false
@@ -132,31 +132,31 @@ export default function MapClient({ initialProperties }: MapClientProps) {
     <div className="flex flex-col h-screen pt-16 bg-white overflow-hidden">
       
       {/* ══ ADVANCED SEARCH HEADER ══ */}
-      <div className="z-30 bg-white border-b border-slate-100 shadow-sm">
-        <div className="flex flex-wrap items-center">
+      <div className="z-30 bg-white border-b border-slate-100 shadow-md">
+        <div className="flex flex-wrap items-center h-20">
           {/* Listing Type Tabs */}
-          <div className="flex border-r border-slate-50 bg-slate-50/30">
-            {['sale', 'rent', 'off_plan'].map((t) => (
+          <div className="flex h-full border-r border-slate-50 bg-slate-50/50">
+            {['any', 'sale', 'rent', 'off_plan'].map((t) => (
               <button
                 key={t}
                 onClick={() => updateFilter('listing', t)}
                 className={cn(
-                  "px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2",
+                  "px-8 text-[11px] font-black uppercase tracking-widest transition-all border-b-4 h-full",
                   filters.listing === t ? "text-primary border-primary bg-white" : "text-slate-400 border-transparent hover:text-slate-600"
                 )}
               >
-                {t === 'sale' ? (fa?'خرید':'Sale') : t === 'rent' ? (fa?'اجاره':'Rent') : (fa?'پیش‌فروش':'Off-Plan')}
+                {t === 'any' ? (fa?'همه':'All') : t === 'sale' ? (fa?'خرید':'Sale') : t === 'rent' ? (fa?'اجاره':'Rent') : (fa?'پیش‌فروش':'Off-Plan')}
               </button>
             ))}
           </div>
 
           {/* Category Toggle */}
-          <div className="flex items-center px-4 border-r border-slate-50 gap-1 h-14">
+          <div className="flex items-center px-6 border-r border-slate-50 gap-2 h-full">
             <button 
               onClick={() => setCategory("residential")} 
               className={cn(
-                "px-3 py-1.5 rounded-lg text-[9px] font-black transition-all uppercase tracking-tighter",
-                category === "residential" ? "bg-primary/10 text-primary" : "text-slate-400 hover:text-slate-600"
+                "px-4 py-2 rounded-xl text-[10px] font-black transition-all uppercase tracking-tighter",
+                category === "residential" ? "bg-primary/10 text-primary shadow-sm" : "text-slate-400 hover:text-slate-600"
               )}
             >
               {fa ? "مسکونی" : "RESIDENTIAL"}
@@ -164,8 +164,8 @@ export default function MapClient({ initialProperties }: MapClientProps) {
             <button 
               onClick={() => setCategory("commercial")} 
               className={cn(
-                "px-3 py-1.5 rounded-lg text-[9px] font-black transition-all uppercase tracking-tighter",
-                category === "commercial" ? "bg-primary/10 text-primary" : "text-slate-400 hover:text-slate-600"
+                "px-4 py-2 rounded-xl text-[10px] font-black transition-all uppercase tracking-tighter",
+                category === "commercial" ? "bg-primary/10 text-primary shadow-sm" : "text-slate-400 hover:text-slate-600"
               )}
             >
               {fa ? "تجاری" : "COMMERCIAL"}
@@ -173,12 +173,12 @@ export default function MapClient({ initialProperties }: MapClientProps) {
           </div>
 
           {/* Property Type Dropdown */}
-          <div className="border-r border-slate-50 min-w-[140px]">
+          <div className="border-r border-slate-50 min-w-[180px]">
             <Select value={filters.type} onValueChange={(v) => updateFilter('type', v)}>
-              <SelectTrigger className="h-14 border-none shadow-none font-bold text-xs text-slate-700 rounded-none focus:ring-0">
+              <SelectTrigger className="h-20 border-none shadow-none font-black text-[13px] text-slate-800 rounded-none focus:ring-0 px-6">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
                 {(category === "residential" ? [
                   { value:"any", label: fa?"همه انواع":"All Types" },
                   { value:"apartment", label: fa?"آپارتمان":"Apartment" },
@@ -191,59 +191,64 @@ export default function MapClient({ initialProperties }: MapClientProps) {
                   { value:"shop", label: fa?"مغازه":"Shop" },
                   { value:"warehouse", label: fa?"انبار":"Warehouse" },
                 ]).map(t => (
-                  <SelectItem key={t.value} value={t.value} className="text-xs font-bold">{t.label}</SelectItem>
+                  <SelectItem key={t.value} value={t.value} className="text-xs font-bold py-3 px-4">{t.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
           {/* Price Range */}
-          <div className="flex items-center gap-1 px-4 border-r border-slate-50 h-14">
-            <DollarSign className="w-3 h-3 text-slate-300" />
-            <input 
-              placeholder="Min" 
-              className="w-16 h-10 bg-transparent text-[11px] font-bold outline-none placeholder:text-slate-300" 
-              value={filters.priceMin} 
-              onChange={e => updateFilter('priceMin', e.target.value)} 
-            />
-            <span className="text-slate-100 text-xs">|</span>
-            <input 
-              placeholder="Max" 
-              className="w-16 h-10 bg-transparent text-[11px] font-bold outline-none placeholder:text-slate-300" 
-              value={filters.priceMax} 
-              onChange={e => updateFilter('priceMax', e.target.value)} 
-            />
+          <div className="flex items-center gap-2 px-6 border-r border-slate-50 h-full">
+            <div className="relative group">
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-300 group-focus-within:text-primary" />
+              <input 
+                placeholder="Min" 
+                className="w-24 h-12 bg-slate-50 rounded-xl pl-8 pr-3 text-[12px] font-bold outline-none border border-transparent focus:border-primary/20 focus:bg-white transition-all" 
+                value={filters.priceMin} 
+                onChange={e => updateFilter('priceMin', e.target.value)} 
+              />
+            </div>
+            <span className="text-slate-200 font-bold">-</span>
+            <div className="relative group">
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-300 group-focus-within:text-primary" />
+              <input 
+                placeholder="Max" 
+                className="w-24 h-12 bg-slate-50 rounded-xl pl-8 pr-3 text-[12px] font-bold outline-none border border-transparent focus:border-primary/20 focus:bg-white transition-all" 
+                value={filters.priceMax} 
+                onChange={e => updateFilter('priceMax', e.target.value)} 
+              />
+            </div>
           </div>
 
           {/* Search Input */}
-          <div className="flex-1 flex items-center px-4 relative min-w-[200px] h-14">
-            <Search className="w-4 h-4 text-primary/40 mr-3" />
+          <div className="flex-1 flex items-center px-8 relative min-w-[250px] h-full group">
+            <Search className="w-5 h-5 text-primary/40 mr-4 group-focus-within:text-primary transition-colors" />
             <input 
               placeholder={fa ? "جستجوی منطقه یا پروژه..." : "Search areas or projects..."}
-              className="w-full h-full bg-transparent text-xs font-bold outline-none placeholder:text-slate-300"
+              className="w-full h-full bg-transparent text-[13px] font-bold outline-none placeholder:text-slate-300"
               value={filters.area}
               onChange={(e) => updateFilter('area', e.target.value)}
             />
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 px-4 h-14">
+          <div className="flex items-center gap-4 px-6 h-full">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={clearFilters}
-              className="h-9 px-3 rounded-xl text-[10px] font-black text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all uppercase tracking-widest gap-2"
+              className="h-12 px-5 rounded-2xl text-[11px] font-black text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all uppercase tracking-widest gap-2"
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-4 h-4" />
               {fa ? "پاکسازی" : "Clear"}
             </Button>
             
-            <div className="hidden sm:flex p-1 bg-slate-100 rounded-xl">
+            <div className="hidden lg:flex p-1.5 bg-slate-100 rounded-2xl">
               <button 
                 onClick={() => setViewMode('map')}
                 className={cn(
-                  "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
-                  viewMode === 'map' ? "bg-white text-primary shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                  viewMode === 'map' ? "bg-white text-primary shadow-md" : "text-slate-500 hover:text-slate-700"
                 )}
               >
                 {fa ? "نقشه" : "Map"}
@@ -251,8 +256,8 @@ export default function MapClient({ initialProperties }: MapClientProps) {
               <button 
                 onClick={() => setViewMode('list')}
                 className={cn(
-                  "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
-                  viewMode === 'list' ? "bg-white text-primary shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                  viewMode === 'list' ? "bg-white text-primary shadow-md" : "text-slate-500 hover:text-slate-700"
                 )}
               >
                 {fa ? "لیست" : "List"}

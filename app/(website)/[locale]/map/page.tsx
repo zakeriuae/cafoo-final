@@ -22,7 +22,7 @@ export default async function MapPage() {
     .eq("content_status", "published")
     .not("latitude", "is", null)
     .not("longitude", "is", null)
-    .limit(100)
+    .limit(1000)
 
   return (
     <main className="h-screen overflow-hidden">
