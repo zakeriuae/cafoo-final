@@ -1,3 +1,5 @@
+import { Navigation } from "@/components/navigation"
+import { Footer } from "@/components/footer"
 import BlogClient from "./blog-client"
 
 export async function generateMetadata({ params }: { params: { locale: string } }) {
@@ -12,5 +14,11 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export default function BlogPage() {
-  return <BlogClient />
+  return (
+    <main className="min-h-screen">
+      <Navigation />
+      <BlogClient />
+      <Footer />
+    </main>
+  )
 }
