@@ -99,9 +99,20 @@ export default function MapClient({ initialProperties }: MapClientProps) {
     return null
   }
 
+  // Helper to get best available coordinates (Property -> Tower -> Area)
+  const getCoords = (p: any): [number, number] | null => {
+    if (p.latitude && p.longitude) return [p.latitude, p.longitude]
+    if (p.tower?.latitude && p.tower?.longitude) return [p.tower.latitude, p.tower.longitude]
+    if (p.area?.latitude && p.area?.longitude) return [p.area.latitude, p.area.longitude]
+    return null
+  }
+
   // Client-side filtering logic
   const filteredProperties = useMemo(() => {
     return properties.filter(p => {
+      // Must have at least some coordinates to show on map
+      if (!getCoords(p)) return false
+
       // Listing Type
       if (filters.listing && filters.listing !== 'any' && p.listing_type !== filters.listing) return false
       
@@ -365,11 +376,14 @@ export default function MapClient({ initialProperties }: MapClientProps) {
                   fillOpacity: 0.1,
                 }}
               >
-                {filteredProperties.map(p => (
-                  p.latitude && p.longitude && (
+                {filteredProperties.map(p => {
+                  const coords = getCoords(p)
+                  if (!coords) return null
+                  
+                  return (
                     <Marker 
                       key={p.id} 
-                      position={[p.latitude, p.longitude]}
+                      position={coords}
                       eventHandlers={{
                         click: () => setSelectedProperty(p),
                       }}

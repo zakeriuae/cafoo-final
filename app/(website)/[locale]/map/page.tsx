@@ -18,10 +18,8 @@ export default async function MapPage() {
   
   const { data: properties } = await supabase
     .from("properties")
-    .select("*, area:areas(name, name_fa, slug), tower:towers(name, name_fa, slug)")
+    .select("*, area:areas(name, name_fa, slug, latitude, longitude), tower:towers(name, name_fa, slug, latitude, longitude)")
     .eq("content_status", "published")
-    .not("latitude", "is", null)
-    .not("longitude", "is", null)
     .limit(1000)
 
   return (
