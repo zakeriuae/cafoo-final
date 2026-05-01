@@ -23,6 +23,8 @@ export const fa: LocaleContent = {
     callUs: 'تماس بگیرید',
     login: 'ورود / ثبت‌نام',
     whatsapp: 'واتساپ',
+    map: 'نقشه',
+    blog: 'بلاگ',
   },
 
   // بخش هیرو

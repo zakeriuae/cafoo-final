@@ -23,6 +23,8 @@ export const en: LocaleContent = {
     callUs: 'Call Us',
     login: 'Login',
     whatsapp: 'WhatsApp',
+    map: 'Map',
+    blog: 'Blog',
   },
 
   // Hero Section

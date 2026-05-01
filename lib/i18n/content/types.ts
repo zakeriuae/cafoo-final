@@ -18,6 +18,8 @@ export interface LocaleContent {
     contact: string;
     callUs: string;
     whatsapp: string;
+    map: string;
+    blog: string;
   };
 
   hero: {

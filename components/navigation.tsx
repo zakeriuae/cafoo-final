@@ -31,7 +31,6 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [activeSection, setActiveSection] = useState("")
   const { locale, isRtl } = useI18n()
   const content = useContent()
   const [user, setUser] = useState<User | null>(null)
@@ -87,28 +86,21 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
   const variant = manualVariant || (isHomePage ? "transparent" : "light")
   const isLight = variant === "light"
 
-  const navLinks: { href: string; label: string }[] = []
+  const navLinks = [
+    { href: `/${locale}`, label: content.nav.home },
+    { href: `/${locale}/properties`, label: content.nav.properties },
+    { href: `/${locale}/map`, label: content.nav.map },
+    { href: `/${locale}/blog`, label: content.nav.blog },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
-      
-      const sections = navLinks.map(link => link.href.split('#')[1])
-      for (const section of sections.reverse()) {
-        const element = document.getElementById(section)
-        if (element) {
-          const rect = element.getBoundingClientRect()
-          if (rect.top <= 150) {
-            setActiveSection(section)
-            break
-          }
-        }
-      }
     }
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [navLinks])
+  }, [])
 
   return (
     <>
@@ -151,7 +143,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                   href={link.href}
                   className={cn(
                     "relative px-4 py-2 text-sm font-medium transition-colors rounded-lg",
-                    activeSection === link.href.split('#')[1]
+                    (link.href === `/${locale}` ? pathname === `/${locale}` : pathname.startsWith(link.href))
                       ? "text-primary font-bold"
                       : (isScrolled || isLight) 
                         ? "text-slate-600 hover:text-primary hover:bg-slate-50"
@@ -159,7 +151,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                   )}
                 >
                   {link.label}
-                  {activeSection === link.href.split('#')[1] && (
+                  {(link.href === `/${locale}` ? pathname === `/${locale}` : pathname.startsWith(link.href)) && (
                     <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
                   )}
                 </Link>
@@ -292,7 +284,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                 href={link.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-300",
-                  activeSection === link.href.substring(1)
+                  (link.href === `/${locale}` ? pathname === `/${locale}` : pathname.startsWith(link.href))
                     ? "bg-primary/10 text-primary"
                     : "text-foreground/70 hover:bg-muted/50 hover:text-foreground",
                   isRtl && "flex-row-reverse"
