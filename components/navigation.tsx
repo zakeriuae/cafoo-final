@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useI18n, useContent } from "@/lib/i18n"
 import { LocaleSwitcher } from "@/components/locale-switcher"
+import { CurrencySwitcher } from "@/components/currency-switcher"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { 
@@ -160,7 +161,10 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
 
             {/* CTA Buttons */}
             <div className={cn("hidden lg:flex items-center gap-3", isRtl && "flex-row-reverse")}>
-              <LocaleSwitcher isLight={isScrolled || isLight} />
+              <div className="flex items-center gap-1">
+                <CurrencySwitcher isLight={isScrolled || isLight} />
+                <LocaleSwitcher isLight={isScrolled || isLight} />
+              </div>
               <div className={cn(
                 "w-px h-6 mx-2",
                 (isScrolled || isLight) ? "bg-slate-200" : "bg-white/20"

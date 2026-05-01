@@ -4,13 +4,14 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Calendar, Building2, ArrowRight, ArrowLeft, MessageCircle, Sparkles, TrendingUp } from "lucide-react"
+import { MapPin, Calendar, Building2, ArrowRight, ArrowLeft, MessageCircle, Sparkles, TrendingUp, DollarSign, Euro, IndianRupee } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
 import { buildSeoUrl } from "@/lib/seo-router"
 import { SmartImage } from "@/components/ui/smart-image"
+import { useCurrency } from "@/hooks/use-currency"
 
 interface Project {
   id: string | number
@@ -40,6 +41,17 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
   const sectionRef = useRef<HTMLElement>(null)
   const { isRtl, locale } = useI18n()
   const content = useContent()
+  const { currency, convert } = useCurrency()
+  
+  const CurrencyIconSmall = () => {
+    if (currency === 'AED') return <AedSymbol size={22} className="flex-shrink-0" />
+    if (currency === 'USD') return <DollarSign className="w-5 h-5 flex-shrink-0" />
+    if (currency === 'EUR') return <Euro className="w-5 h-5 flex-shrink-0" />
+    if (currency === 'INR') return <IndianRupee className="w-5 h-5 flex-shrink-0" />
+    if (currency === 'CNY') return <span className="text-xl font-bold flex-shrink-0">¥</span>
+    if (currency === 'IRR') return <span className="text-sm font-bold flex-shrink-0">IRR</span>
+    return null
+  }
   
   const filters = [
     { key: "all", label: content.projects.filters.all },
@@ -198,7 +210,7 @@ export default function ProjectsSectionClient({ projects }: ProjectsSectionClien
                     <div>
                       <p className="text-white/70 text-xs font-medium mb-1">{content.projects.startingFrom}</p>
                       <p className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5" dir="ltr">
-                        <AedSymbol size={22} className="flex-shrink-0" /> {project.launchPrice}
+                        <CurrencyIconSmall /> {Math.round(convert(parseFloat(String(project.launchPrice).replace(/,/g, '')) || 0)).toLocaleString()}
                       </p>
                     </div>
                     {project.roi && (

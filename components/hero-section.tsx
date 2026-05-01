@@ -49,12 +49,13 @@ function Counter({ end, duration = 2000, suffix = "+" }: { end: number; duration
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Search, MapPin, ChevronDown, BedDouble, Ruler, Calendar, SlidersHorizontal, Home, Briefcase } from "lucide-react"
+import { Search, MapPin, ChevronDown, BedDouble, Ruler, Calendar, SlidersHorizontal, Home, Briefcase, DollarSign, Euro, IndianRupee, Coins } from "lucide-react"
 import { AedSymbol } from "@/components/ui/aed-symbol"
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { useCurrency } from "@/hooks/use-currency"
 
 type Intent   = "buy" | "rent"
 type BuyStage = "all" | "ready" | "off-plan"
@@ -196,6 +197,7 @@ export function HeroSection() {
   const [visible, setVisible] = useState(false)
   const { locale } = useI18n()
   const content = useContent()
+  const { currency } = useCurrency()
   const fa = locale === "fa"
 
   const router = useRouter()
@@ -450,8 +452,9 @@ export function HeroSection() {
                 <>
                   <Sep />
                   <RangeDropdown
-                    label={fa?"قیمت (درهم)":"Price (AED)"} icon={AedSymbol}
-                    unit="AED" fa={fa}
+                    label={fa ? `قیمت (${currency})` : `Price (${currency})`} 
+                    icon={currency === 'AED' ? AedSymbol : (currency === 'USD' ? DollarSign : (currency === 'EUR' ? Euro : (currency === 'INR' ? IndianRupee : Coins)))}
+                    unit={currency} fa={fa}
                     min={priceMin} max={priceMax}
                     onMinChange={setPriceMin} onMaxChange={setPriceMax}
                     onReset={() => { setPriceMin(""); setPriceMax("") }}

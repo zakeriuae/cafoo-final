@@ -3,11 +3,12 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Bed, Bath, Maximize, Heart, ArrowRight, Loader2 } from "lucide-react"
+import { MapPin, Bed, Bath, Maximize, Heart, ArrowRight, Loader2, DollarSign, Euro, IndianRupee } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AedSymbol } from "@/components/ui/aed-symbol"
 import { SmartImage } from "@/components/ui/smart-image"
 import { useAuthAction } from "@/hooks/use-auth-action"
+import { useCurrency } from "@/hooks/use-currency"
 
 interface PropertyCardProps {
   property: any; // We will use any for now, or define a strict interface
@@ -39,8 +40,15 @@ export function PropertyCard({
     ? (locale === 'fa' && property.area.name_fa ? property.area.name_fa : property.area.name)
     : (property.location ? property.location[locale] : property.location);
   
-  const price = property.price?.toLocaleString?.() || property.price;
-  const pricePerSqft = property.pricePerSqft || (property.price && property.size ? Math.round(property.price / property.size).toLocaleString() : null);
+  const { currency, convert } = useCurrency()
+  const rawPrice = property.price || 0
+  const convertedPrice = convert(rawPrice)
+  const priceDisplay = Math.round(convertedPrice).toLocaleString()
+  
+  const rawPricePerSqft = property.pricePerSqft || (property.price && property.size ? Math.round(property.price / property.size) : 0)
+  const convertedPricePerSqft = convert(rawPricePerSqft)
+  const pricePerSqftDisplay = Math.round(convertedPricePerSqft).toLocaleString()
+
   const imageUrl = property.cover_image_url || property.image || "/images/placeholder.jpg";
   const listingType = property.listing_type || property.type;
   
@@ -78,6 +86,26 @@ export function PropertyCard({
 
   const devName = property.developer?.name || property.developerName || property.project;
   const devLogo = property.developer?.logo_url || property.developerLogo;
+
+  const CurrencyIcon = () => {
+    if (currency === 'AED') return <AedSymbol size={28} className="flex-shrink-0" />
+    if (currency === 'USD') return <DollarSign className="w-6 h-6 flex-shrink-0" />
+    if (currency === 'EUR') return <Euro className="w-6 h-6 flex-shrink-0" />
+    if (currency === 'INR') return <IndianRupee className="w-6 h-6 flex-shrink-0" />
+    if (currency === 'CNY') return <span className="text-2xl font-bold flex-shrink-0">¥</span>
+    if (currency === 'IRR') return <span className="text-lg font-bold flex-shrink-0">IRR</span>
+    return null
+  }
+
+  const CurrencyIconSmall = () => {
+    if (currency === 'AED') return <AedSymbol size={14} />
+    if (currency === 'USD') return <DollarSign className="w-3 h-3" />
+    if (currency === 'EUR') return <Euro className="w-3 h-3" />
+    if (currency === 'INR') return <IndianRupee className="w-3 h-3" />
+    if (currency === 'CNY') return <span className="text-[10px] font-bold">¥</span>
+    if (currency === 'IRR') return <span className="text-[8px] font-bold">IRR</span>
+    return null
+  }
 
   return (
     <Link 
@@ -151,11 +179,11 @@ export function PropertyCard({
           {/* Price Overlay */}
           <div className="absolute bottom-5 inset-x-5 z-10">
             <p className="text-3xl font-bold text-white tracking-tight flex items-center gap-1.5" dir="ltr">
-              <AedSymbol size={28} className="flex-shrink-0" /> {price}
+              <CurrencyIcon /> {priceDisplay}
             </p>
-            {pricePerSqft && (
+            {pricePerSqftDisplay && (
               <p className="text-white/80 text-sm font-medium mt-1 flex items-center gap-1" dir="ltr">
-                <AedSymbol size={14} /> {pricePerSqft}/Sq.Ft
+                <CurrencyIconSmall /> {pricePerSqftDisplay}/Sq.Ft
               </p>
             )}
           </div>

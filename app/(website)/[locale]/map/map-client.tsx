@@ -4,19 +4,40 @@ import { useState, useEffect, useMemo } from "react"
 import dynamic from 'next/dynamic'
 import Image from "next/image"
 import Link from "next/link"
-import { MapPin, Home, Bed, Bath, Maximize, Search, SlidersHorizontal, ChevronRight, X } from "lucide-react"
+import { 
+  MapPin, 
+  Home, 
+  Bed, 
+  Bath, 
+  Maximize, 
+  Search, 
+  SlidersHorizontal, 
+  ChevronRight, 
+  X, 
+  DollarSign, 
+  Euro, 
+  IndianRupee,
+  Briefcase,
+  Trash2
+} from "lucide-react"
 import { useI18n, useContent } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useCurrency } from "@/hooks/use-currency"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 import 'leaflet/dist/leaflet.css'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 
 // Dynamic imports for Leaflet to avoid SSR issues
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false })
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false })
 const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { ssr: false })
 const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup), { ssr: false })
+const MarkerClusterGroup = dynamic(() => import('react-leaflet-cluster'), { ssr: false })
 
 // Helper to fix Leaflet icon issue
 let L: any;
@@ -37,65 +58,206 @@ interface MapClientProps {
 export default function MapClient({ initialProperties }: MapClientProps) {
   const { locale, isRtl } = useI18n()
   const content = useContent()
-  const [properties, setProperties] = useState(initialProperties)
+  const fa = locale === 'fa'
+  const { currency, convert } = useCurrency()
+  const [properties] = useState(initialProperties)
   const [selectedProperty, setSelectedProperty] = useState<any>(null)
-  const [searchQuery, setSearchQuery] = useState("")
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map')
+
+  // Filter States
+  const [filters, setFilters] = useState<any>({
+    listing: 'sale',
+    type: 'any',
+    priceMin: '',
+    priceMax: '',
+    area: ''
+  })
+  const [category, setCategory] = useState<"residential" | "commercial">("residential")
+
+  const updateFilter = (key: string, value: string) => {
+    setFilters((prev: any) => ({ ...prev, [key]: value }))
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      listing: 'sale',
+      type: 'any',
+      priceMin: '',
+      priceMax: '',
+      area: ''
+    })
+    setCategory("residential")
+  }
+
+  const CurrencyIconSmall = () => {
+    if (currency === 'AED') return <AedSymbol size={14} />
+    if (currency === 'USD') return <DollarSign className="w-3 h-3" />
+    if (currency === 'EUR') return <Euro className="w-3 h-3" />
+    if (currency === 'INR') return <IndianRupee className="w-3 h-3" />
+    if (currency === 'CNY') return <span className="text-[10px] font-bold">¥</span>
+    if (currency === 'IRR') return <span className="text-[8px] font-bold">IRR</span>
+    return null
+  }
+
+  // Client-side filtering logic
+  const filteredProperties = useMemo(() => {
+    return properties.filter(p => {
+      // Listing Type
+      if (filters.listing && p.listing_type !== filters.listing) return false
+      
+      // Property Type
+      if (filters.type && filters.type !== 'any' && p.property_type !== filters.type) return false
+      
+      // Price
+      if (filters.priceMin && p.price < parseInt(filters.priceMin)) return false
+      if (filters.priceMax && p.price > parseInt(filters.priceMax)) return false
+      
+      // Search / Area
+      if (filters.area) {
+        const search = filters.area.toLowerCase()
+        const title = (p.title[locale] || p.title || "").toLowerCase()
+        const address = (p.address || "").toLowerCase()
+        const areaName = (p.area?.name || "").toLowerCase()
+        if (!title.includes(search) && !address.includes(search) && !areaName.includes(search)) return false
+      }
+      
+      return true
+    })
+  }, [properties, filters, locale])
 
   // Default center of Dubai
   const center: [number, number] = [25.2048, 55.2708]
 
-  const filteredProperties = useMemo(() => {
-    return properties.filter(p => {
-      const title = p.title[locale] || p.title || ""
-      const address = p.address || ""
-      return title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-             address.toLowerCase().includes(searchQuery.toLowerCase())
-    })
-  }, [properties, searchQuery, locale])
-
   return (
     <div className="flex flex-col h-screen pt-16 bg-white overflow-hidden">
-      {/* Top Header Filter */}
-      <div className="h-16 border-b border-slate-100 bg-white flex items-center px-4 md:px-6 gap-4 z-20 shrink-0">
-        <div className="relative flex-1 max-w-md group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
-          <Input 
-            placeholder={isRtl ? "جستجوی منطقه یا پروژه..." : "Search areas or projects..."}
-            className={cn(
-              "pl-10 h-10 bg-slate-50 border-none rounded-xl focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all text-xs font-semibold",
-              isRtl && "pr-10 pl-4 text-right"
-            )}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="rounded-xl h-10 border-slate-200 gap-2 font-bold text-xs">
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            {isRtl ? "فیلترها" : "Filters"}
-          </Button>
-          
-          <div className="hidden sm:flex p-1 bg-slate-100 rounded-xl">
+      
+      {/* ══ ADVANCED SEARCH HEADER ══ */}
+      <div className="z-30 bg-white border-b border-slate-100 shadow-sm">
+        <div className="flex flex-wrap items-center">
+          {/* Listing Type Tabs */}
+          <div className="flex border-r border-slate-50 bg-slate-50/30">
+            {['sale', 'rent', 'off_plan'].map((t) => (
+              <button
+                key={t}
+                onClick={() => updateFilter('listing', t)}
+                className={cn(
+                  "px-6 py-4 text-[10px] font-black uppercase tracking-widest transition-all border-b-2",
+                  filters.listing === t ? "text-primary border-primary bg-white" : "text-slate-400 border-transparent hover:text-slate-600"
+                )}
+              >
+                {t === 'sale' ? (fa?'خرید':'Sale') : t === 'rent' ? (fa?'اجاره':'Rent') : (fa?'پیش‌فروش':'Off-Plan')}
+              </button>
+            ))}
+          </div>
+
+          {/* Category Toggle */}
+          <div className="flex items-center px-4 border-r border-slate-50 gap-1 h-14">
             <button 
-              onClick={() => setViewMode('map')}
+              onClick={() => setCategory("residential")} 
               className={cn(
-                "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                viewMode === 'map' ? "bg-white text-primary shadow-sm" : "text-slate-500 hover:text-slate-700"
+                "px-3 py-1.5 rounded-lg text-[9px] font-black transition-all uppercase tracking-tighter",
+                category === "residential" ? "bg-primary/10 text-primary" : "text-slate-400 hover:text-slate-600"
               )}
             >
-              {isRtl ? "نقشه" : "Map"}
+              {fa ? "مسکونی" : "RESIDENTIAL"}
             </button>
             <button 
-              onClick={() => setViewMode('list')}
+              onClick={() => setCategory("commercial")} 
               className={cn(
-                "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                viewMode === 'list' ? "bg-white text-primary shadow-sm" : "text-slate-500 hover:text-slate-700"
+                "px-3 py-1.5 rounded-lg text-[9px] font-black transition-all uppercase tracking-tighter",
+                category === "commercial" ? "bg-primary/10 text-primary" : "text-slate-400 hover:text-slate-600"
               )}
             >
-              {isRtl ? "لیست" : "List"}
+              {fa ? "تجاری" : "COMMERCIAL"}
             </button>
+          </div>
+
+          {/* Property Type Dropdown */}
+          <div className="border-r border-slate-50 min-w-[140px]">
+            <Select value={filters.type} onValueChange={(v) => updateFilter('type', v)}>
+              <SelectTrigger className="h-14 border-none shadow-none font-bold text-xs text-slate-700 rounded-none focus:ring-0">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {(category === "residential" ? [
+                  { value:"any", label: fa?"همه انواع":"All Types" },
+                  { value:"apartment", label: fa?"آپارتمان":"Apartment" },
+                  { value:"villa", label: fa?"ویلا":"Villa" },
+                  { value:"townhouse", label: fa?"تاون‌هاوس":"Townhouse" },
+                  { value:"studio", label: fa?"استودیو":"Studio" },
+                ] : [
+                  { value:"any", label: fa?"همه انواع":"All Types" },
+                  { value:"office", label: fa?"دفتر کار":"Office" },
+                  { value:"shop", label: fa?"مغازه":"Shop" },
+                  { value:"warehouse", label: fa?"انبار":"Warehouse" },
+                ]).map(t => (
+                  <SelectItem key={t.value} value={t.value} className="text-xs font-bold">{t.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Price Range */}
+          <div className="flex items-center gap-1 px-4 border-r border-slate-50 h-14">
+            <DollarSign className="w-3 h-3 text-slate-300" />
+            <input 
+              placeholder="Min" 
+              className="w-16 h-10 bg-transparent text-[11px] font-bold outline-none placeholder:text-slate-300" 
+              value={filters.priceMin} 
+              onChange={e => updateFilter('priceMin', e.target.value)} 
+            />
+            <span className="text-slate-100 text-xs">|</span>
+            <input 
+              placeholder="Max" 
+              className="w-16 h-10 bg-transparent text-[11px] font-bold outline-none placeholder:text-slate-300" 
+              value={filters.priceMax} 
+              onChange={e => updateFilter('priceMax', e.target.value)} 
+            />
+          </div>
+
+          {/* Search Input */}
+          <div className="flex-1 flex items-center px-4 relative min-w-[200px] h-14">
+            <Search className="w-4 h-4 text-primary/40 mr-3" />
+            <input 
+              placeholder={fa ? "جستجوی منطقه یا پروژه..." : "Search areas or projects..."}
+              className="w-full h-full bg-transparent text-xs font-bold outline-none placeholder:text-slate-300"
+              value={filters.area}
+              onChange={(e) => updateFilter('area', e.target.value)}
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 px-4 h-14">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={clearFilters}
+              className="h-9 px-3 rounded-xl text-[10px] font-black text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all uppercase tracking-widest gap-2"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              {fa ? "پاکسازی" : "Clear"}
+            </Button>
+            
+            <div className="hidden sm:flex p-1 bg-slate-100 rounded-xl">
+              <button 
+                onClick={() => setViewMode('map')}
+                className={cn(
+                  "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                  viewMode === 'map' ? "bg-white text-primary shadow-sm" : "text-slate-500 hover:text-slate-700"
+                )}
+              >
+                {fa ? "نقشه" : "Map"}
+              </button>
+              <button 
+                onClick={() => setViewMode('list')}
+                className={cn(
+                  "px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                  viewMode === 'list' ? "bg-white text-primary shadow-sm" : "text-slate-500 hover:text-slate-700"
+                )}
+              >
+                {fa ? "لیست" : "List"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -106,9 +268,9 @@ export default function MapClient({ initialProperties }: MapClientProps) {
           "w-full lg:w-[420px] bg-white border-r border-slate-100 overflow-y-auto custom-scrollbar flex flex-col transition-all duration-300",
           viewMode === 'map' ? "hidden lg:flex" : "flex"
         )}>
-          <div className="p-4 border-b border-slate-50 bg-slate-50/50">
+          <div className="p-4 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-              {filteredProperties.length} {isRtl ? "ملک یافت شد" : "Properties Found"}
+              {filteredProperties.length} {fa ? "ملک یافت شد" : "Properties Found"}
             </p>
           </div>
           
@@ -155,12 +317,19 @@ export default function MapClient({ initialProperties }: MapClientProps) {
                     </div>
                   </div>
                   
-                  <p className="text-sm font-black text-primary" dir="ltr">
-                    AED {p.price?.toLocaleString()}
+                  <p className="text-sm font-black text-primary flex items-center gap-1" dir="ltr">
+                    <CurrencyIconSmall /> {Math.round(convert(p.price || 0)).toLocaleString()}
                   </p>
                 </div>
               </div>
             ))}
+
+            {filteredProperties.length === 0 && (
+              <div className="p-12 text-center">
+                <Search className="w-8 h-8 text-slate-200 mx-auto mb-4" />
+                <p className="text-xs font-bold text-slate-400">{fa ? "نتیجه‌ای یافت نشد" : "No results found"}</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -181,40 +350,51 @@ export default function MapClient({ initialProperties }: MapClientProps) {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
               
-              {filteredProperties.map(p => (
-                p.latitude && p.longitude && (
-                  <Marker 
-                    key={p.id} 
-                    position={[p.latitude, p.longitude]}
-                    eventHandlers={{
-                      click: () => setSelectedProperty(p),
-                    }}
-                  >
-                    <Popup className="property-popup">
-                      <div className="w-48 p-0">
-                        <div className="relative h-28 rounded-t-xl overflow-hidden mb-2">
-                          <Image src={p.cover_image_url || "/images/placeholder.jpg"} alt="Property" fill className="object-cover" />
-                          <Badge className="absolute top-2 right-2 bg-primary text-white border-none font-black text-[9px]">
-                            AED {p.price?.toLocaleString()}
-                          </Badge>
+              <MarkerClusterGroup
+                chunkedLoading
+                polygonOptions={{
+                  fillColor: '#6366f1',
+                  color: '#6366f1',
+                  weight: 0.5,
+                  opacity: 1,
+                  fillOpacity: 0.1,
+                }}
+              >
+                {filteredProperties.map(p => (
+                  p.latitude && p.longitude && (
+                    <Marker 
+                      key={p.id} 
+                      position={[p.latitude, p.longitude]}
+                      eventHandlers={{
+                        click: () => setSelectedProperty(p),
+                      }}
+                    >
+                      <Popup className="property-popup">
+                        <div className="w-48 p-0">
+                          <div className="relative h-28 rounded-t-xl overflow-hidden mb-2">
+                            <Image src={p.cover_image_url || "/images/placeholder.jpg"} alt="Property" fill className="object-cover" />
+                            <Badge className="absolute top-2 right-2 bg-primary text-white border-none font-black text-[9px] flex items-center gap-1">
+                              <CurrencyIconSmall /> {Math.round(convert(p.price || 0)).toLocaleString()}
+                            </Badge>
+                          </div>
+                          <div className="p-2">
+                            <h5 className="font-bold text-xs text-slate-900 line-clamp-1 mb-1">{p.title[locale] || p.title}</h5>
+                            <Link href={`/${locale}/properties/${p.slug}`} className="text-[10px] font-black text-primary flex items-center gap-1 hover:gap-2 transition-all">
+                              {fa ? "مشاهده جزئیات" : "View Details"} <ChevronRight className="w-3 h-3" />
+                            </Link>
+                          </div>
                         </div>
-                        <div className="p-2">
-                          <h5 className="font-bold text-xs text-slate-900 line-clamp-1 mb-1">{p.title[locale] || p.title}</h5>
-                          <Link href={`/${locale}/properties/${p.slug}`} className="text-[10px] font-black text-primary flex items-center gap-1 hover:gap-2 transition-all">
-                            {isRtl ? "مشاهده جزئیات" : "View Details"} <ChevronRight className="w-3 h-3" />
-                          </Link>
-                        </div>
-                      </div>
-                    </Popup>
-                  </Marker>
-                )
-              ))}
+                      </Popup>
+                    </Marker>
+                  )
+                ))}
+              </MarkerClusterGroup>
             </MapContainer>
           )}
 
           {/* Map Controls */}
           <div className="absolute top-6 right-6 z-[1000] flex flex-col gap-2">
-            <Button size="icon" variant="white" className="w-10 h-10 rounded-xl shadow-xl shadow-black/10 border-slate-100">
+            <Button size="icon" variant="white" className="w-10 h-10 rounded-xl shadow-xl shadow-black/10 border-slate-100" onClick={() => window.location.reload()}>
               <Home className="w-4 h-4 text-slate-600" />
             </Button>
           </div>
@@ -228,12 +408,12 @@ export default function MapClient({ initialProperties }: MapClientProps) {
               {viewMode === 'map' ? (
                 <>
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  {isRtl ? "نمایش لیست" : "Show List"}
+                  {fa ? "نمایش لیست" : "Show List"}
                 </>
               ) : (
                 <>
                   <MapPin className="w-3.5 h-3.5" />
-                  {isRtl ? "نمایش نقشه" : "Show Map"}
+                  {fa ? "نمایش نقشه" : "Show Map"}
                 </>
               )}
             </Button>
