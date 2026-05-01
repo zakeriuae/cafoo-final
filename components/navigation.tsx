@@ -87,14 +87,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
   const variant = manualVariant || (isHomePage ? "transparent" : "light")
   const isLight = variant === "light"
 
-  const navLinks = [
-    { href: `/${locale}#projects`, label: content.nav.projects },
-    { href: `/${locale}#properties`, label: content.nav.properties },
-    { href: `/${locale}#areas`, label: content.nav.areas },
-    { href: `/${locale}#developers`, label: content.nav.developers },
-    { href: `/${locale}#agents`, label: content.nav.agents },
-    { href: `/${locale}#about`, label: content.nav.about },
-  ]
+  const navLinks: { href: string; label: string }[] = []
 
   useEffect(() => {
     const handleScroll = () => {
