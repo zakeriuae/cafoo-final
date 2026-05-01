@@ -226,7 +226,7 @@ export const fa: LocaleContent = {
     retry: 'تلاش مجدد',
   },
   profile: {
-    title: 'تکمیل اطلاعات حساب کاربری',
+    title: 'پروفایل',
     description: 'لطفاً نام و شماره موبایل خود را برای ادامه ثبت کنید.',
     fullName: 'نام و نام خانوادگی',
     phone: 'شماره موبایل',

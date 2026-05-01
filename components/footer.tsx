@@ -22,10 +22,10 @@ import { LocaleSwitcher } from "@/components/locale-switcher"
 import { cn } from "@/lib/utils"
 
 const socialLinks = [
-  { icon: Facebook, href: "#", label: "Facebook", color: "hover:bg-blue-600" },
-  { icon: Instagram, href: "#", label: "Instagram", color: "hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-500" },
-  { icon: Linkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" },
-  { icon: Youtube, href: "#", label: "YouTube", color: "hover:bg-red-600" },
+  { icon: Facebook, href: "https://www.facebook.com/share/18MzCmsyU8/?mibextid=wwXIfr", label: "Facebook", color: "hover:bg-blue-600" },
+  { icon: Instagram, href: "https://www.instagram.com/isa_ghavasi?igsh=enluaDU5dzB3bWg4&utm_source=qr", label: "Instagram", color: "hover:bg-gradient-to-br hover:from-purple-600 hover:to-pink-500" },
+  { icon: Linkedin, href: "https://www.linkedin.com/in/isa-ghavasi-a67530272?utm_source=share_via&utm_content=profile&utm_medium=member_ios", label: "LinkedIn", color: "hover:bg-blue-700" },
+  { icon: Youtube, href: "https://youtube.com/@isaghavasi?si=Tl-eqxqPG11bA1Fz", label: "YouTube", color: "hover:bg-red-600" },
 ]
 
 export function Footer() {
@@ -87,6 +87,8 @@ export function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary transition-all duration-300"
                   aria-label={social.label}
                 >

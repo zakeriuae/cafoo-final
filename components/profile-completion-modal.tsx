@@ -115,71 +115,72 @@ export function ProfileCompletionModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
-      // Don't allow closing without completion unless specifically needed
       if (!open) onClose()
     }}>
-      <DialogContent className="sm:max-w-md border-none rounded-[2rem] overflow-hidden bg-white p-0 shadow-2xl" onPointerDownOutside={(e) => e.preventDefault()}>
-        <div className={cn("pt-12 pb-10 px-8 flex flex-col items-center", isRtl && "font-vazir text-right")}>
-          <div className="mb-6 h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-            <UserIcon className="h-6 w-6" />
+      <DialogContent className="sm:max-w-md border-none rounded-[2.5rem] overflow-hidden bg-white p-0 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)]" onPointerDownOutside={(e) => e.preventDefault()}>
+        <div className={cn("pt-12 pb-10 px-10 flex flex-col items-center", isRtl && "font-vazir text-right")}>
+          <div className="mb-8 h-16 w-16 rounded-[1.5rem] bg-primary/5 flex items-center justify-center text-primary shadow-sm border border-primary/10">
+            <UserIcon className="h-7 w-7" />
           </div>
           
-          <DialogHeader className="space-y-2 w-full">
-            <DialogTitle className={cn("text-2xl font-bold text-slate-900", isRtl && "text-center")}>
+          <DialogHeader className="space-y-3 w-full">
+            <DialogTitle className={cn("text-2xl font-black text-slate-900 tracking-tight", isRtl && "text-center")}>
               {t.title}
             </DialogTitle>
-            <DialogDescription className={cn("text-slate-400 text-sm font-medium", isRtl && "text-center")}>
+            <DialogDescription className={cn("text-slate-400 text-sm font-medium leading-relaxed", isRtl && "text-center")}>
               {t.description}
             </DialogDescription>
           </DialogHeader>
           
-          <form onSubmit={handleSubmit} className="w-full mt-8 space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-xs font-bold uppercase tracking-widest text-slate-400 px-1">
+          <form onSubmit={handleSubmit} className="w-full mt-10 space-y-8">
+            <div className="space-y-2.5">
+              <Label htmlFor="fullName" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">
                 {t.fullName}
               </Label>
-              <div className="relative">
-                <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <UserIcon className="w-4 h-4 text-slate-300 group-focus-within:text-primary transition-colors" />
+                </div>
                 <Input 
                   id="fullName"
                   placeholder={t.placeholderName}
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className={cn(
-                    "h-14 bg-slate-50 border-slate-100 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all pl-12",
-                    isRtl && "pr-4 pl-12 text-right"
+                    "h-14 bg-slate-50/50 border-slate-100/80 rounded-2xl focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all pl-11 text-sm font-semibold text-slate-700",
+                    isRtl && "pr-4 pl-11 text-right"
                   )}
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest text-slate-400 px-1">
+            <div className="space-y-2.5">
+              <Label htmlFor="phone" className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 px-1">
                 {t.phone}
               </Label>
-              <div className="flex gap-2">
-                <div className="w-[120px] shrink-0">
+              <div className="flex items-stretch bg-slate-50/50 border border-slate-100/80 rounded-2xl focus-within:bg-white focus-within:ring-4 focus-within:ring-primary/5 focus-within:border-primary/20 transition-all overflow-hidden">
+                <div className="w-[110px] shrink-0 border-r border-slate-100/80">
                   <Select 
                     value={selectedCountry.code} 
                     onValueChange={(val) => setSelectedCountry(countries.find(c => c.code === val) || countries[0])}
                   >
-                    <SelectTrigger className="h-14 bg-slate-50 border-slate-100 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all px-3">
+                    <SelectTrigger className="h-14 bg-transparent border-none focus:ring-0 rounded-none px-4 shadow-none">
                       <SelectValue>
                         <div className="flex items-center gap-2">
-                          <span className="text-lg leading-none">{selectedCountry.flag}</span>
-                          <span className="text-xs font-bold">{selectedCountry.dialCode}</span>
+                          <span className="text-xl leading-none grayscale-[0.2]">{selectedCountry.flag}</span>
+                          <span className="text-xs font-black text-slate-600">{selectedCountry.dialCode}</span>
                         </div>
                       </SelectValue>
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl border-slate-100 shadow-xl max-h-[300px]">
+                    <SelectContent className="rounded-2xl border-slate-100 shadow-2xl max-h-[300px]">
                       {sortedCountries.map((country) => (
-                        <SelectItem key={country.code} value={country.code} className="cursor-pointer focus:bg-slate-50">
-                          <div className="flex items-center gap-3 py-1">
-                            <span className="text-xl leading-none">{country.flag}</span>
+                        <SelectItem key={country.code} value={country.code} className="cursor-pointer focus:bg-slate-50 py-3">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl leading-none">{country.flag}</span>
                             <div className="flex flex-col">
-                              <span className="text-xs font-bold text-slate-700">{country.name}</span>
-                              <span className="text-[10px] text-slate-400 font-medium">{country.dialCode}</span>
+                              <span className="text-[11px] font-black text-slate-800">{country.name}</span>
+                              <span className="text-[10px] text-slate-400 font-bold">{country.dialCode}</span>
                             </div>
                           </div>
                         </SelectItem>
@@ -188,7 +189,9 @@ export function ProfileCompletionModal() {
                   </Select>
                 </div>
                 <div className="flex-1 relative">
-                  <PhoneIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                    <PhoneIcon className="w-4 h-4 text-slate-300 transition-colors" />
+                  </div>
                   <Input 
                     id="phone"
                     type="tel"
@@ -196,8 +199,8 @@ export function ProfileCompletionModal() {
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
                     className={cn(
-                      "h-14 bg-slate-50 border-slate-100 rounded-xl focus:ring-2 focus:ring-primary/20 transition-all pl-12",
-                      isRtl && "pl-12 text-right ltr"
+                      "h-14 bg-transparent border-none focus:ring-0 rounded-none pl-11 text-sm font-semibold text-slate-700 shadow-none",
+                      isRtl && "pl-11 text-right ltr"
                     )}
                     required
                   />
@@ -207,7 +210,7 @@ export function ProfileCompletionModal() {
 
             <Button 
               type="submit"
-              className="w-full h-14 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all active:scale-[0.98] mt-4"
+              className="w-full h-15 py-4 bg-primary hover:bg-primary/90 text-white rounded-[1.25rem] font-black text-sm uppercase tracking-widest shadow-[0_12px_24px_-8px_rgba(var(--primary-rgb),0.4)] transition-all active:scale-[0.98] mt-4"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

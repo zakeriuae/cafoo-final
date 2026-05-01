@@ -225,7 +225,7 @@ export const en: LocaleContent = {
     retry: 'Try Again',
   },
   profile: {
-    title: 'Complete Your Profile',
+    title: 'Profile',
     description: 'Please provide your name and phone number to continue.',
     fullName: 'Full Name',
     phone: 'Phone Number',

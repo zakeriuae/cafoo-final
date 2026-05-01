@@ -49,7 +49,8 @@ function Counter({ end, duration = 2000, suffix = "+" }: { end: number; duration
 
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Search, MapPin, ChevronDown, BedDouble, Ruler, Calendar, SlidersHorizontal, Home, Briefcase, DollarSign } from "lucide-react"
+import { Search, MapPin, ChevronDown, BedDouble, Ruler, Calendar, SlidersHorizontal, Home, Briefcase } from "lucide-react"
+import { AedSymbol } from "@/components/ui/aed-symbol"
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useI18n, useContent } from "@/lib/i18n"
@@ -449,7 +450,7 @@ export function HeroSection() {
                 <>
                   <Sep />
                   <RangeDropdown
-                    label={fa?"قیمت (درهم)":"Price (AED)"} icon={DollarSign}
+                    label={fa?"قیمت (درهم)":"Price (AED)"} icon={AedSymbol}
                     unit="AED" fa={fa}
                     min={priceMin} max={priceMax}
                     onMinChange={setPriceMin} onMaxChange={setPriceMax}
