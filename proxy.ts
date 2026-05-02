@@ -41,10 +41,8 @@ export default async function proxy(request: NextRequest) {
   // Create a new redirect response but copy the cookies from supabaseResponse
   const redirectResponse = NextResponse.redirect(url)
   
-  // Copy all headers/cookies from supabaseResponse to the new redirect
-  supabaseResponse.cookies.getAll().forEach(cookie => {
-    redirectResponse.cookies.set(cookie.name, cookie.value)
-  })
+  // Copy all cookies from supabaseResponse to the new redirect (preserving options)
+  redirectResponse.cookies.setAll(supabaseResponse.cookies.getAll())
 
   return redirectResponse
 }
