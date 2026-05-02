@@ -36,28 +36,34 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
   const content = useContent()
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
   const supabase = createClient()
   const profileModal = useProfileModal()
 
   useEffect(() => {
     const getData = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      
-      if (user) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-        setProfile(profileData)
-      } else {
-        setProfile(null)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+        
+        if (user) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+          setProfile(profileData)
+        }
+      } catch (err) {
+        console.error('Nav user fetch failed:', err)
+      } finally {
+        setLoading(false)
       }
     }
     getData()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const currentUser = session?.user ?? null
       setUser(currentUser)
       
@@ -71,10 +77,17 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
       } else {
         setProfile(null)
       }
+      
+      setLoading(false)
+
+      // Refresh the current route to sync server components
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        router.refresh()
+      }
     })
 
     return () => subscription.unsubscribe()
-  }, [supabase])
+  }, [supabase, router])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -181,7 +194,9 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                 <Phone className={cn("w-4 h-4", isRtl ? "ml-2" : "mr-2")} />
                 {content.nav.callUs}
               </Button>
-              {user ? (
+              {loading ? (
+                <div className="w-10 h-10 rounded-full bg-slate-100 animate-pulse" />
+              ) : user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="relative group focus:outline-none">
@@ -235,7 +250,7 @@ export function Navigation({ variant: manualVariant }: NavigationProps) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Link href={`/${locale}/auth/login`}>
+                <Link href={`/${locale}/auth/login?next=${pathname}`}>
                   <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 border-0 px-8 rounded-xl font-bold">
                     {content.nav.login || "Login"}
                   </Button>
