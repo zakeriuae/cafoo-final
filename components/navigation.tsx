@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 import { useI18n, useContent } from "@/lib/i18n"
 import { LocaleSwitcher } from "@/components/locale-switcher"
 import { CurrencySwitcher } from "@/components/currency-switcher"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { 
   DropdownMenu, 
