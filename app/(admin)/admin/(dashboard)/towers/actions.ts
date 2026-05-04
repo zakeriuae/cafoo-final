@@ -8,7 +8,7 @@ export async function deleteTower(id: string) {
   
   const { error } = await supabase
     .from('towers')
-    .delete()
+    .update({ status: 'archived' })
     .eq('id', id)
 
   if (error) {

@@ -8,7 +8,7 @@ export async function deleteArea(id: string) {
   
   const { error } = await supabase
     .from('areas')
-    .delete()
+    .update({ status: 'archived' })
     .eq('id', id)
 
   if (error) {
