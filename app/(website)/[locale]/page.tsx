@@ -3,8 +3,7 @@ export const dynamic = 'force-dynamic'
 // Force rebuild for minimal design update - v3
 import { Navigation } from "@/components/navigation"
 import { HeroSection } from "@/components/hero-section"
-import { ProjectsSection } from "@/components/projects-section"
-import { PropertiesSection } from "@/components/properties-section"
+import { DiscoveryTabs } from "@/components/discovery-tabs"
 import { AreasSection } from "@/components/areas-section-wrapper"
 import { DevelopersSection } from "@/components/developers-section-wrapper"
 import { AgentsSection } from "@/components/agents-section-wrapper"
@@ -25,10 +24,7 @@ export default async function HomePage() {
       <Navigation />
       <HeroSection />
       <Suspense fallback={<SectionLoading />}>
-        <ProjectsSection />
-      </Suspense>
-      <Suspense fallback={<SectionLoading />}>
-        <PropertiesSection />
+        <DiscoveryTabs />
       </Suspense>
       <Suspense fallback={<SectionLoading />}>
         <AreasSection />
