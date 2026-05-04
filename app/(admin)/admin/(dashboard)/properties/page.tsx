@@ -39,7 +39,7 @@ export default async function PropertiesPage() {
     
     let isAdmin = false
     if (user) {
-      if (user.email === 'zakeriuae@gmail.com') {
+      if (user.email === 'zakeriuae@gmail.com' || user.email === 'mynameismehdihasan@gmail.com') {
         isAdmin = true
       } else {
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()

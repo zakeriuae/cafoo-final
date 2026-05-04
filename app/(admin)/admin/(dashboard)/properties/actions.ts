@@ -5,7 +5,12 @@ import { revalidatePath } from 'next/cache'
 
 export async function deleteProperty(id: string) {
   const supabase = await createClient()
-  
+  // Clean up relations first to avoid foreign key constraint errors
+  await supabase.from('property_amenities').delete().eq('property_id', id)
+  await supabase.from('favorites').delete().eq('property_id', id)
+  await supabase.from('leads').delete().eq('property_id', id)
+  await supabase.from('referral_clicks').delete().eq('property_id', id)
+
   const { error } = await supabase
     .from('properties')
     .delete()

@@ -67,13 +67,7 @@ export async function createTower(formData: FormData) {
     connectivity_fa: formData.get('connectivity_fa') ? JSON.parse(formData.get('connectivity_fa') as string) : [],
     faq: formData.get('faq') ? JSON.parse(formData.get('faq') as string) : [],
     faq_fa: formData.get('faq_fa') ? JSON.parse(formData.get('faq_fa') as string) : [],
-    additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
-    highlights: formData.get('highlights') as string || null,
-    highlights_fa: formData.get('highlights_fa') as string || null,
-    architectural_details: formData.get('architectural_details') as string || null,
-    architectural_details_fa: formData.get('architectural_details_fa') as string || null,
-    investment_potential: formData.get('investment_potential') as string || null,
-    investment_potential_fa: formData.get('investment_potential_fa') as string || null,
+
   }
 
   // Handle empty UUID fields
@@ -151,13 +145,7 @@ export async function updateTower(id: string, formData: FormData) {
     connectivity_fa: formData.get('connectivity_fa') ? JSON.parse(formData.get('connectivity_fa') as string) : [],
     faq: formData.get('faq') ? JSON.parse(formData.get('faq') as string) : [],
     faq_fa: formData.get('faq_fa') ? JSON.parse(formData.get('faq_fa') as string) : [],
-    additional_media: formData.get('additional_media') ? JSON.parse(formData.get('additional_media') as string) : [],
-    highlights: formData.get('highlights') as string || null,
-    highlights_fa: formData.get('highlights_fa') as string || null,
-    architectural_details: formData.get('architectural_details') as string || null,
-    architectural_details_fa: formData.get('architectural_details_fa') as string || null,
-    investment_potential: formData.get('investment_potential') as string || null,
-    investment_potential_fa: formData.get('investment_potential_fa') as string || null,
+
   }
 
   // Handle empty UUID fields

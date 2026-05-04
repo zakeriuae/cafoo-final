@@ -41,11 +41,21 @@ export function PropertyCard({
     : (property.location ? property.location[locale] : property.location);
   
   const { currency, convert } = useCurrency()
-  const rawPrice = property.price || 0
+  
+  const parseNumber = (val: any) => {
+    if (typeof val === 'number') return val;
+    if (typeof val === 'string') return parseFloat(val.replace(/,/g, '')) || 0;
+    return 0;
+  };
+
+  const rawPrice = parseNumber(property.price);
   const convertedPrice = convert(rawPrice)
   const priceDisplay = Math.round(convertedPrice).toLocaleString()
   
-  const rawPricePerSqft = property.pricePerSqft || (property.price && property.size ? Math.round(property.price / property.size) : 0)
+  const parsedSize = parseNumber(property.size);
+  const rawPricePerSqft = property.pricePerSqft 
+    ? parseNumber(property.pricePerSqft) 
+    : (rawPrice && parsedSize ? Math.round(rawPrice / parsedSize) : 0);
   const convertedPricePerSqft = convert(rawPricePerSqft)
   const pricePerSqftDisplay = Math.round(convertedPricePerSqft).toLocaleString()
 

@@ -163,38 +163,7 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 border-t pt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="highlights">Project Highlights (EN)</Label>
-                    <Input id="highlights" name="highlights" defaultValue={(tower as any)?.highlights || ''} placeholder="LUXURY LIVING..." />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="highlights_fa">Project Highlights (FA)</Label>
-                    <Input id="highlights_fa" name="highlights_fa" defaultValue={(tower as any)?.highlights_fa || ''} dir="rtl" />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4 border-t pt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="architectural_details">Architectural Details (EN)</Label>
-                    <Textarea id="architectural_details" name="architectural_details" defaultValue={(tower as any)?.architectural_details || ''} rows={3} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="architectural_details_fa">Architectural Details (FA)</Label>
-                    <Textarea id="architectural_details_fa" name="architectural_details_fa" defaultValue={(tower as any)?.architectural_details_fa || ''} rows={3} dir="rtl" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 border-t pt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="investment_potential">Investment Potential (EN)</Label>
-                    <Textarea id="investment_potential" name="investment_potential" defaultValue={(tower as any)?.investment_potential || ''} rows={3} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="investment_potential_fa">Investment Potential (FA)</Label>
-                    <Textarea id="investment_potential_fa" name="investment_potential_fa" defaultValue={(tower as any)?.investment_potential_fa || ''} rows={3} dir="rtl" />
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
@@ -353,15 +322,7 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                   </div>
                 </div>
 
-                <div className="border-t pt-6">
-                  <MediaListInput
-                    name="additional_media"
-                    label="Additional Media & Links"
-                    bucket="media"
-                    folder={`towers/${tower?.slug || 'new'}/additional`}
-                    initialValue={(tower as any)?.additional_media || []}
-                  />
-                </div>
+
               </CardContent>
             </Card>
 
