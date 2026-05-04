@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { locales, defaultLocale } from '@/lib/i18n/config'
 import { updateSession } from '@/lib/supabase/middleware'
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const host = request.headers.get('host')
 
