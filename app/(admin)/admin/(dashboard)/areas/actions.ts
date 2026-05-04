@@ -51,6 +51,9 @@ export async function createArea(formData: FormData) {
     seo_description_fa: formData.get('seo_description_fa') as string || null,
   }
 
+  // Handle empty UUID fields
+  if (data.assigned_agent_id === 'none') data.assigned_agent_id = null
+
   const { error } = await supabase.from('areas').insert(data)
 
   if (error) {
@@ -92,6 +95,9 @@ export async function updateArea(id: string, formData: FormData) {
     seo_description: formData.get('seo_description') as string || null,
     seo_description_fa: formData.get('seo_description_fa') as string || null,
   }
+
+  // Handle empty UUID fields
+  if (data.assigned_agent_id === 'none') data.assigned_agent_id = null
 
   const { error } = await supabase
     .from('areas')

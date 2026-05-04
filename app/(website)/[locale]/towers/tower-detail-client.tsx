@@ -443,8 +443,16 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
               <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'ویژگی‌ها و امکانات رفاهی' : 'Features / Amenities'}</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                 {finalAmenities.map((feature, idx) => {
+                  const iconName = feature.icon || 'Check';
+                  // Convert kebab-case to PascalCase for Lucide icons
+                  const pascalIconName = iconName
+                    .split('-')
+                    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+                    .join('');
+                  
                   // @ts-ignore
-                  const Icon = Icons[feature.icon] || Icons.Check;
+                  const Icon = Icons[pascalIconName] || Icons[iconName.charAt(0).toUpperCase() + iconName.slice(1)] || Icons.Check;
+                  
                   return (
                     <div key={idx} className="flex flex-col items-center justify-center p-4 rounded-xl bg-slate-50 border border-slate-100/50 hover:bg-white hover:border-primary/20 transition-all group aspect-square text-center">
                       <div className="mb-2">
@@ -493,52 +501,8 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
               </div>
             )}
 
-            {/* 4. Floor Plans & Interactive Media */}
-            {(tower.video_url || tower.brochure_url || tower.floor_plan_url || (tower.additional_media && tower.additional_media.length > 0)) && (
-              <div className="p-6 md:p-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-6">{locale === 'fa' ? 'رسانه‌های تعاملی و مستندات' : 'Interactive Media & Documents'}</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {tower.video_url && (
-                    <a href={tower.video_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
-                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Icons.Play className="h-6 w-6 text-primary" />
-                      </div>
-                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'ویدیو پروژه' : 'Project Video'}</span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Watch Now</span>
-                    </a>
-                  )}
-                  {tower.brochure_url && (
-                    <a href={tower.brochure_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
-                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Icons.Download className="h-6 w-6 text-primary" />
-                      </div>
-                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'کاتالوگ پروژه' : 'Project Brochure'}</span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">PDF - View</span>
-                    </a>
-                  )}
-                  {tower.floor_plan_url && (
-                    <a href={tower.floor_plan_url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
-                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Icons.Map className="h-6 w-6 text-primary" />
-                      </div>
-                      <span className="text-sm font-bold text-slate-900">{locale === 'fa' ? 'نقشه طبقات' : 'Floor Plans'}</span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">View PDF</span>
-                    </a>
-                  )}
-                  {tower.additional_media?.map((media, idx) => (
-                    <a key={idx} href={media.url} target="_blank" className="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-primary/30 hover:bg-white transition-all group no-underline">
-                      <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <Icons.FileText className="h-6 w-6 text-primary" />
-                      </div>
-                      <span className="text-sm font-bold text-slate-900 truncate max-w-full px-2">{media.title}</span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase mt-1 tracking-widest">Open Link</span>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
             </div>
+
 
             {/* Available Units Grid */}
             {properties.length > 0 && (
@@ -722,9 +686,54 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
               )}
 
               <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 mt-4">
-                <h4 className="text-sm font-bold text-slate-900 mb-4">{locale === 'fa' ? 'لینک‌های مرتبط' : 'Related Links'}</h4>
+                <h4 className="text-sm font-bold text-slate-900 mb-4">{locale === 'fa' ? 'رسانه‌ها و مستندات' : 'Media & Documents'}</h4>
                 <div className="space-y-3">
-                  <Link href={`/${locale}/projects`} className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-primary transition-colors">
+                  {tower.video_url && (
+                    <a href={tower.video_url} target="_blank" className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-primary/5 hover:text-primary transition-all group no-underline">
+                      <div className="h-8 w-8 rounded-lg bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                        <Icons.Play className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold">{locale === 'fa' ? 'ویدیو پروژه' : 'Project Video'}</span>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Watch Now</span>
+                      </div>
+                    </a>
+                  )}
+                  {tower.brochure_url && (
+                    <a href={tower.brochure_url} target="_blank" className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-primary/5 hover:text-primary transition-all group no-underline">
+                      <div className="h-8 w-8 rounded-lg bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                        <Icons.Download className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold">{locale === 'fa' ? 'کاتالوگ پروژه' : 'Project Brochure'}</span>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Download PDF</span>
+                      </div>
+                    </a>
+                  )}
+                  {tower.floor_plan_url && (
+                    <a href={tower.floor_plan_url} target="_blank" className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-primary/5 hover:text-primary transition-all group no-underline">
+                      <div className="h-8 w-8 rounded-lg bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                        <Icons.Map className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold">{locale === 'fa' ? 'نقشه طبقات' : 'Floor Plans'}</span>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">View PDF</span>
+                      </div>
+                    </a>
+                  )}
+                  {tower.additional_media?.map((media, idx) => (
+                    <a key={idx} href={media.url} target="_blank" className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-primary/5 hover:text-primary transition-all group no-underline">
+                      <div className="h-8 w-8 rounded-lg bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                        <Icons.FileText className="h-4 w-4" />
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-xs font-bold truncate">{media.title}</span>
+                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">External Link</span>
+                      </div>
+                    </a>
+                  )}
+                  <hr className="border-slate-100 my-2" />
+                  <Link href={`/${locale}/projects`} className="flex items-center gap-3 p-2 text-xs font-bold text-slate-500 hover:text-primary transition-colors">
                     <LinkIcon className="h-3 w-3" />
                     {locale === 'fa' ? 'تمام پروژه‌های دبی' : 'All Dubai Projects'}
                   </Link>
