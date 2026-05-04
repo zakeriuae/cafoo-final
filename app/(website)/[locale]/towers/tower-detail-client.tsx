@@ -45,7 +45,8 @@ import {
   Link as LinkIcon,
   Home,
   Baby,
-  ShieldCheck
+  ShieldCheck,
+  Clock
 } from "lucide-react"
 import { useContent, useI18n } from "@/lib/i18n"
 import { useState } from "react"
