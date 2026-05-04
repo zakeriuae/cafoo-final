@@ -376,7 +376,7 @@ export function TowerForm({ tower, areas, developers, agents, isAdmin, currentAg
                     <SelectContent>
                       <SelectItem value="draft">Draft</SelectItem>
                       <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="archived">Archived</SelectItem>
+                      <SelectItem value="archived">Deleted</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

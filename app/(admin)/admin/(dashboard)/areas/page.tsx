@@ -19,6 +19,7 @@ async function getAreas() {
   let query = supabase
     .from('areas')
     .select('*, assigned_agent:agents(name)')
+    .neq('status', 'archived')
     .order('sort_order', { ascending: true })
 
   if (!isAdmin && currentAgentId) {

@@ -20,6 +20,7 @@ async function getProperties() {
   let query = supabase
     .from('properties')
     .select('*, area:areas(name), tower:towers(name), agent:agents(name)')
+    .neq('content_status', 'archived')
     .order('created_at', { ascending: false })
 
   if (!isAdmin && currentAgentId) {

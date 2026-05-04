@@ -6,6 +6,7 @@ async function getAgents() {
   const { data } = await supabase
     .from('agents')
     .select('*')
+    .neq('status', 'archived')
     .order('sort_order', { ascending: true })
   return data || []
 }

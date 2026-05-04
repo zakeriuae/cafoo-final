@@ -19,6 +19,7 @@ async function getTowers() {
   let query = supabase
     .from('towers')
     .select('*, area:areas(name), developer:developers(name)')
+    .neq('status', 'archived')
     .order('sort_order', { ascending: true })
 
   if (!isAdmin && currentAgentId) {

@@ -304,7 +304,7 @@ export function AreaForm({ area, agents, isAdmin, currentAgentId }: AreaFormProp
                     <SelectContent>
                       <SelectItem value="draft">Draft</SelectItem>
                       <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="archived">Archived</SelectItem>
+                      <SelectItem value="archived">Deleted</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

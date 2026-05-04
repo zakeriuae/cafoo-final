@@ -8,7 +8,7 @@ export async function deleteAgent(id: string) {
   
   const { error } = await supabase
     .from('agents')
-    .delete()
+    .update({ status: 'archived' })
     .eq('id', id)
 
   if (error) {

@@ -725,7 +725,7 @@ export function PropertyForm({ property, areas, towers, developers, agents, isAd
                     <SelectContent>
                       <SelectItem value="draft">Draft</SelectItem>
                       <SelectItem value="published">Published</SelectItem>
-                      <SelectItem value="archived">Archived</SelectItem>
+                      <SelectItem value="archived">Deleted</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

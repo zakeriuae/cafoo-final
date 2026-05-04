@@ -8,7 +8,7 @@ export async function deleteDeveloper(id: string) {
   
   const { error } = await supabase
     .from('developers')
-    .delete()
+    .update({ status: 'archived' })
     .eq('id', id)
 
   if (error) {

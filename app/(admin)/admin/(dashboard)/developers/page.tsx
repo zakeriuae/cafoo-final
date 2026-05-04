@@ -6,6 +6,7 @@ async function getDevelopers() {
   const { data } = await supabase
     .from('developers')
     .select('*')
+    .neq('status', 'archived')
     .order('sort_order', { ascending: true })
   return data || []
 }
