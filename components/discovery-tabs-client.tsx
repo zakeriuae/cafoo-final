@@ -26,6 +26,7 @@ export default function DiscoveryTabsClient({
   propertiesCount, 
   towersCount 
 }: DiscoveryTabsClientProps) {
+  const [activeTab, setActiveTab] = useState<"properties" | "towers">("properties")
   const [propertyFilter, setPropertyFilter] = useState<"all" | "sale" | "rent">("all")
   const [towerFilter, setTowerFilter] = useState<"all" | "Off-Plan" | "Ready">("all")
   const { locale, isRtl } = useI18n()
