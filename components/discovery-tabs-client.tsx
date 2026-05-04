@@ -26,9 +26,22 @@ export default function DiscoveryTabsClient({
   propertiesCount, 
   towersCount 
 }: DiscoveryTabsClientProps) {
-  const [activeTab, setActiveTab] = useState<"properties" | "towers">("properties")
+  const [propertyFilter, setPropertyFilter] = useState<"all" | "sale" | "rent">("all")
+  const [towerFilter, setTowerFilter] = useState<"all" | "Off-Plan" | "Ready">("all")
   const { locale, isRtl } = useI18n()
   const content = useContent()
+
+  const propertyTabs = [
+    { key: "all" as const, label: content.projects.filters.all },
+    { key: "sale" as const, label: content.properties.tabs.sale },
+    { key: "rent" as const, label: content.properties.tabs.rent },
+  ]
+
+  const towerFilters = [
+    { key: "all", label: content.projects.filters.all },
+    { key: "Off-Plan", label: content.projects.filters.offPlan },
+    { key: "Ready", label: content.projects.filters.readyToMove },
+  ]
 
   const tabs = [
     {
@@ -61,6 +74,14 @@ export default function DiscoveryTabsClient({
     return foundKey ? mapping[foundKey] : (logoFromDb || null);
   };
 
+  const filteredProperties = propertyFilter === "all" 
+    ? properties 
+    : properties.filter(p => p.type === propertyFilter || p.type === "both")
+
+  const filteredTowers = towerFilter === "all" 
+    ? towers 
+    : towers.filter(p => p.status === towerFilter)
+
   return (
     <section className="py-24 bg-[#F0F7FF] overflow-hidden">
       <div className="container mx-auto">
@@ -72,38 +93,35 @@ export default function DiscoveryTabsClient({
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "relative flex items-center gap-4 px-8 py-5 rounded-[2rem] transition-all duration-500 min-w-[280px]",
+                  "relative flex items-center gap-4 px-6 py-4 rounded-[1.8rem] transition-all duration-500 min-w-[240px]",
                   activeTab === tab.id
                     ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]"
                     : "text-slate-500 hover:bg-primary/5 hover:text-primary"
                 )}
               >
                 <div className={cn(
-                  "p-3 rounded-2xl transition-colors",
+                  "p-2.5 rounded-xl transition-colors",
                   activeTab === tab.id ? "bg-white/20" : "bg-primary/10 text-primary"
                 )}>
-                  <tab.icon className="w-6 h-6" />
+                  <tab.icon className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col items-start text-left rtl:text-right">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-black tracking-tight">{tab.title}</span>
+                    <span className="text-base font-black tracking-tight">{tab.title}</span>
                     <span className={cn(
-                      "text-[10px] font-bold px-2 py-0.5 rounded-full border",
+                      "text-[9px] font-bold px-1.5 py-0.5 rounded-full border",
                       activeTab === tab.id ? "bg-white/20 border-white/20" : "bg-primary/10 border-primary/10"
                     )}>
                       {tab.count}
                     </span>
                   </div>
                   <span className={cn(
-                    "text-xs font-medium opacity-70",
+                    "text-[10px] font-medium opacity-70",
                     activeTab === tab.id ? "text-white/80" : "text-slate-400"
                   )}>
                     {tab.subtitle}
                   </span>
                 </div>
-                {activeTab === tab.id && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-white rounded-full" />
-                )}
               </button>
             ))}
           </div>
@@ -116,25 +134,51 @@ export default function DiscoveryTabsClient({
             "transition-all duration-700 absolute inset-0",
             activeTab === "properties" ? "opacity-100 translate-y-0 z-10" : "opacity-0 translate-y-12 z-0 pointer-events-none"
           )}>
-            <div className="flex justify-between items-end mb-10">
-              <div>
-                <h3 className="text-3xl font-black text-slate-900 mb-2">
-                  {locale === 'fa' ? 'پیشنهادات ویژه املاک' : 'Premium Property Listings'}
-                </h3>
-                <p className="text-slate-500 font-medium">
-                  {locale === 'fa' ? 'بهترین واحدهای مسکونی و تجاری در دبی' : 'The finest residential and commercial units in Dubai'}
-                </p>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 p-3 bg-white rounded-2xl shadow-sm border border-slate-100 text-primary">
+                  <Home className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-black text-slate-900 mb-2">
+                    {locale === 'fa' ? 'املاک و واحدها' : 'Properties'}
+                  </h3>
+                  <p className="text-slate-500 font-medium">
+                    {locale === 'fa' ? 'بهترین واحدهای مسکونی و تجاری در دبی' : 'The finest residential and commercial units in Dubai'}
+                  </p>
+                </div>
               </div>
-              <Link href={`/${locale}/properties`}>
-                <Button variant="outline" className="rounded-full px-6 h-12 border-primary/20 hover:bg-primary hover:text-white transition-all gap-2 group font-bold">
-                  {content.properties.viewAll}
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+              
+              <div className="flex flex-col items-end gap-4">
+                <Link href={`/${locale}/properties`}>
+                  <Button variant="outline" className="rounded-full px-6 h-10 border-primary/20 hover:bg-primary hover:text-white transition-all gap-2 group font-bold">
+                    {content.properties.viewAll}
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                
+                {/* Properties Filter Tabs */}
+                <div className="flex p-1 bg-white rounded-full border border-slate-200 shadow-sm">
+                  {propertyTabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setPropertyFilter(tab.key)}
+                      className={cn(
+                        "px-5 py-1.5 rounded-full font-bold text-xs transition-all duration-300",
+                        propertyFilter === tab.key
+                          ? "bg-primary text-white shadow-md"
+                          : "text-slate-400 hover:text-primary"
+                      )}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {properties.map((property) => {
+              {filteredProperties.map((property) => {
                 const propertyUrl = buildSeoUrl({
                   transactionType: property.type === 'rent' ? 'for-rent' : 'for-sale',
                   propertyType: 'property',
@@ -165,25 +209,51 @@ export default function DiscoveryTabsClient({
             "transition-all duration-700 absolute inset-0",
             activeTab === "towers" ? "opacity-100 translate-y-0 z-10" : "opacity-0 translate-y-12 z-0 pointer-events-none"
           )}>
-             <div className="flex justify-between items-end mb-10">
-              <div>
-                <h3 className="text-3xl font-black text-slate-900 mb-2">
-                  {locale === 'fa' ? 'پروژه‌های شاخص و برج‌ها' : 'Iconic Projects & Towers'}
-                </h3>
-                <p className="text-slate-500 font-medium">
-                  {locale === 'fa' ? 'مجموعه‌های ساختمانی لوکس و مناطق رو به رشد' : 'Luxury complexes and high-growth investment districts'}
-                </p>
+             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+              <div className="flex items-start gap-4">
+                <div className="mt-1 p-3 bg-white rounded-2xl shadow-sm border border-slate-100 text-primary">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-black text-slate-900 mb-2">
+                    {locale === 'fa' ? 'برج‌ها و مناطق' : 'Towers & Districts'}
+                  </h3>
+                  <p className="text-slate-500 font-medium">
+                    {locale === 'fa' ? 'مجموعه‌های ساختمانی لوکس و مناطق رو به رشد' : 'Luxury complexes and high-growth investment districts'}
+                  </p>
+                </div>
               </div>
-              <Link href={`/${locale}/towers`}>
-                <Button variant="outline" className="rounded-full px-6 h-12 border-primary/20 hover:bg-primary hover:text-white transition-all gap-2 group font-bold">
-                  {content.projects.viewAll}
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+
+              <div className="flex flex-col items-end gap-4">
+                <Link href={`/${locale}/towers`}>
+                  <Button variant="outline" className="rounded-full px-6 h-10 border-primary/20 hover:bg-primary hover:text-white transition-all gap-2 group font-bold">
+                    {content.projects.viewAll}
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+
+                {/* Towers Filter Tabs */}
+                <div className="flex p-1 bg-white rounded-full border border-slate-200 shadow-sm">
+                  {towerFilters.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setTowerFilter(tab.key as any)}
+                      className={cn(
+                        "px-5 py-1.5 rounded-full font-bold text-xs transition-all duration-300",
+                        towerFilter === tab.key
+                          ? "bg-primary text-white shadow-md"
+                          : "text-slate-400 hover:text-primary"
+                      )}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {towers.map((project, index) => {
+              {filteredTowers.map((project, index) => {
                 const projectUrl = buildSeoUrl({
                   transactionType: project.status === "Off-Plan" ? 'off-plan' : 'for-sale',
                   propertyType: 'apartment',
