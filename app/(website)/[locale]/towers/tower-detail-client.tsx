@@ -731,7 +731,7 @@ export function TowerDetailClient({ tower, properties, locale }: TowerDetailClie
                         <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">External Link</span>
                       </div>
                     </a>
-                  )}
+                  ))}
                   <hr className="border-slate-100 my-2" />
                   <Link href={`/${locale}/projects`} className="flex items-center gap-3 p-2 text-xs font-bold text-slate-500 hover:text-primary transition-colors">
                     <LinkIcon className="h-3 w-3" />
